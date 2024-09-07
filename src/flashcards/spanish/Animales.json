@@ -1,5 +1,6 @@
 {
   "setName": "animales",
+  "restrictLetters": "y",
   "termList": {
     "Qué es \"mono\" en inglés?": "monkey",
     "Qué es \"zorro\" en inglés?": "fox",

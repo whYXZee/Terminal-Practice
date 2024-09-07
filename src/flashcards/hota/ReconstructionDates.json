@@ -1,5 +1,6 @@
 {
   "setName": "reconstructionDate",
+  "restrictLetters": "n",
   "termList": {
     "What year was \"The Birth of a Nation\" released?": "1915",
     "What year did the Ku Klux Klan restart?": "1915",

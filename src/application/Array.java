@@ -2,18 +2,16 @@ package application;
 
 import scenarios.algebra.*;
 import scenarios.physics.*;
-import flashcards.*;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.Set;
+import java.util.List;
 
-public class Array {
-    // public static final String[] scenarioSubjects = { "algebra" };
-    // public static final String[] flashcardSubjects = { "english", "history of the
-    // americas" };
-
-    public static final LinkedHashMap<String, Scenario> algebraScenarios = new LinkedHashMap<String, Scenario>() {
+public final class Array {
+    public static final HashMap<String, Scenario> algebraScenarios = new HashMap<String, Scenario>() {
         {
             put("algebraic memory", new AlgebraMemory());
             put("simplify equations", new SimplifyEquation());
@@ -22,47 +20,41 @@ public class Array {
         }
     };
 
-    public static final LinkedHashMap<String, Scenario> physicsScenarios = new LinkedHashMap<String, Scenario>() {
+    public static final HashMap<String, Scenario> physicsScenarios = new HashMap<String, Scenario>() {
         {
             put("projectile motion", new ProjectileMotion());
         }
     };
 
-    public static final LinkedHashMap<String, Flashcard> englishFlashcards = new LinkedHashMap<String, Flashcard>() {
-        {
-            put("roots", new Roots());
-        }
-    };
-
-    public static final LinkedHashMap<String, HashMap<String, String>> hotaFlashcards = new LinkedHashMap<String, HashMap<String, String>>() {
+    public static final HashMap<String, File> hotaFlashcards = new HashMap<String, File>() {
         {
             put("reconstruction dates",
-                    JSONTools.getCustomHashMap("history of the americas", "reconstructionDate",
-                            "./src/flashcards/hota/"));
+                    JSONTools.getJSONPath("history of the americas", "reconstructionDate", "./src/flashcards/hota/"));
             put("reconstruction definitions",
-                    JSONTools.getCustomHashMap("history of the americas", "reconstructionDef",
-                            "./src/flashcards/hota/"));
+                    JSONTools.getJSONPath("history of the americas", "reconstructionDef", "./src/flashcards/hota/"));
             put("u.s. expansionism definitions",
-                    JSONTools.getCustomHashMap("history of the americas", "u.s. expansionist definitions",
-                            "./src/flashcards/hota"));
-            put("u.s. expansionism dates", JSONTools.getCustomHashMap("history of the americas",
-                    "u.s. expansionist dates", "./src/flashcards/hota"));
+                    JSONTools.getJSONPath("history of the americas", "u.s. expansionist definitions",
+                            "./src/flashcards/hota/"));
+            put("u.s. expansionism dates",
+                    JSONTools.getJSONPath("history of the americas", "u.s. expansionist dates",
+                            "./src/flashcards/hota/"));
         }
     };
 
-    public static final LinkedHashMap<String, HashMap<String, String>> spanishFlashcards = new LinkedHashMap<String, HashMap<String, String>>() {
+    public static final HashMap<String, File> spanishFlashcards = new HashMap<String, File>() {
         {
-            put("animales", JSONTools.getCustomHashMap("spanish", "animales", "./src/flashcards/spanish"));
+            put("animales",
+                    JSONTools.getJSONPath("spanish", "animales", "./src/flashcards/spanish/"));
         }
     };
 
-    public static final LinkedHashMap<String, HashMap<String, Scenario>> scenarioHashMap = new LinkedHashMap<String, HashMap<String, Scenario>>() {
+    public static final HashMap<String, HashMap<String, Scenario>> scenarioHashMap = new HashMap<String, HashMap<String, Scenario>>() {
         {
             put("algebra", algebraScenarios);
             put("physics", physicsScenarios);
         }
     };
-    public static final LinkedHashMap<String, HashMap<String, HashMap<String, String>>> flashcardHashMap = new LinkedHashMap<String, HashMap<String, HashMap<String, String>>>() {
+    public static final HashMap<String, HashMap<String, File>> flashcardHashMap = new HashMap<String, HashMap<String, File>>() {
         {
             // put("english", englishFlashcards);
             put("history of the americas", hotaFlashcards);
@@ -70,28 +62,18 @@ public class Array {
         }
     };
 
-    public static void printArrays(ArrayList<String> array) {
-        for (String i : array) {
+    @SuppressWarnings("unchecked")
+    public static void printArrays(Set<String> set) {
+        // To sort the array in alphabetical order
+        @SuppressWarnings("rawtypes")
+        List<String> list = new ArrayList(set);
+        Collections.sort(list);
+        for (String i : list) {
             System.out.println("* " + RunApplication.capitalize(i));
         }
     }
 
-    public static void printArrays(HashMap<String, ?> hashMap) {
-        for (String i : hashMap.keySet()) {
-            System.out.println("* " + RunApplication.capitalize(i));
-        }
-    }
-
-    public static boolean inArray(HashMap<String, ?> array, String value) {
-        for (String i : array.keySet()) {
-            if (value.equals(i)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean inArray(ArrayList<String> array, String value) {
+    public static boolean inArray(Set<String> array, String value) {
         for (String i : array) {
             if (value.equals(i)) {
                 return true;

@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+@SuppressWarnings("unchecked") // cuz I don't wanna deal w/ warnings
 public class JSONTools {
     public static void create() throws FileNotFoundException {
         // Setting the variables
@@ -41,6 +42,13 @@ public class JSONTools {
         }
         jsonO.put("termList", map);
 
+        System.out.println("Would you like to prompt letter banning? [y to prompt restrictions]");
+        if (RunApplication.IO.nextLine().equals("y")) {
+            jsonO.put("restrictLetters", "y");
+        } else {
+            jsonO.put("restrictLetters", "n");
+        }
+
         // Export the JSON
         System.out.println("What do you want to call the file?");
         PrintWriter pw = new PrintWriter("./src/customjson/" + RunApplication.IO.nextLine() + ".json");
@@ -51,7 +59,7 @@ public class JSONTools {
 
     public static ArrayList<String> getCustomSubjects() {
         File directory = new File("./src/customjson/");
-        File[] jsons = directory.listFiles();
+        File[] jsons = removeGitKeep(directory.listFiles());
         ArrayList<String> output = new ArrayList<String>();
         if (directory != null) {
             for (File i : jsons) {
@@ -73,7 +81,7 @@ public class JSONTools {
 
     public static ArrayList<String> getCustomSets(String subject) {
         File directory = new File("./src/customjson/");
-        File[] jsons = directory.listFiles();
+        File[] jsons = removeGitKeep(directory.listFiles());
         ArrayList<String> output = new ArrayList<String>();
         if (directory != null) {
             for (File i : jsons) {
@@ -93,9 +101,17 @@ public class JSONTools {
         return output;
     }
 
+    /**
+     * Gets the path of a JSON.
+     * 
+     * @param subject
+     * @param set
+     * @param path
+     * @return path as "./src/"
+     */
     public static File getJSONPath(String subject, String set, String path) {
         File directory = new File(path);
-        File[] jsons = directory.listFiles();
+        File[] jsons = removeGitKeep(directory.listFiles());
         if (directory != null) {
             for (File i : jsons) {
                 try {
@@ -117,10 +133,15 @@ public class JSONTools {
         return null;
     }
 
-    public static HashMap<String, String> getCustomHashMap(String subject, String set, String path) {
+    /**
+     * Gets the hashmap from a JSON.
+     * 
+     * @param path : path of the file, starting from "./src/"
+     */
+    public static HashMap<String, String> getCustomHashMap(File path) {
         try {
             JSONObject jsonO = (JSONObject) new JSONParser()
-                    .parse(new FileReader(getJSONPath(subject, set, path)));
+                    .parse(new FileReader(path));
             return (HashMap<String, String>) jsonO.get("termList");
         } catch (FileNotFoundException e) {
             System.out.println(e);
@@ -130,6 +151,32 @@ public class JSONTools {
             System.out.println(e);
         }
         return null;
+    }
+
+    public static String getRestriction(File path) {
+        try {
+            JSONObject jsonO = (JSONObject) new JSONParser()
+                    .parse(new FileReader(path));
+            return (String) jsonO.get("restrictLetters");
+        } catch (FileNotFoundException e) {
+            System.out.println(e);
+        } catch (IOException e) {
+            System.out.println(e);
+        } catch (ParseException e) {
+            System.out.println(e);
+        }
+        return "n";
+    }
+
+    public static File[] removeGitKeep(File[] jsons) {
+        File[] output = {};
+        for (File i : jsons) {
+            if (!i.equals(new File("./src/customjson/.gitkeep"))) {
+                // all other files will be jsons, so void the gitkeep
+                output = new File[output.length + 1];
+            }
+        }
+        return output;
     }
 
     public static void edit(File path) {

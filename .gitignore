@@ -1,4 +1,8 @@
+# Ignore
 bin
 lib
 .vscode
-src/customjson
+src/customjson/*
+
+# Keep
+!src/customjson/.gitkeep

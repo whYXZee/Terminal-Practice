@@ -8,7 +8,8 @@ import java.util.HashMap;
 import java.util.Collections;
 
 public class Flashcard {
-    public static void runFlashcard(boolean buffer, HashMap<String, String> set) throws InterruptedException {
+    public static void runFlashcard(boolean buffer, HashMap<String, String> set, String restriction)
+            throws InterruptedException {
         // Shuffling terms
         ArrayList<String> shuffled = new ArrayList<String>(set.keySet());
         Collections.shuffle(shuffled);
@@ -34,12 +35,19 @@ public class Flashcard {
         }
         int correct, termsCompleted;
         correct = termsCompleted = 0;
-        ArrayList<String> bannedLetters = banLetters(buffer);
-        // System.out.println(bannedLetters);
+        ArrayList<String> bannedLetters = new ArrayList<String>();
+
+        // To see if letters should be restricted or not
+        if (restriction.equals("y")) {
+            bannedLetters = banLetters(buffer);
+        } else {
+            if (buffer) { // to apply the buffer effect still
+                RunApplication.IO.nextLine();
+            }
+        }
+
         for (String i : shuffled) {
-            // System.out.println(i);
             AnswerSet answers = new AnswerSet(set.get(i));
-            // System.out.println(answers);
             if (Character.toString(i.charAt(0)).equals("-")) {
                 if (!bannedLetters.contains(Character.toString(i.charAt(1)))) {
                     System.out.println("Question " + (termsCompleted + 1) + "/" + goal + ":");

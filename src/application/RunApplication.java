@@ -5,13 +5,15 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.ArrayList;
-import java.io.PrintWriter;
 
 public class RunApplication {
     public static final Scanner IO = new Scanner(new InputStreamReader(System.in, Charset.forName("ISO-8859-1")));
 
+    /**
+     * Capitalizes each word of the input.
+     */
     public static String capitalize(String input) {
         String string = "";
         for (int j = 0; j < input.toCharArray().length; j++) {
@@ -24,51 +26,17 @@ public class RunApplication {
         return string;
     }
 
-    private static String chooseSubject(HashMap<String, ?> map) {
-        while (true) {
-            System.out.println("\nWhich subject would you like to choose?");
-            Array.printArrays(map);
-            System.out.println("[type one of the above]");
-            try {
-                String subject = IO.nextLine().toLowerCase();
-                if (Array.inArray(map, subject)) {
-                    return subject;
-                } else if (subject.equals("back")) {
-                    return "exit code";
-                }
-            } catch (java.lang.NullPointerException e) {
-                System.out.println("Try again.");
-            }
-        }
-    }
-
     private static String chooseSubject(ArrayList<String> map) {
         while (true) {
             System.out.println("\nWhich subject would you like to choose?");
             try {
-                Array.printArrays(map);
+                Array.printArrays(new HashSet<>(map));
                 System.out.println("[type one of the above]");
                 String subject = IO.nextLine().toLowerCase();
-                if (Array.inArray(map, subject)) {
+                if (Array.inArray(new HashSet<>(map), subject)) {
                     return subject;
                 } else if (subject.equals("back")) {
                     return "exit code";
-                }
-            } catch (java.lang.NullPointerException e) {
-                System.out.println("Try again.");
-            }
-        }
-    }
-
-    private static String chooseSet(HashMap<String, ?> map) {
-        while (true) {
-            System.out.println("\nWhich scenario would you like to choose?");
-            Array.printArrays(map);
-            System.out.println("[type one of the above]");
-            try {
-                String set = IO.nextLine().toLowerCase();
-                if (Array.inArray(map, set)) {
-                    return set;
                 }
             } catch (java.lang.NullPointerException e) {
                 System.out.println("Try again.");
@@ -79,11 +47,11 @@ public class RunApplication {
     private static String chooseSet(ArrayList<String> map) {
         while (true) {
             System.out.println("\nWhich scenario would you like to choose?");
-            Array.printArrays(map);
+            Array.printArrays(new HashSet<>(map));
             System.out.println("[type one of the above]");
             try {
                 String set = IO.nextLine().toLowerCase();
-                if (Array.inArray(map, set)) {
+                if (Array.inArray(new HashSet<>(map), set)) {
                     return set;
                 }
             } catch (java.lang.NullPointerException e) {
@@ -111,15 +79,17 @@ public class RunApplication {
         String subject = "";
         String set = "";
         Game gameEnum = Game.NONE;
+        File json;
         while (run) {
             switch (gameEnum) {
                 case FLASHCARDS:
                     // Getting the flashcard
-                    subject = chooseSubject(Array.flashcardHashMap);
-                    set = chooseSet(Array.flashcardHashMap.get(subject));
+                    subject = chooseSubject(new ArrayList<>(Array.flashcardHashMap.keySet()));
+                    set = chooseSet(new ArrayList<>(Array.flashcardHashMap.get(subject).keySet()));
+                    json = Array.flashcardHashMap.get(subject).get(set);
 
                     // Playing the flashcard
-                    Flashcard.runFlashcard(buffer, Array.flashcardHashMap.get(subject).get(set));
+                    Flashcard.runFlashcard(buffer, JSONTools.getCustomHashMap(json), JSONTools.getRestriction(json));
                     System.out.println("Would you like to go again? [n to exit]");
                     if (IO.nextLine().equals("n")) {
                         // isFlashcard = subjectChosen = numberChosen = scenarioChosen = gameChosen =
@@ -131,8 +101,8 @@ public class RunApplication {
                     break;
 
                 case SCENARIOS:
-                    subject = chooseSubject(Array.scenarioHashMap);
-                    set = chooseSet(Array.scenarioHashMap.get(subject));
+                    subject = chooseSubject(new ArrayList<>(Array.scenarioHashMap.keySet()));
+                    set = chooseSet(new ArrayList<>(Array.scenarioHashMap.get(subject).keySet()));
 
                     // Choosing the # of times to play
                     System.out.println("\nHow many questions you like to practice? ");
@@ -177,11 +147,12 @@ public class RunApplication {
                 case CUSTOM_FLASHCARDS:
                     subject = chooseSubject(JSONTools.getCustomSubjects());
                     set = chooseSet(JSONTools.getCustomSets(subject));
+                    json = JSONTools.getJSONPath(subject, set, "./src/customjson");
 
                     // Playing the flashcard.
                     if (!subject.equals("null")) {
-                        Flashcard.runFlashcard(buffer, JSONTools.getCustomHashMap(subject, set,
-                                "./src/customjson/"));
+                        Flashcard.runFlashcard(buffer, JSONTools.getCustomHashMap(json),
+                                JSONTools.getRestriction(json));
                         System.out.println("Would you like to go again? [n to exit]");
                         if (IO.nextLine().equals("n")) {
                             gameEnum = Game.EXIT;
@@ -193,7 +164,7 @@ public class RunApplication {
                 case NONE:
                     System.out.println("* Flashcards\n* Scenarios\n* Flashcard Creator");
                     File directory = new File("./src/customjson/");
-                    File[] jsons = directory.listFiles();
+                    File[] jsons = JSONTools.removeGitKeep(directory.listFiles());
                     try {
                         if (jsons.length != 0) {
                             System.out.println("* Custom Flashcards");

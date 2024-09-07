@@ -1,5 +1,6 @@
 {
   "setName": "u.s. expansionist dates",
+  "restrictLetters": "n",
   "termList": {
     "What year was the Baltimore incident?": "1891",
     "What year was the Berlin Conference?": "1885",
