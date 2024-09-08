@@ -126,6 +126,10 @@ public class JSONTools {
                     System.out.println("IOException");
                 } catch (ParseException e) {
                     System.out.println("ParseException; getJSONPath; " + i);
+                } catch (NullPointerException e) {
+                    System.out.println("subject: " + subject);
+                    System.out.println("set: " + set);
+                    // System.out.println("path: " + path);
                 }
 
             }

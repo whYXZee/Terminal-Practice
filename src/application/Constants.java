@@ -1,7 +1,8 @@
 package application;
 
-import scenarios.algebra.*;
 import scenarios.physics.*;
+import ui.scenarios.algebra.*;
+import ui.scenarios.ScenarioUI;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -10,13 +11,12 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.List;
 
-public final class Array {
-    public static final HashMap<String, Scenario> algebraScenarios = new HashMap<String, Scenario>() {
+public final class Constants {
+    // static HashMap<String, ScenarioUI> algebraScenarios = new HashMap<String,
+    // ScenarioUI>();
+    static final ArrayList<String> algebraScenarios = new ArrayList<String>() {
         {
-            put("algebraic memory", new AlgebraMemory());
-            put("simplify equations", new SimplifyEquation());
-            put("solve for x (linear)", new SolveForXLinear());
-            put("quadratic factors", new QuadFactors());
+            add("algebraic memory");
         }
     };
 
@@ -28,30 +28,23 @@ public final class Array {
 
     public static final HashMap<String, File> hotaFlashcards = new HashMap<String, File>() {
         {
-            put("reconstruction dates",
-                    JSONTools.getJSONPath("history of the americas", "reconstructionDate", "./src/flashcards/hota/"));
-            put("reconstruction definitions",
-                    JSONTools.getJSONPath("history of the americas", "reconstructionDef", "./src/flashcards/hota/"));
-            put("u.s. expansionism definitions",
-                    JSONTools.getJSONPath("history of the americas", "u.s. expansionist definitions",
-                            "./src/flashcards/hota/"));
-            put("u.s. expansionism dates",
-                    JSONTools.getJSONPath("history of the americas", "u.s. expansionist dates",
-                            "./src/flashcards/hota/"));
+            put("reconstruction dates", new File("./src/flashcards/hota/ReconstructionDates.json"));
+            put("reconstruction definitions", new File("./src/flashcards/hota/ReconstructionDef.json"));
+            put("u.s. expansionism definitions", new File("./src/flashcards/hota/USExpansionismDef.json"));
+            put("u.s. expansionism dates", new File("./src/flashcards/hota/USExpansionismDates.json"));
         }
     };
 
     public static final HashMap<String, File> spanishFlashcards = new HashMap<String, File>() {
         {
-            put("animales",
-                    JSONTools.getJSONPath("spanish", "animales", "./src/flashcards/spanish/"));
+            put("animales", new File("./src/flashcards/spanish/Animales.json"));
         }
     };
 
-    public static final HashMap<String, HashMap<String, Scenario>> scenarioHashMap = new HashMap<String, HashMap<String, Scenario>>() {
+    public static final HashMap<String, ArrayList<String>> scenarioHashMap = new HashMap<String, ArrayList<String>>() {
         {
             put("algebra", algebraScenarios);
-            put("physics", physicsScenarios);
+            // put("physics", physicsScenarios);
         }
     };
     public static final HashMap<String, HashMap<String, File>> flashcardHashMap = new HashMap<String, HashMap<String, File>>() {
