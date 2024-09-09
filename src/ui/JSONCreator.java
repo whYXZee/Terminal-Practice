@@ -65,7 +65,7 @@ public class JSONCreator extends JPanel implements ActionListener {
             grid.gridx++;
             subjectText.setColumns(10);
             subjectText.setText(subject);
-            subjectText.addActionListener(this);
+            subjectText.addActionListener(new actionListener());
             subjectText.setActionCommand("subject");
             this.add(subjectText, grid);
             grid.gridy++;
@@ -75,7 +75,7 @@ public class JSONCreator extends JPanel implements ActionListener {
             grid.gridx++;
             setText.setColumns(10);
             setText.setText(set);
-            setText.addActionListener(this);
+            setText.addActionListener(new actionListener());
             setText.setActionCommand("set");
             this.add(setText, grid);
             grid.gridy++;
@@ -85,11 +85,11 @@ public class JSONCreator extends JPanel implements ActionListener {
             this.add(restrictLabel, grid);
             grid.gridx++;
             JRadioButton yesRadioButton = new JRadioButton("Yes");
-            yesRadioButton.addActionListener(this);
+            yesRadioButton.addActionListener(new actionListener());
             yesRadioButton.setActionCommand("yesRestrict");
             yesRadioButton.setSelected(yesSelected);
             JRadioButton noRadioButton = new JRadioButton("No");
-            noRadioButton.addActionListener(this);
+            noRadioButton.addActionListener(new actionListener());
             noRadioButton.setActionCommand("noRestrict");
             noRadioButton.setSelected(!yesSelected);
             ButtonGroup buttonGroup = new ButtonGroup();
@@ -144,7 +144,7 @@ public class JSONCreator extends JPanel implements ActionListener {
             addTerm.setPreferredSize(new Dimension(150, 25));
             addTerm.setToolTipText("Answer questions regarding pre-made flashcard content.");
             addTerm.setMnemonic(KeyEvent.VK_A);
-            addTerm.addActionListener(this);
+            addTerm.addActionListener(new actionListener());
             this.add(addTerm, grid);
             grid.gridy++;
 
@@ -155,7 +155,7 @@ public class JSONCreator extends JPanel implements ActionListener {
             doneButton.setPreferredSize(new Dimension(150, 25));
             doneButton.setToolTipText("Answer questions regarding pre-made flashcard content.");
             doneButton.setMnemonic(KeyEvent.VK_D);
-            doneButton.addActionListener(this);
+            doneButton.addActionListener(new actionListener());
             doneButton.setEnabled(isAllFilled);
             this.add(doneButton, grid);
             grid.gridy++;
@@ -166,43 +166,45 @@ public class JSONCreator extends JPanel implements ActionListener {
         }
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        subject = subjectText.getText();
-        set = setText.getText();
-        file = jsonName.getText();
+    static class actionListener implements ActionListener
+    {
+        public void actionPerformed(ActionEvent e) {
+            subject = subjectText.getText();
+            set = setText.getText();
+            file = jsonName.getText();
+    
+            if (e.getActionCommand().equals("yesRestrict")) {
+                restrict = "y";
+                yesSelected = true;
+            } else if (e.getActionCommand().equals("noRestrict")) {
+                restrict = "n";
+                yesSelected = false;
+            }
+            for (int i = 0; i < questions.length; i++) {
+                questionAmounts[i] = questions[i].getText();
+                answerAmounts[i] = answers[i].getText();
+            }
+    
+            if (e.getActionCommand().equals("addTerm")) {
+                questionAmounts = Arrays.asList(questionAmounts).toArray(new String[questionAmounts.length + 1]);
+                questions = Arrays.asList(questions).toArray(new JTextField[questions.length + 1]);
+                answerAmounts = Arrays.asList(answerAmounts).toArray(new String[answerAmounts.length + 1]);
+                answers = Arrays.asList(answers).toArray(new JTextField[answers.length + 1]);
+    
+                questionAmounts[questionAmounts.length - 1] = "";
+                questions[questions.length - 1] = new JTextField();
+                answerAmounts[answerAmounts.length - 1] = "";
+                answers[answers.length - 1] = new JTextField();
+                System.out.println("ran");
+            }
 
-        if (e.getActionCommand().equals("yesRestrict")) {
-            restrict = "y";
-            yesSelected = true;
-        } else if (e.getActionCommand().equals("noRestrict")) {
-            restrict = "n";
-            yesSelected = false;
+            isAllFilled = checkIfDone();
+    
+            if (e.getActionCommand().equals("done")) {
+                creating = false;
+            }
+            semaphore.release();
         }
-        for (int i = 0; i < questions.length; i++) {
-            questionAmounts[i] = questions[i].getText();
-            answerAmounts[i] = answers[i].getText();
-        }
-
-        if (e.getActionCommand().equals("addTerm")) {
-            questionAmounts = Arrays.asList(questionAmounts).toArray(new String[questionAmounts.length + 1]);
-            questions = Arrays.asList(questions).toArray(new JTextField[questions.length + 1]);
-            answerAmounts = Arrays.asList(answerAmounts).toArray(new String[answerAmounts.length + 1]);
-            answers = Arrays.asList(answers).toArray(new JTextField[answers.length + 1]);
-
-            questionAmounts[questionAmounts.length - 1] = "";
-            questions[questions.length - 1] = new JTextField();
-            answerAmounts[answerAmounts.length - 1] = "";
-            answers[answers.length - 1] = new JTextField();
-            System.out.println("ran");
-        }
-
-        isAllFilled = checkIfDone();
-
-        if (e.getActionCommand().equals("done")) {
-            creating = false;
-        }
-        semaphore.release();
     }
 
     public void display() {
