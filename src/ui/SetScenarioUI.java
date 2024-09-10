@@ -42,20 +42,31 @@ public class SetScenarioUI extends JPanel implements ActionListener {
         }
 
         // adding data for every button
-        for (JButton i : buttonList) {
-            i.setHorizontalAlignment(AbstractButton.CENTER);
-            i.setVerticalTextPosition(AbstractButton.CENTER);
-            i.setActionCommand(i.getText().toLowerCase());
-            i.addActionListener(this); // Makes the buttons work
-            this.add(i, grid); // adds the button to the panel
-            // i.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize));
-            i.setPreferredSize(new Dimension(250, 25));
+        for (int i = 0; i < buttonList.size(); i++) {
+            JButton index = buttonList.get(i);
+            index.addActionListener(this);
+            index.setActionCommand(index.getText().toLowerCase());
+
+            index.setHorizontalAlignment(AbstractButton.CENTER);
+            index.setVerticalTextPosition(AbstractButton.CENTER);
+            index.setPreferredSize(new Dimension(250, 25));
+
+            this.add(index, grid);
             grid.gridy++;
         }
+
+        JButton backButton = new JButton("Go Back");
+        backButton.setActionCommand("go back");
+        backButton.addActionListener(this);
+        // this.add(backButton);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if (e.getActionCommand().equals("go back")) {
+            RunApplication.set = "";
+            RunApplication.subject = "";
+        }
         for (JButton i : buttonList) {
             if (e.getActionCommand().equals(i.getText().toLowerCase())) {
                 RunApplication.set = i.getText().toLowerCase();

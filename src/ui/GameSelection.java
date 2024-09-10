@@ -50,9 +50,21 @@ public class GameSelection extends JPanel implements ActionListener {
         creatorButton.setHorizontalTextPosition(AbstractButton.CENTER);
         creatorButton.setVerticalTextPosition(AbstractButton.CENTER);
         creatorButton.setPreferredSize(new Dimension(150, 25));
-        creatorButton.setMnemonic(KeyEvent.VK_B);
-        // creatorButton.setEnabled(false);
-        creatorButton.setToolTipText("Currently unavailable, the UI isn't created yet.");
+        // creatorButton.setMnemonic(KeyEvent.VK_B);
+        creatorButton.setToolTipText("Create your own flashcard sets");
+
+        JButton editorButton = new JButton("Edit flashcards");
+        editorButton.setActionCommand("flashcard editor");
+        editorButton.setHorizontalTextPosition(AbstractButton.CENTER);
+        editorButton.setVerticalTextPosition(AbstractButton.CENTER);
+        editorButton.setPreferredSize(new Dimension(150, 25));
+        editorButton.setMnemonic(KeyEvent.VK_E);
+        editorButton.setEnabled(isCustomAvailable);
+        if (editorButton.isEnabled()) {
+            editorButton.setToolTipText("Edit custom flashcards.");
+        } else {
+            editorButton.setToolTipText("No custom flashcards detected.");
+        }
 
         JButton customDrills = new JButton("Custom Drills");
         customDrills.setActionCommand("custom drills");
@@ -71,6 +83,7 @@ public class GameSelection extends JPanel implements ActionListener {
         drillsButton.addActionListener(this);
         scenariosButton.addActionListener(this);
         creatorButton.addActionListener(this);
+        editorButton.addActionListener(this);
         customDrills.addActionListener(this);
 
         // Adding the buttons to the screen
@@ -79,6 +92,8 @@ public class GameSelection extends JPanel implements ActionListener {
         this.add(scenariosButton, grid);
         grid.gridy++;
         this.add(creatorButton, grid);
+        grid.gridy++;
+        this.add(editorButton, grid);
         grid.gridy++;
         this.add(customDrills, grid);
     }
@@ -95,6 +110,8 @@ public class GameSelection extends JPanel implements ActionListener {
             RunApplication.gameEnum = RunApplication.Game.CUSTOM_DRILLS;
         } else if (e.getActionCommand().equals("flashcard creator")) {
             RunApplication.gameEnum = RunApplication.Game.JSON_CREATOR;
+        } else if (e.getActionCommand().equals("flashcard editor")) {
+            RunApplication.gameEnum = RunApplication.Game.JSON_EDITOR;
         }
         RunApplication.semaphore.release();
     }

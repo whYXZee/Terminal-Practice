@@ -10,17 +10,14 @@ import java.util.ArrayList;
 
 public class QuadFactors extends Scenario {
     @Override
-    public void runScenario(int goal, boolean buffer) throws InterruptedException {
+    public void runScenario() throws InterruptedException {
         int correct = 0;
         String input;
-        for (int i = 0; i < goal; i++) {
+        for (int i = 0; i < RunApplication.goal; i++) {
             Equation eq = randomize();
-            System.out.println("Question " + (i + 1) + "/" + goal);
+            System.out.println("Question " + (i + 1) + "/" + RunApplication.goal);
             System.out.println("Find the factors of x: " + eq);
-            if (buffer) {
-                buffer = false;
-                input = RunApplication.IO.nextLine();
-            }
+
             input = RunApplication.IO.nextLine();
             if (solve(eq).equals(input)) {
                 System.out.println("Correct! Moving on:");

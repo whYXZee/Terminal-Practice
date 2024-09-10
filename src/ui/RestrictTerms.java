@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import application.RunApplication;
 import resources.English;
 
+// fix this
 public class RestrictTerms extends JPanel implements ActionListener {
     JTextField restrictedField = new JTextField();
     GridBagConstraints grid = new GridBagConstraints();
@@ -64,5 +65,6 @@ public class RestrictTerms extends JPanel implements ActionListener {
     public void display() {
         RunApplication.frame.setContentPane(this);
         RunApplication.frame.setVisible(true);
+        restrictedField.requestFocusInWindow();
     }
 }

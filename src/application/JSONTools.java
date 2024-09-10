@@ -2,16 +2,21 @@ package application;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import ui.JSONCreator;
+import ui.JSONEditor;
 
 @SuppressWarnings("unchecked") // cuz I don't wanna deal w/ warnings
 public class JSONTools {
@@ -21,40 +26,43 @@ public class JSONTools {
         JSONObject jsonO = new JSONObject();
 
         // Adding needed paramaters
-        System.out.println("What is the subject of the set?");
-        jsonO.put("subject", RunApplication.IO.nextLine().toLowerCase());
-        System.out.println("What is the name of the set?");
-        jsonO.put("setName", RunApplication.IO.nextLine().toLowerCase());
+        jsonO.put("subject", JSONCreator.subject);
+        jsonO.put("setName", JSONCreator.set);
+        jsonO.put("restrictLetters", JSONCreator.restrict);
 
         // Adding terms
+        ArrayList<String> questions = parseArrayList(JSONCreator.questions);
+        ArrayList<String> answers = parseArrayList(JSONCreator.answers);
         Map<String, String> map = new HashMap<String, String>();
-        while (loop) {
-            System.out.println("What is the question?");
-            String question = RunApplication.IO.nextLine();
-            System.out.println("What is the answer?");
-            String answer = RunApplication.IO.nextLine();
-            map.put(question, answer);
-            // Check to end loop
-            System.out.println("Add more terms? [n to exit]");
-            if (RunApplication.IO.nextLine().toLowerCase().equals("n")) {
-                loop = false;
-            }
+        int termSize = questions.size();
+        if (termSize < answers.size()) {
+            termSize = answers.size();
+        }
+        questions = equalizeTerms(questions, termSize);
+        answers = equalizeTerms(answers, termSize);
+        for (int i = 0; i < termSize; i++) {
+            map.put(questions.get(i), answers.get(i));
         }
         jsonO.put("termList", map);
 
-        System.out.println("Would you like to prompt letter banning? [y to prompt restrictions]");
-        if (RunApplication.IO.nextLine().equals("y")) {
-            jsonO.put("restrictLetters", "y");
-        } else {
-            jsonO.put("restrictLetters", "n");
-        }
-
         // Export the JSON
-        System.out.println("What do you want to call the file?");
-        PrintWriter pw = new PrintWriter("./src/customjson/" + RunApplication.IO.nextLine() + ".json");
+        PrintWriter pw = new PrintWriter("./src/customjson/" + JSONCreator.file + ".json");
         pw.write(jsonO.toJSONString());
         pw.flush();
         pw.close();
+    }
+
+    private static ArrayList<String> equalizeTerms(ArrayList<String> input, int termSize) {
+        int size = input.size();
+        if (termSize != input.size()) {
+            System.out.println("termSize: " + termSize + " input size: " + size);
+            System.out.println(termSize - size);
+            for (int i = 0; i < termSize - size; i++) {
+                System.out.println(i);
+                input.add("");
+            }
+        }
+        return input;
     }
 
     public static ArrayList<String> getCustomSubjects() {
@@ -85,9 +93,11 @@ public class JSONTools {
         ArrayList<String> output = new ArrayList<String>();
         if (directory != null) {
             for (File i : jsons) {
+                System.out.println(i.getPath());
                 try {
                     JSONObject jsonO = (JSONObject) new JSONParser().parse(new FileReader(i));
-                    if (((String) jsonO.get("subject")).equals(subject) && !output.contains(jsonO.get("setName"))) {
+                    // removed conditional && !output.contains(jsonO.get("setName")
+                    if (((String) jsonO.get("subject")).equals(subject)) {
                         output.add((String) jsonO.get("setName"));
                     }
                 } catch (IOException e) {
@@ -95,7 +105,27 @@ public class JSONTools {
                 } catch (ParseException e) {
                     System.out.println("ParseException at " + i);
                 }
+            }
+        }
+        return output;
+    }
 
+    /**
+     * Parses an ArrayList<String> from the inputted string.
+     * 
+     * @return
+     */
+    private static ArrayList<String> parseArrayList(String input) {
+        ArrayList<String> output = new ArrayList<String>();
+        String stringedChar = "";
+        for (Character i : input.toCharArray()) {
+            if (i.equals(';')) {
+                output.add(stringedChar);
+                stringedChar = "";
+            } else if (i.equals('\n')) {
+
+            } else {
+                stringedChar = stringedChar + i;
             }
         }
         return output;
@@ -172,91 +202,78 @@ public class JSONTools {
         return "n";
     }
 
+    /**
+     * Removes the ".gitkeep" file from "./src/customjson/"
+     * 
+     * @param jsons
+     * @return
+     */
     public static File[] removeGitKeep(File[] jsons) {
         File[] output = {};
+        ArrayList<File> recordFiles = new ArrayList<File>();
         for (File i : jsons) {
+            System.out.println("remove gitkeep: " + i.getPath());
             if (!i.equals(new File("./src/customjson/.gitkeep"))) {
                 // all other files will be jsons, so void the gitkeep
-                output = new File[output.length + 1];
+                System.out.println("adding: " + i.getPath());
+                recordFiles.add(i);
+                output = recordFiles.toArray(new File[recordFiles.size()]);
             }
         }
         return output;
     }
 
     public static void edit(File path) {
+        System.out.println(path.getName());
         try {
             // Getting the file
-            JSONObject jsonO = (JSONObject) new JSONParser().parse(new FileReader(path));
+            JSONObject jsonO = new JSONObject();
             PrintWriter pw = new PrintWriter(path);
 
-            // Setting the variables
-            String subject = (String) jsonO.get("subject");
-            String setName = (String) jsonO.get("setName");
-            String editMode = "";
-            boolean loop = true;
-            HashMap<String, String> terms = (HashMap<String, String>) jsonO.get("termList");
+            jsonO.put("subject", JSONEditor.subject);
+            jsonO.put("setName", JSONEditor.set);
+            jsonO.put("restrictLetters", JSONEditor.restrict);
 
-            // Edit Loop
-            while (loop) {
-                System.out.println("* Subject\n* Set Name\n* Edit Terms\n* Add Terms\nWhat would you like to edit?");
-                editMode = RunApplication.IO.nextLine().toLowerCase();
-
-                if (editMode.equals("subject")) {
-                    System.out.println("What would you like to change the subject of the set to?");
-                    subject = RunApplication.IO.nextLine().toLowerCase();
-
-                } else if (editMode.equals("set name")) {
-                    System.out.println("What is the name of the set?");
-                    setName = RunApplication.IO.nextLine().toLowerCase();
-
-                } else if (editMode.equals("edit terms")) {
-                    for (String i : terms.keySet()) {
-                        System.out.println(
-                                "Would you like to change the following term? [y to edit]\n" + i + ": " + terms.get(i));
-                        if (RunApplication.IO.nextLine().toLowerCase().equals("y")) {
-                            terms.remove(i);
-                            System.out.println("What is the question?");
-                            String question = RunApplication.IO.nextLine();
-                            System.out.println("What is the answer?");
-                            String answer = RunApplication.IO.nextLine().toLowerCase();
-                            terms.put(question, answer);
-                        }
-                    }
-
-                } else if (editMode.equals("add terms")) {
-                    boolean addTermLoop = true;
-                    while (addTermLoop) {
-                        System.out.println("What is the question?");
-                        String question = RunApplication.IO.nextLine();
-                        System.out.println("What is the answer?");
-                        String answer = RunApplication.IO.nextLine().toLowerCase();
-                        terms.put(question, answer);
-                        System.out.println("Continue adding terms? [n to exit]");
-                        if (RunApplication.IO.nextLine().toLowerCase().equals("n")) {
-                            addTermLoop = false;
-                        }
-                    }
-                }
-                // Check to end loop
-                System.out.println("Continue editing? [n to exit]");
-                if (RunApplication.IO.nextLine().toLowerCase().equals("n")) {
-                    loop = false;
-                    jsonO.put("subject", subject);
-                    jsonO.put("setName", setName);
-                    jsonO.put("termList", terms);
-                }
+            // Adding terms
+            ArrayList<String> questions = parseArrayList(JSONEditor.questions);
+            ArrayList<String> answers = parseArrayList(JSONEditor.answers);
+            Map<String, String> map = new HashMap<String, String>();
+            System.out.println(questions.size());
+            System.out.println(answers.size());
+            int termSize = questions.size();
+            if (termSize < answers.size()) {
+                termSize = answers.size();
             }
+            System.out.println(termSize);
+            questions = equalizeTerms(questions, termSize);
+            answers = equalizeTerms(answers, termSize);
+            for (int i = 0; i < termSize; i++) {
+                map.put(questions.get(i), answers.get(i));
+            }
+            jsonO.put("termList", map);
 
             // Writing
             pw.write(jsonO.toJSONString());
             pw.flush();
             pw.close();
         } catch (FileNotFoundException e) {
-
-        } catch (IOException e) {
-
-        } catch (ParseException e) {
-
+            System.out.println("file not found");
         }
+    }
+
+    public static String arrayListToString(Set<String> input) {
+        String output = "";
+        for (String i : input) {
+            output = output + i + ";\n";
+        }
+        return output;
+    }
+
+    public static String answersFromKey(HashMap<String, String> map, Set<String> keys) {
+        String output = "";
+        for (String i : keys) {
+            output = output + map.get(i) + ";\n";
+        }
+        return output;
     }
 }

@@ -30,10 +30,18 @@ public class Equation {
     public static ArrayList<String> parseZero(ArrayList<String> list) {
         ArrayList<String> outputList = new ArrayList<String>();
         for (int i = 0; i < list.size(); i++) { // iterate throught the list.
-            if (MathFunctions.getCoefficient(list.get(i)) != 0) {
-                // if not equal to zero, add to output list.
-                outputList.add(list.get(i));
+            if (Fraction.isFraction(list.get(i))) {
+                Fraction frac = Fraction.toFraction(list.get(i));
+                if (!MathFunctions.getFracCoefficient(frac.toString()).equals("0")) {
+                    outputList.add(frac.toString());
+                }
+            } else {
+                if (MathFunctions.getCoefficient(list.get(i)) != 0) {
+                    // if not equal to zero, add to output list.
+                    outputList.add(list.get(i));
+                }
             }
+
         }
         return outputList;
     }

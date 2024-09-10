@@ -32,7 +32,7 @@ public class RunDrillsUI extends JPanel implements ActionListener {
     Semaphore semaphore = new Semaphore(0);
     JLabel questionTracker;
     JLabel question;
-    JTextField textField;
+    JTextField textField = new JTextField();
     public JLabel correctIncorrect = new JLabel();
     GridBagConstraints grid = new GridBagConstraints();
     boolean shouldBreak = false;
@@ -47,91 +47,93 @@ public class RunDrillsUI extends JPanel implements ActionListener {
 
         // Shuffling terms
         ArrayList<String> shuffled = new ArrayList<String>(terms.keySet());
+        System.out.println(shuffled.size());
         Collections.shuffle(shuffled);
         for (String i : shuffled) {
             RunApplication.getFontSize();
             this.answers = new AnswerSet(terms.get(i));
-            if (Character.toString(i.charAt(0)).equals("-") || !bannedLetters
-                    .contains(Character.toString(i.charAt(0)))) {
-                if (!bannedLetters.contains(Character.toString(i.charAt(1)))) {
-                    questionTracker = new JLabel("Question " + (termsCompleted + 1) + "/" + RunApplication.goal + ":");
-                    question = new JLabel(i);
+            if (Character.toString(i.charAt(0)).equals("-") || (!bannedLetters.contains(Character.toString(i.charAt(1)))
+                    && !bannedLetters.contains(Character.toString(i.charAt(0))))) {
+                questionTracker = new JLabel("Question " + (termsCompleted + 1) + "/" + RunApplication.goal + ":");
+                question = new JLabel(i);
 
-                    // Changing size of the labels
-                    questionTracker.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize));
-                    question.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 2));
+                // Changing size of the labels
+                questionTracker.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize));
+                question.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 2));
 
-                    textField = new JTextField();
-                    textField.setColumns(RunApplication.getColumns());
-                    textField.setHorizontalAlignment(JTextField.CENTER);
-                    textField.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 2));
-                    textField.addActionListener(this);
+                textField = new JTextField();
+                textField.setColumns(RunApplication.getColumns());
+                textField.setHorizontalAlignment(JTextField.CENTER);
+                textField.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 2));
+                textField.addActionListener(this);
 
-                    JButton backButton = new JButton("End practice");
-                    backButton.setActionCommand("end");
-                    backButton.setHorizontalTextPosition(AbstractButton.CENTER);
-                    backButton.setVerticalTextPosition(AbstractButton.CENTER);
-                    backButton.setPreferredSize(new Dimension(150, 25));
-                    backButton.setToolTipText("End the drill early.");
-                    backButton.setMnemonic(KeyEvent.VK_E);
-                    backButton.addActionListener(this);
+                JButton backButton = new JButton("End practice");
+                backButton.setActionCommand("end");
+                backButton.setHorizontalTextPosition(AbstractButton.CENTER);
+                backButton.setVerticalTextPosition(AbstractButton.CENTER);
+                backButton.setPreferredSize(new Dimension(150, 25));
+                backButton.setToolTipText("End the drill early.");
+                backButton.setMnemonic(KeyEvent.VK_E);
+                backButton.addActionListener(this);
 
-                    // Adding the components
-                    this.add(questionTracker, grid);
-                    grid.gridy++;
-                    this.add(question, grid);
-                    grid.gridy++;
-                    this.add(textField, grid);
-                    grid.gridy++;
-                    this.add(backButton, grid);
-                    grid.gridy++;
+                // Adding the components
+                this.add(questionTracker, grid);
+                grid.gridy++;
+                this.add(question, grid);
+                grid.gridy++;
+                this.add(textField, grid);
+                grid.gridy++;
+                this.add(backButton, grid);
+                grid.gridy++;
 
+                display();
+                semaphore.acquire();
+                if (shouldBreak) {
+                    RunApplication.semaphore.release();
+                    break;
+                }
+
+                try {
+                    if (answers.inSet(response)) {
+                        if (answers.sizeAnswers() == 0) {
+                            correctIncorrect = new JLabel("Correct!");
+                        } else {
+                            correctIncorrect = new JLabel("Correct! Other answers include: \"" + answers + "\".");
+                        }
+                        correct++;
+                    } else {
+                        correctIncorrect = new JLabel("Incorrect, answers include: \"" + answers + "\".");
+                    }
+                    termsCompleted++;
+                    correctIncorrect.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 4));
+                    this.add(correctIncorrect, grid);
                     display();
-                    semaphore.acquire();
-                    if (shouldBreak) {
-                        System.out.println("test 1");
+                    Thread.sleep(2000);
+                    if (termsCompleted == RunApplication.goal) {
                         RunApplication.semaphore.release();
+                        correctIncorrect = new JLabel("Congratulations, you got " + correct + " correct!");
                         break;
                     }
+                } catch (InterruptedException f) {
 
-                    try {
-                        if (answers.inSet(response)) {
-                            if (answers.sizeAnswers() == 0) {
-                                correctIncorrect = new JLabel("Correct!");
-                            } else {
-                                correctIncorrect = new JLabel("Correct! Other answers include: \"" + answers + "\".");
-                            }
-                            correct++;
-                        } else {
-                            correctIncorrect = new JLabel("Incorrect, answers include: \"" + answers + "\".");
-                        }
-                        termsCompleted++;
-                        correctIncorrect.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 4));
-                        this.add(correctIncorrect, grid);
-                        display();
-                        Thread.sleep(2000);
-                        if (termsCompleted == RunApplication.goal) {
-                            RunApplication.semaphore.release();
-                            correctIncorrect = new JLabel("Congratulations, you got " + correct + " correct!");
-                            break;
-                        }
-                    } catch (InterruptedException f) {
-
-                    }
-                    this.removeAll();
                 }
+                this.removeAll();
             }
 
         }
+        RunApplication.semaphore.release();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("end")) {
-            System.out.println("ended");
             shouldBreak = true;
         } else {
-            this.response = textField.getText();
+            try {
+                this.response = textField.getText();
+            } catch (NullPointerException error) {
+                this.response = "";
+            }
         }
         semaphore.release();
     }
@@ -139,5 +141,6 @@ public class RunDrillsUI extends JPanel implements ActionListener {
     public void display() {
         RunApplication.frame.setContentPane(this);
         RunApplication.frame.setVisible(true);
+        textField.requestFocusInWindow();
     }
 }

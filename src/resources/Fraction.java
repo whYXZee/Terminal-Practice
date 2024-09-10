@@ -108,10 +108,11 @@ public class Fraction {
      */
     public void simplify() {
         float divisor;
+
         // Simplifies Coefficients
         float numNum = MathFunctions.getCoefficient(numerator);
         float denomNum = MathFunctions.getCoefficient(denominator);
-        if (denomNum % numNum == 0) { // If they'the denominator is divisible by the numerator, then divide the
+        if (denomNum % numNum == 0) { // If the denominator is divisible by the numerator, then divide the
                                       // numerator
             denomNum = denomNum / numNum;
             numNum = numNum / numNum;

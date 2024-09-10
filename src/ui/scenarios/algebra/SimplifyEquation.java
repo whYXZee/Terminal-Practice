@@ -4,6 +4,7 @@ import ui.scenarios.ScenarioUI;
 import application.RunApplication;
 import application.Scenario;
 import resources.Equation;
+import resources.MathFunctions;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -15,7 +16,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import javax.swing.Timer;
 
-import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -24,17 +24,16 @@ import javax.swing.JTextField;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
-public class AlgebraMemory extends ScenarioUI implements ActionListener {
+public class SimplifyEquation extends ScenarioUI implements ActionListener {
     boolean shouldBreak = false;
     public int correct = 0;
     public String response = "";
     Timer timer = new Timer(4500, this);
     Semaphore internalSemaphore = new Semaphore(0);
-    public Semaphore externalSemaphore = new Semaphore(0);
     JTextField textField;
     public JLabel correctIncorrect = new JLabel();
 
-    public AlgebraMemory() throws InterruptedException {
+    public SimplifyEquation() throws InterruptedException {
         // Layout
         this.setLayout(new GridBagLayout());
         GridBagConstraints grid = new GridBagConstraints();
@@ -48,17 +47,14 @@ public class AlgebraMemory extends ScenarioUI implements ActionListener {
             // Showing the equation
             Equation eq = randomize();
             JLabel questionTracker = new JLabel("Question " + (i + 1) + "/" + RunApplication.goal);
-            JLabel question = new JLabel("Remember: " + eq);
+            JLabel question = new JLabel("Simplify: " + eq);
             questionTracker.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 2));
             question.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 3));
             this.add(questionTracker, grid);
             grid.gridy++;
             this.add(question, grid);
-            display();
-            Thread.sleep(1500);
+            grid.gridy++;
 
-            // Ask question
-            this.remove(question);
             textField = new JTextField();
             textField.setColumns(RunApplication.getColumns());
             textField.setHorizontalAlignment(JTextField.CENTER);
@@ -81,20 +77,20 @@ public class AlgebraMemory extends ScenarioUI implements ActionListener {
             backButton.setMnemonic(KeyEvent.VK_E);
             backButton.addActionListener(this);
             this.add(backButton, grid);
+            grid.gridy++;
 
-            this.add(Box.createVerticalGlue(), grid);
             display();
             textField.requestFocusInWindow();
 
             internalSemaphore.acquire();
 
-            if (eq.toString().equals(response)) {
+            if (solve(eq).equals(response)) {
                 correctIncorrect = new JLabel("Correct!");
                 correct++;
             } else if (shouldBreak) {
                 break;
             } else {
-                correctIncorrect = new JLabel("Incorrect, the answer was: " + eq.toString());
+                correctIncorrect = new JLabel("Incorrect, the answer was: " + solve(eq));
             }
             this.remove(Box.createVerticalGlue());
             this.add(correctIncorrect, grid);
@@ -133,13 +129,22 @@ public class AlgebraMemory extends ScenarioUI implements ActionListener {
                 term = "-";
             }
             term = term + Integer.toString(Scenario.rng.nextInt(25) + 1);
-            if (i == 0 && termNumber == 3) {
-                term = term + "x^2";
-            } else if ((i == 0 && termNumber == 2) || (i == 1 && termNumber == 3)) {
-                term = term + "x";
-            }
+            System.out.println(term);
             output.add(term);
         }
         return new Equation(output);
+    }
+
+    private String solve(Equation eq) {
+        String output = MathFunctions.addition(eq.termArray[0] + "+" + eq.termArray[1]);
+        // for (String i : eq.termArray) {
+        // System.out.println(i);
+        // }
+        if (eq.termArray.length == 3) {
+            // System.out.println("yip " + output);
+            output = MathFunctions.addition(output + "+" + eq.termArray[2]);
+            // System.out.println("yip2 " + output);
+        }
+        return output;
     }
 }

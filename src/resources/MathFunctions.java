@@ -4,10 +4,17 @@ import java.util.ArrayList;
 // import java.util.HashMap;
 
 public class MathFunctions {
+    /**
+     * Getes the coefficient of a string.
+     * 
+     * @param input
+     * @return integer coefficient.
+     */
     public static int getCoefficient(String input) {
         // Setting vars
         boolean exponent = false;
         String output = "";
+
         // Number construction loop
         for (Character i : input.toCharArray()) {
             if (Character.isDigit(i) || i == '-' || (i == '/' && !exponent)) {
@@ -23,6 +30,12 @@ public class MathFunctions {
         return Integer.valueOf(parseDoubleNegative(output));
     }
 
+    /**
+     * Gets the fractional coefficient of the input
+     * 
+     * @param input
+     * @return
+     */
     public static String getFracCoefficient(String input) {
         String output = "";
         for (Character i : input.toCharArray()) {
