@@ -1,10 +1,10 @@
 package scenarios.algebra;
 
-import application.RunApplication;
 import application.Scenario;
-import resources.Equation;
-import resources.Fraction;
-import resources.MathFunctions;
+import whyxzee.terminalpractice.application.RunApplication;
+import whyxzee.terminalpractice.resources.AlgebraFunctions;
+import whyxzee.terminalpractice.resources.Equation;
+import whyxzee.terminalpractice.resources.Fraction;
 
 import java.util.ArrayList;
 
@@ -47,7 +47,7 @@ public class QuadFactors extends Scenario {
         return new Equation(new ArrayList<String>() {
             {
                 add(a + "x^2");
-                add(MathFunctions.multiplication(a + "*" + c) + "x");
+                add(AlgebraFunctions.multiplication(a + "*" + c) + "x");
                 add(c);
             }
         });
@@ -56,9 +56,9 @@ public class QuadFactors extends Scenario {
     private String solve(Equation eq) {
         String output = "";
         String bTerm;
-        float bVal = (float) MathFunctions.getCoefficient(eq.termArray[1]);
-        ArrayList<Float> divisors = MathFunctions.findAllDivisors(
-                Float.valueOf(MathFunctions.getCoefficient(eq.termArray[0])), Float.valueOf(eq.termArray[2]));
+        float bVal = (float) AlgebraFunctions.getCoefficient(eq.termArray[1]);
+        ArrayList<Float> divisors = AlgebraFunctions.findAllDivisors(
+                Float.valueOf(AlgebraFunctions.getCoefficient(eq.termArray[0])), Float.valueOf(eq.termArray[2]));
         for (Float i : divisors) {
             for (Float j : divisors) {
                 if (i + j == bVal) {

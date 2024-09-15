@@ -3,9 +3,9 @@ package scenarios.physics;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
-import application.RunApplication;
 import application.Scenario;
-import resources.Trigonometry;
+import whyxzee.terminalpractice.application.RunApplication;
+import whyxzee.terminalpractice.resources.Trigonometry;
 
 public class ProjectileMotionAdvanced extends Scenario {
     // enums to determine problem type
