@@ -1,6 +1,7 @@
 package whyxzee.terminalpractice.flashcards;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * ArrayList of Strings consisting of answers to flashcards.
@@ -33,6 +34,42 @@ public class AnswerSet {
         }
 
         // this.answerSet = answerSet;
+    }
+
+    /**
+     * 
+     * @param input
+     * @param bannedChars
+     * @return
+     */
+    public boolean answerIsAllowed(ArrayList<String> bannedChars, int beginCharIndex) {
+        for (String i : answerSet) {
+            try {
+                String charToCheck = Character.toString(i.toCharArray()[beginCharIndex]).toLowerCase();
+                if (!bannedChars.contains(charToCheck)) {
+                    return true;
+                }
+            } catch (IndexOutOfBoundsException error) {
+
+            }
+
+        }
+        return false;
+    }
+
+    /**
+     * Returns the total number of answers with the given letter restriction.
+     * 
+     */
+    public static int totalAnswers(HashMap<String, String> hashmap, ArrayList<String> bannedChars, int beginCharIndex) {
+        int output = 0;
+        for (String i : hashmap.keySet()) {
+            AnswerSet answerSet = new AnswerSet(hashmap.get(i));
+            if (answerSet.answerIsAllowed(bannedChars, beginCharIndex)) {
+                output++;
+            }
+        }
+        return output;
     }
 
     /**

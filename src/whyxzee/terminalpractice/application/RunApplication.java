@@ -1,23 +1,62 @@
 package whyxzee.terminalpractice.application;
 
 import whyxzee.terminalpractice.flashcards.*;
+import whyxzee.terminalpractice.resources.English;
 import whyxzee.terminalpractice.scenarios.ScenarioConstants;
 
 import java.io.File;
-import java.io.InputStreamReader;
 import java.io.FileNotFoundException;
-import java.nio.charset.Charset;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.concurrent.Semaphore;
 
 public class RunApplication {
-    public static final Scanner IO = new Scanner(new InputStreamReader(System.in, Charset.forName("ISO-8859-1")));
+
+    /**
+     * Divides the input into seperate labels.
+     * 
+     * @param input
+     * @return
+     */
+    public static JLabel[] divideLabel(String input) {
+        // Declaring variables
+        ArrayList<JLabel> output = new ArrayList<JLabel>();
+        char[] inputArray = input.toCharArray();
+
+        // Cutting up the input
+        String labelContent = "";
+        int offset = 0;
+        for (int i = 0; i < Math.ceil(inputArray.length / 52.0); i++) {
+            for (int j = 0; j < 52; j++) {
+                try {
+                    labelContent += inputArray[j + (i * 52) + offset];
+
+                    // Detection to see if the line cuts off in the middle of a word
+                    if (j == 51 && inputArray[j + 1 + (i * 52) + offset] != ' '
+                            && inputArray[j + (i * 52) + offset] != ' ') {
+                        offset++;
+                        while (inputArray[j + (i * 52) + offset] != ' ') {
+                            labelContent += inputArray[j + (i * 52) + offset];
+                            offset++;
+                        }
+                    }
+                } catch (IndexOutOfBoundsException e) {
+                    break;
+                }
+            }
+            output.add(new JLabel(labelContent));
+            labelContent = "";
+        }
+        return output.toArray(new JLabel[output.size()]);
+    }
+
+    // public static final Scanner IO = new Scanner(new InputStreamReader(System.in,
+    // Charset.forName("ISO-8859-1")));
 
     /**
      * Capitalizes each word of the input.
@@ -99,9 +138,13 @@ public class RunApplication {
                         RestrictTerms restrictTerms = new RestrictTerms();
                         restrictTerms.display();
                         semaphore.acquire();
+                    } else {
+                        whitelistArray.addAll(English.characters.keySet());
+                        bannedLetters.removeAll(whitelistArray);
                     }
 
-                    RunDrillsUI drills = new RunDrillsUI(JSONTools.getCustomHashMap(json), bannedLetters);
+                    RunDrillsUI drills = new RunDrillsUI(JSONTools.getCustomHashMap(json), bannedLetters,
+                            JSONTools.getBeginningCharIndex(json));
                     drills.display();
                     semaphore.acquire();
 
@@ -177,9 +220,13 @@ public class RunApplication {
                         RestrictTerms restrictTerms = new RestrictTerms();
                         restrictTerms.display();
                         semaphore.acquire();
+                    } else {
+                        whitelistArray.addAll(English.characters.keySet());
+                        bannedLetters.removeAll(whitelistArray);
                     }
 
-                    RunDrillsUI customDrills = new RunDrillsUI(JSONTools.getCustomHashMap(json), bannedLetters);
+                    RunDrillsUI customDrills = new RunDrillsUI(JSONTools.getCustomHashMap(json), bannedLetters,
+                            JSONTools.getBeginningCharIndex(json));
                     customDrills.display();
                     semaphore.acquire();
 
@@ -208,22 +255,27 @@ public class RunApplication {
                     break;
             }
         }
-        IO.close();
+        // IO.close();
     }
 
     private static String getRandomSplash() {
-        Random rng = new Random();
-        switch (rng.nextInt(5) + 1) {
+        switch (new Random().nextInt(8) + 1) {
             case 1:
-                return "Mitochondria is the powerhouse of the cell";
+                return "0 != 1, and 0! = 1"; // factorial & boolean algebra joke
             case 2:
-                return "v^2 = u^2 + 2as";
+                return "Mitochondria is the powerhouse of the cell";
             case 3:
                 return "Sodium Bromide";
             case 4:
                 return "1 + 1 = 10";
             case 5:
                 return "My problems are sqrt(-1)";
+            case 6:
+                return "3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679";
+            case 7:
+                return "123 is the same as 132"; // combination joke
+            case 8:
+                return "21 P 2 = -34, trust"; // joke due to digit limits from originally using longs
             default:
                 return "";
         }

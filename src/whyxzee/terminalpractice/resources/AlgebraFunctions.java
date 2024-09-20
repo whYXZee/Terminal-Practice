@@ -115,7 +115,7 @@ public class AlgebraFunctions {
     }
 
     /**
-     * Does String arithmetics
+     * Does String arithmetics for addition.
      * 
      * @param input
      * @return
@@ -191,11 +191,13 @@ public class AlgebraFunctions {
     }
 
     public static String multiplication(String input) {
+        // Declaring variables
         boolean rightSide, isVar, isImplicit;
         String lSide, rSide, vars, implicitVar;
         rightSide = isVar = isImplicit = false;
         lSide = rSide = vars = implicitVar = "";
 
+        // Getting the numbers and variables
         input = parseDoubleNegative(input);
         for (Character i : input.toCharArray()) {
             if (i == '*') {
@@ -216,6 +218,11 @@ public class AlgebraFunctions {
                     rSide += i;
                 }
             }
+        }
+
+        // Avoid errors with empty strings.
+        if (rSide.equals("")) {
+            rSide = "1";
         }
         return Integer.toString(Integer.valueOf(lSide) * Integer.valueOf(rSide)) + vars + implicitVar;
     }
@@ -406,5 +413,21 @@ public class AlgebraFunctions {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Checks if the input is made of digits.
+     * 
+     * @param input
+     * @return {@code true} if the input is only digits, {@code false} if there is a
+     *         symbol or var.
+     */
+    public static boolean isPureNumber(String input) {
+        for (Character i : input.toCharArray()) {
+            if (!Character.isDigit(i)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

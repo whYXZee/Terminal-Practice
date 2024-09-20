@@ -27,6 +27,7 @@ public class RunDrillsUI extends JPanel implements ActionListener {
     int termsCompleted = 0;
     AnswerSet answers;
     String response;
+
     Semaphore drillSemaphore = new Semaphore(0);
     JLabel questionTracker;
     JLabel[] questions;
@@ -34,8 +35,9 @@ public class RunDrillsUI extends JPanel implements ActionListener {
     public JLabel correctIncorrect = new JLabel();
     GridBagConstraints grid = new GridBagConstraints();
     boolean shouldBreak = false;
+    boolean buffer = false;
 
-    public RunDrillsUI(HashMap<String, String> terms, ArrayList<String> bannedLetters)
+    public RunDrillsUI(HashMap<String, String> terms, ArrayList<String> bannedLetters, long beginCharIndex)
             throws InterruptedException {
         // Layout
         this.setLayout(new GridBagLayout());
@@ -45,24 +47,22 @@ public class RunDrillsUI extends JPanel implements ActionListener {
         grid.anchor = GridBagConstraints.CENTER;
 
         // Shuffling terms & removing banned letters
-        ArrayList<String> shuffled = new ArrayList<String>();
-        for (String term : terms.keySet()) {
-            if (!bannedLetters.contains(Character.toString(terms.get(term).charAt(0)))) {
-                shuffled.add(term);
+        ArrayList<String> shuffled = new ArrayList<String>() {
+            {
+                addAll(terms.keySet());
             }
-        }
-        if (RunApplication.goal > shuffled.size()) {
-            RunApplication.goal = shuffled.size();
-        }
+        };
         Collections.shuffle(shuffled);
+        int totalAnswers = AnswerSet.totalAnswers(terms, bannedLetters, (int) beginCharIndex);
+        if (RunApplication.goal > totalAnswers) {
+            RunApplication.goal = totalAnswers;
+        }
         for (String i : shuffled) {
             RunApplication.getFontSize();
             this.answers = new AnswerSet(terms.get(i));
-            if ((Character.toString(terms.get(i).charAt(0)).equals("-")
-                    && !bannedLetters.contains(Character.toString(terms.get(i).charAt(1))))
-                    || !bannedLetters.contains(Character.toString(terms.get(i).charAt(0)))) {
+            if (answers.answerIsAllowed(bannedLetters, (int) beginCharIndex)) {
                 questionTracker = new JLabel("Question " + (termsCompleted + 1) + "/" + RunApplication.goal + ":");
-                questions = divideLabel(i);
+                questions = RunApplication.divideLabel(i);
 
                 // Changing size of the labels
                 questionTracker.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize));
@@ -95,7 +95,9 @@ public class RunDrillsUI extends JPanel implements ActionListener {
                 grid.gridy++;
 
                 display();
+                buffer = false;
                 drillSemaphore.acquire();
+                buffer = true;
                 if (shouldBreak) {
                     break;
                 }
@@ -142,57 +144,20 @@ public class RunDrillsUI extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("end")) {
             shouldBreak = true;
-        } else {
+            drillSemaphore.release();
+        } else if (!buffer) {
             try {
                 this.response = textField.getText();
             } catch (NullPointerException error) {
                 this.response = "";
             }
+            drillSemaphore.release();
         }
-        drillSemaphore.release();
     }
 
     public void display() {
         RunApplication.frame.setContentPane(this);
         RunApplication.frame.setVisible(true);
         textField.requestFocusInWindow();
-    }
-
-    /**
-     * Divides the input into seperate labels.
-     * 
-     * @param input
-     * @return
-     */
-    public JLabel[] divideLabel(String input) {
-        // Declaring variables
-        ArrayList<JLabel> output = new ArrayList<JLabel>();
-        char[] inputArray = input.toCharArray();
-
-        // Cutting up the input
-        String labelContent = "";
-        int offset = 0;
-        for (int i = 0; i < Math.ceil(inputArray.length / 52.0); i++) {
-            for (int j = 0; j < 52; j++) {
-                try {
-                    labelContent += inputArray[j + (i * 52) + offset];
-
-                    // Detection to see if the line cuts off in the middle of a word
-                    if (j == 51 && inputArray[j + 1 + (i * 52) + offset] != ' '
-                            && !Character.isWhitespace(inputArray[j + (i * 52)])) {
-                        offset++;
-                        while (inputArray[j + (i * 52) + offset] != ' ') {
-                            labelContent += inputArray[j + (i * 52) + offset];
-                            offset++;
-                        }
-                    }
-                } catch (IndexOutOfBoundsException e) {
-                    break;
-                }
-            }
-            output.add(new JLabel(labelContent));
-            labelContent = "";
-        }
-        return output.toArray(new JLabel[output.size()]);
     }
 }

@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -26,6 +27,8 @@ import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JTextArea;
 
+import java.text.NumberFormat;
+
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
@@ -38,6 +41,7 @@ public class JSONEditor extends JPanel implements ActionListener {
     public static String subject = "";
     public static String set = "";
     public static boolean restrict = false;
+    public static long beginningCharIndex = 0;
     // public static String file = "";
     public static String questions = "";
     public static String answers = "";
@@ -48,6 +52,7 @@ public class JSONEditor extends JPanel implements ActionListener {
 
     JLabel subjectLabel = new JLabel("What is the name of the subject?");
     JLabel setLabel = new JLabel("What is the name of the set?");
+    JLabel charIndexLabel = new JLabel("Which character would you like to check with the restriction? [starting at 0]");
 
     JTextField subjectText = new JTextField();
     JTextField setText = new JTextField();
@@ -57,6 +62,7 @@ public class JSONEditor extends JPanel implements ActionListener {
     JRadioButton noRadioButton = new JRadioButton("No");
     JRadioButton yesRadioButton = new JRadioButton("Yes");
     ButtonGroup buttonGroup = new ButtonGroup();
+    JFormattedTextField charIndexField = new JFormattedTextField(NumberFormat.getNumberInstance());
     JTextArea questionBox = new JTextArea(10, RunApplication.getColumns() * 2);
     JTextArea answerBox = new JTextArea(10, RunApplication.getColumns() * 2);
 
@@ -79,6 +85,7 @@ public class JSONEditor extends JPanel implements ActionListener {
             subject = (String) jsonO.get("subject");
             set = (String) jsonO.get("setName");
             restrict = (boolean) jsonO.get("restrictLetters");
+            beginningCharIndex = (long) jsonO.get("beginningCharIndex");
             @SuppressWarnings("unchecked")
             HashMap<String, String> terms = (HashMap<String, String>) jsonO.get("termList");
             Set<String> keySet = terms.keySet();
@@ -90,8 +97,8 @@ public class JSONEditor extends JPanel implements ActionListener {
             grid.gridx++;
             subjectText.setColumns(RunApplication.getColumns() * 2);
             subjectText.setText(subject);
-            subjectText.addActionListener(this);
-            subjectText.setActionCommand("subject");
+            // subjectText.addActionListener(this);
+            // subjectText.setActionCommand("subject");
             this.add(subjectText, grid);
             grid.gridy++;
             grid.gridx--;
@@ -100,8 +107,8 @@ public class JSONEditor extends JPanel implements ActionListener {
             grid.gridx++;
             setText.setColumns(RunApplication.getColumns() * 2);
             setText.setText(set);
-            setText.addActionListener(this);
-            setText.setActionCommand("set");
+            // setText.addActionListener(this);
+            // setText.setActionCommand("set");
             this.add(setText, grid);
             grid.gridy++;
             grid.gridx--;
@@ -121,6 +128,16 @@ public class JSONEditor extends JPanel implements ActionListener {
             this.add(noRadioButton, grid);
             grid.gridy++;
             grid.gridx--;
+            grid.gridx--;
+
+            this.add(charIndexLabel, grid);
+            grid.gridx++;
+            charIndexField.setColumns(RunApplication.getColumns() * 2);
+            charIndexField.setValue(beginningCharIndex);
+            // charIndexField.addActionListener(this);
+            // charIndexField.setActionCommand("subject");
+            this.add(charIndexField, grid);
+            grid.gridy++;
             grid.gridx--;
 
             JLabel questionLabel = new JLabel("Questions:");
@@ -176,6 +193,7 @@ public class JSONEditor extends JPanel implements ActionListener {
             set = setText.getText();
             questions = questionBox.getText();
             answers = answerBox.getText();
+            beginningCharIndex = ((Number) charIndexField.getValue()).longValue();
 
             if (e.getActionCommand().equals("yesRestrict") || e.getActionCommand().equals("noRestrict")) {
                 restrict = !restrict;

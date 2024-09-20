@@ -1,10 +1,9 @@
-package whyxzee.terminalpractice.scenarios.algebra;
+package whyxzee.terminalpractice.scenarios.number_sense;
 
 import whyxzee.terminalpractice.application.RunApplication;
-import whyxzee.terminalpractice.resources.AlgebraFunctions;
-import whyxzee.terminalpractice.resources.Equation;
-import whyxzee.terminalpractice.resources.Fraction;
-import whyxzee.terminalpractice.scenarios.*;
+import whyxzee.terminalpractice.resources.DiscreteMath;
+import whyxzee.terminalpractice.scenarios.ScenarioConstants;
+import whyxzee.terminalpractice.scenarios.ScenarioUI;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -20,10 +19,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import java.util.ArrayList;
-
-public class QuadFactors extends ScenarioUI implements ActionListener {
-    // General variables
+public class Factorial extends ScenarioUI implements ActionListener {
     boolean shouldBreak = false;
     public int correct = 0;
     public String response = "";
@@ -32,8 +28,9 @@ public class QuadFactors extends ScenarioUI implements ActionListener {
     public JLabel correctIncorrect = new JLabel();
 
     // Scenario-specific variables
+    private static int number = 0;
 
-    public QuadFactors() throws InterruptedException {
+    public Factorial() throws InterruptedException {
         // Layout
         this.setLayout(new GridBagLayout());
         GridBagConstraints grid = new GridBagConstraints();
@@ -45,9 +42,9 @@ public class QuadFactors extends ScenarioUI implements ActionListener {
         for (int i = 0; i < RunApplication.goal; i++) {
             RunApplication.getFontSize();
             // Showing the equation
-            Equation eq = randomize();
+            randomize();
             JLabel questionTracker = new JLabel("Question " + (i + 1) + "/" + RunApplication.goal);
-            JLabel question = new JLabel("Solve for the factors of x: " + eq);
+            JLabel question = new JLabel("What is the factorial of " + number + "?");
             questionTracker.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 2));
             question.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 3));
             this.add(questionTracker, grid);
@@ -63,12 +60,10 @@ public class QuadFactors extends ScenarioUI implements ActionListener {
             this.add(textField, grid);
             grid.gridy++;
 
-            // Timer stuff
-            if (ScenarioConstants.timerEnabled) {
-                timer.restart();
-                timer.setActionCommand("timer");
-                timer.start();
-            }
+            // timer = ;
+            // timer.restart();
+            // timer.setActionCommand("timer");
+            // timer.start();
 
             JButton backButton = new JButton("End practice");
             backButton.setActionCommand("end");
@@ -84,13 +79,13 @@ public class QuadFactors extends ScenarioUI implements ActionListener {
 
             ScenarioConstants.scenarioSemaphore.acquire();
 
-            if (solve(eq).equals(response)) {
+            if (solve().equals(response)) {
                 correctIncorrect = new JLabel("Correct!");
                 correct++;
             } else if (shouldBreak) {
                 break;
             } else {
-                correctIncorrect = new JLabel("Incorrect, the answer was: " + solve(eq));
+                correctIncorrect = new JLabel("Incorrect, the answer was: " + solve());
             }
             this.add(correctIncorrect, grid);
             display();
@@ -111,75 +106,15 @@ public class QuadFactors extends ScenarioUI implements ActionListener {
         } else {
             this.response = textField.getText();
         }
-        if (ScenarioConstants.timerEnabled) {
-            timer.stop();
-        }
+        // timer.stop();
         ScenarioConstants.scenarioSemaphore.release();
     }
 
-    private Equation randomize() {
-        ArrayList<String> output = new ArrayList<String>();
-        String a, c;
-
-        // A term
-        a = Integer.toString(ScenarioConstants.rng.nextInt(4) + 1);
-        if (Math.random() > .5) {
-            a = "-" + a;
-        }
-
-        // C term
-        c = Integer.toString(ScenarioConstants.rng.nextInt(40) + 1);
-        if (Math.random() > .5) { // randomze if it's positive or negative
-            c = "-" + c;
-        }
-
-        output.add(a + "x^2");
-        // output.add(Math.multiplication + "x");
-
-        return new Equation(output);
+    private void randomize() {
+        number = ScenarioConstants.rng.nextInt(11);
     }
 
-    private String solve(Equation eq) {
-        String output = "";
-        if (Fraction.isFraction(eq.termArray[0])) {
-            output = Fraction.divideFraction("-" + eq.termArray[1],
-                    AlgebraFunctions.getCoefficient(eq.termArray[0])).toString();
-        } else {
-            output = AlgebraFunctions
-                    .division("-" + eq.termArray[1] + "/" + AlgebraFunctions.getCoefficient(eq.termArray[0]));
-        }
-        return output;
-    }
-
-    private void printHowTo() {
-        // Removing everything to re-do window:
-        this.removeAll();
-        ScenarioConstants.grid.gridx = 0;
-        ScenarioConstants.grid.gridy = 0;
-
-        // Adding everything
-        JLabel[] howToLabels = {};
-        this.add(correctIncorrect, ScenarioConstants.grid);
-        ScenarioConstants.grid.gridy++;
-        howToLabels = RunApplication.divideLabel("");
-
-        for (JLabel label : howToLabels) {
-            label.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 4));
-            this.add(label, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
-        }
-
-        // Button
-        JButton continueButton = new JButton("Continue");
-        continueButton.setActionCommand("move on");
-        continueButton.setPreferredSize(new Dimension(150, 25));
-        continueButton.setToolTipText("Continue to the next problem.");
-        continueButton.setMnemonic(KeyEvent.VK_C);
-        continueButton.addActionListener(this);
-
-        this.add(continueButton, ScenarioConstants.grid);
-        ScenarioConstants.grid.gridy++;
-
-        display();
+    private String solve() {
+        return DiscreteMath.factorial(number).toString();
     }
 }

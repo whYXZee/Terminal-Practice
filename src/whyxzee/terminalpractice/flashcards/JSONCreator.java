@@ -9,14 +9,17 @@ import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.io.FileNotFoundException;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.JRadioButton;
-import javax.swing.ButtonGroup;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+import java.text.NumberFormat;
 
 import java.util.concurrent.Semaphore;
 
@@ -28,6 +31,7 @@ public class JSONCreator extends JPanel implements ActionListener {
     public static String subject = "";
     public static String set = "";
     public static boolean restrict = false;
+    public static long beginningCharIndex = 0;
     public static String file = "";
     public static String questions = "";
     public static String answers = "";
@@ -37,6 +41,7 @@ public class JSONCreator extends JPanel implements ActionListener {
 
     JLabel subjectLabel = new JLabel("What is the name of the subject?");
     JLabel setLabel = new JLabel("What is the name of the set?");
+    JLabel charIndexLabel = new JLabel("Which character would you like to check with the restriction? [starting at 0]");
 
     JTextField subjectText = new JTextField();
     JTextField setText = new JTextField();
@@ -47,6 +52,7 @@ public class JSONCreator extends JPanel implements ActionListener {
     JRadioButton noRadioButton = new JRadioButton("No");
     JRadioButton yesRadioButton = new JRadioButton("Yes");
     ButtonGroup buttonGroup = new ButtonGroup();
+    JFormattedTextField charIndexField = new JFormattedTextField(NumberFormat.getNumberInstance());
     JTextArea questionBox = new JTextArea(10, RunApplication.getColumns() * 2);
     JTextArea answerBox = new JTextArea(10, RunApplication.getColumns() * 2);
 
@@ -106,6 +112,16 @@ public class JSONCreator extends JPanel implements ActionListener {
         grid.gridx--;
         grid.gridx--;
 
+        this.add(charIndexLabel, grid);
+        grid.gridx++;
+        charIndexField.setColumns(RunApplication.getColumns() * 2);
+        charIndexField.setValue(beginningCharIndex);
+        // charIndexField.addActionListener(this);
+        // charIndexField.setActionCommand("subject");
+        this.add(charIndexField, grid);
+        grid.gridy++;
+        grid.gridx--;
+
         JLabel nameLabel = new JLabel("What is the name of the file?");
         this.add(nameLabel, grid);
         grid.gridx++;
@@ -159,6 +175,7 @@ public class JSONCreator extends JPanel implements ActionListener {
             file = jsonName.getText();
             questions = questionBox.getText();
             answers = answerBox.getText();
+            beginningCharIndex = ((Number) charIndexField.getValue()).longValue();
 
             if (e.getActionCommand().equals("yesRestrict") || (e.getActionCommand().equals("noRestrict"))) {
                 restrict = !restrict;

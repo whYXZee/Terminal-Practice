@@ -30,6 +30,7 @@ public class JSONTools {
         jsonO.put("subject", JSONCreator.subject);
         jsonO.put("setName", JSONCreator.set);
         jsonO.put("restrictLetters", JSONCreator.restrict);
+        jsonO.put("beginningCharIndex", JSONCreator.beginningCharIndex);
 
         // Adding terms
         ArrayList<String> questions = parseArrayList(JSONCreator.questions);
@@ -64,10 +65,7 @@ public class JSONTools {
     private static ArrayList<String> equalizeTerms(ArrayList<String> input, int termSize) {
         int size = input.size();
         if (termSize != input.size()) {
-            // System.out.println("termSize: " + termSize + " input size: " + size);
-            // System.out.println(termSize - size);
             for (int i = 0; i < termSize - size; i++) {
-                System.out.println(i);
                 input.add("");
             }
         }
@@ -265,6 +263,7 @@ public class JSONTools {
             jsonO.put("subject", JSONEditor.subject);
             jsonO.put("setName", JSONEditor.set);
             jsonO.put("restrictLetters", JSONEditor.restrict);
+            jsonO.put("beginningCharIndex", JSONEditor.beginningCharIndex);
 
             // Adding terms
             ArrayList<String> questions = parseArrayList(JSONEditor.questions);
@@ -293,11 +292,11 @@ public class JSONTools {
         }
     }
 
-    public static int getBeginningCharIndex(File path) {
+    public static long getBeginningCharIndex(File path) {
         try {
             JSONObject jsonO = (JSONObject) new JSONParser()
                     .parse(new FileReader(path));
-            return (int) jsonO.get("beginningCharIndex");
+            return (long) jsonO.get("beginningCharIndex");
         } catch (FileNotFoundException e) {
             System.out.println(e);
         } catch (IOException e) {

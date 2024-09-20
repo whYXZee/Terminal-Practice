@@ -2,8 +2,12 @@ package whyxzee.terminalpractice.scenarios;
 
 import whyxzee.terminalpractice.application.RunApplication;
 import whyxzee.terminalpractice.scenarios.algebra.*;
+import whyxzee.terminalpractice.scenarios.discrete_math.*;
 import whyxzee.terminalpractice.scenarios.number_sense.*;
 import whyxzee.terminalpractice.scenarios.physics.*;
+
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +18,7 @@ public class ScenarioConstants {
     // Universal classes
     public static final Random rng = new Random();
     public static final Semaphore scenarioSemaphore = new Semaphore(0);
+    public static final GridBagConstraints grid = new GridBagConstraints();
 
     // HashMaps
     static final ArrayList<String> algebraScenarios = new ArrayList<String>() {
@@ -24,10 +29,17 @@ public class ScenarioConstants {
         }
     };
 
+    static final ArrayList<String> discreteMathScenarios = new ArrayList<String>() {
+        {
+            add("combinatorics");
+        }
+    };
+
     static final ArrayList<String> numberSenseScenarios = new ArrayList<String>() {
         {
             add("simplify equations");
             add("perfect squares");
+            add("factorials");
         }
     };
 
@@ -43,6 +55,7 @@ public class ScenarioConstants {
             put("algebra", algebraScenarios);
             put("physics", physicsScenarios);
             put("number sense", numberSenseScenarios);
+            put("discrete mathematics", discreteMathScenarios);
         }
     };
 
@@ -52,6 +65,10 @@ public class ScenarioConstants {
      * @throws InterruptedException because of the semaphores in the UI.
      */
     public static void runScenario() throws InterruptedException {
+        grid.insets = new Insets(8, 8, 8, 8);
+        grid.anchor = GridBagConstraints.CENTER;
+        grid.gridx = 0;
+        grid.gridy = 0;
         switch (RunApplication.set) {
             // Algebra
             case "algebraic memory":
@@ -61,7 +78,15 @@ public class ScenarioConstants {
                 new SolveForXLinear().display();
                 break;
 
+            // Discrete Mathematics
+            case "combinatorics":
+                new Combinatorics().display();
+                break;
+
             // Number Sense
+            case "factorials":
+                new Factorial().display();
+                break;
             case "simplify equations":
                 new SimplifyEquation().display();
                 break;
