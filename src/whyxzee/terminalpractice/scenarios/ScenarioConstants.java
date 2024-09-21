@@ -25,7 +25,7 @@ public class ScenarioConstants {
         {
             add("algebraic memory");
             add("solve for x (linear)");
-            add("quadratic factors");
+            // add("quadratic factors");
         }
     };
 

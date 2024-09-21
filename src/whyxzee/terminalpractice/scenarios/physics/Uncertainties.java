@@ -231,7 +231,7 @@ public class Uncertainties extends ScenarioUI implements ActionListener {
      */
     private ArrayList<BigDecimal> randomizeMeasurements() {
         ArrayList<BigDecimal> output = new ArrayList<BigDecimal>();
-        double x = ScenarioConstants.rng.nextDouble(12) + 1;
+        double x = ScenarioConstants.rng.nextInt(12) + 1;
         for (int i = 0; i < ScenarioConstants.rng.nextInt(6) + 2; i++) {
             output.add(new BigDecimal(x + Math.random(), round));
         }

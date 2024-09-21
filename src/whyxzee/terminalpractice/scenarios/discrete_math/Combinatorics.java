@@ -20,7 +20,9 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 public class Combinatorics extends ScenarioUI implements ActionListener {
+    //
     // General variables
+    //
     boolean shouldBreak = false;
     int correct = 0;
     public String response = "";
@@ -29,17 +31,15 @@ public class Combinatorics extends ScenarioUI implements ActionListener {
     JTextField textField;
     JLabel correctIncorrect = new JLabel();
 
-    // static JLabel lookingFor = new JLabel();
-
+    //
     // Scenario-specific variables
+    //
     private static ProblemType problemType = ProblemType.PERMUTATION_ALLOCATION;
     private static int n_1, n_2, n_3, n_4, r, grouped;
-    private static int[] groups = {};
+    private static int[] groups = {}; // for generalized
     private static ExampleObjects object = new ExampleObjects();
 
-    /**
-     * What part of the motion needs to be found?
-     */
+    // What combinatoric needs to be found?
     private enum ProblemType {
         PERMUTATION_ALLOCATION,
         PERMUTATION_GROUPED,
@@ -233,6 +233,13 @@ public class Combinatorics extends ScenarioUI implements ActionListener {
                 questions = RunApplication.divideLabel("How many ways can " + n_1 + " " + object.plural +
                         " be arranged around a circle of " + object.corresponding + "?");
                 break;
+            case PERMUTATION_GENERALIZED:
+                if (n_4 == 1) {
+
+                } else {
+                    questions = RunApplication.divideLabel("Given groups of " + n_1 + " " + n_2 + " " + n_3 + ", and "
+                            + n_4 + " " + object.plural + ", how many ways can they be ordered?");
+                }
 
             case COMBINATION_ALLOCATION:
                 switch (ScenarioConstants.rng.nextInt(2)) {
@@ -297,6 +304,8 @@ public class Combinatorics extends ScenarioUI implements ActionListener {
                         "factorial of the remaining terms. In addition, the orientations are treated the same " +
                         "(example: 1234 = 1432), so each permutation counts as 2. ([" + n_1 + "-1]!/2)");
                 break;
+            case PERMUTATION_GENERALIZED:
+                howToLabels = RunApplication.divideLabel("do later lmao");
 
             case COMBINATION_ALLOCATION:
                 howToLabels = RunApplication.divideLabel("No two " + object.plural + " can occupy the same "

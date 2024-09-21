@@ -17,7 +17,6 @@ public class AnswerSet {
      */
     public AnswerSet(String input) {
         // Declaring variables
-        // ArrayList<String> answerSet = new ArrayList<String>();
         String parse = "";
 
         // Parsing the input into a set of answers.
@@ -32,8 +31,6 @@ public class AnswerSet {
                 parse = "";
             }
         }
-
-        // this.answerSet = answerSet;
     }
 
     /**

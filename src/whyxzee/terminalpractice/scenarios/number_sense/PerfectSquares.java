@@ -12,24 +12,24 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import javax.swing.Timer;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import java.util.concurrent.Semaphore;
-
 public class PerfectSquares extends ScenarioUI implements ActionListener {
+    //
+    // General variables
+    //
     boolean shouldBreak = false;
     public int correct = 0;
     public String response = "";
-    Timer timer = new Timer(4500, this);
-    Semaphore internalSemaphore = new Semaphore(0);
     JTextField textField;
     public JLabel correctIncorrect = new JLabel();
 
+    //
     // Scenario-specific variables
+    //
     private static int number = 0;
 
     public PerfectSquares() throws InterruptedException {
@@ -62,11 +62,6 @@ public class PerfectSquares extends ScenarioUI implements ActionListener {
             this.add(textField, grid);
             grid.gridy++;
 
-            // timer = ;
-            timer.restart();
-            timer.setActionCommand("timer");
-            timer.start();
-
             JButton backButton = new JButton("End practice");
             backButton.setActionCommand("end");
             backButton.setPreferredSize(new Dimension(150, 25));
@@ -79,7 +74,7 @@ public class PerfectSquares extends ScenarioUI implements ActionListener {
             display();
             textField.requestFocusInWindow();
 
-            internalSemaphore.acquire();
+            ScenarioConstants.scenarioSemaphore.acquire();
 
             if (solve().equals(response)) {
                 correctIncorrect = new JLabel("Correct!");
@@ -108,8 +103,7 @@ public class PerfectSquares extends ScenarioUI implements ActionListener {
         } else {
             this.response = textField.getText();
         }
-        timer.stop();
-        internalSemaphore.release();
+        ScenarioConstants.scenarioSemaphore.release();
     }
 
     private void randomize() {
