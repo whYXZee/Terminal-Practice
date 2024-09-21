@@ -1,4 +1,7 @@
+# Ignore
 bin
-lib
 .vscode
-src/customjson
+src/whyxzee/terminalpractice/flashcards/custom/*
+
+# Keep
+!src/whyxzee/terminalpractice/flashcards/custom/.gitkeep

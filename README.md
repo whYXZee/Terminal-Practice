@@ -1,18 +1,18 @@
-## Getting Started
+# Terminal Practice
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+Terminal Practice is a UI-based way to study and practice for subjects, all done locally on your computer! It doesn't require an internet connection and you can share your custom sets online (coming soon).
 
-## Folder Structure
+## Features
 
-The workspace contains two folders by default, where:
+<!-- - _Sets_: questions and answers that can be used for
+- _Drills_: quizzes over your sets
+- _Scenarios_: randomly generated questions, normally regarding arithmetics. -->
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+- Flashcards (coming soon) and questions for your sets.
+- Set creator and editor which can be shared with others (coming soon).
+- Randomized questions for arithmetics in subjects such as algebra and physics, with more to come!
+- Customizable parameters for said randomized questions (coming soon).
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+## Decompiling
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+Info on decompiling later.

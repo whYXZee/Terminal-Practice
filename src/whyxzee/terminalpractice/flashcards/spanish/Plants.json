@@ -1,0 +1,20 @@
+{
+  "setName": "plants",
+  "restrictLetters": true,
+  "beginningCharIndex": 3,
+  "termList": {
+    "What is \"the plant\" in Spanish?": "la planta",
+    "What is \"the garden\" in Spanish?": "el jardín",
+    "What is \"the forest\" in Spanish?": "el bosque",
+    "What is \"the jungle\" in Spanish?": "la selva",
+
+    "What is \"the shrub\" in Spanish?": "el arbusto,la mata",
+    "What is \"the tree\" in Spanish?": "el árbol",
+    "What is \"the fern\" in Spanish?": "el helecho",
+
+    "What is \"the seaweed\" in Spanish?": "la alga,la alga marina",
+    "What is \"the algae\" in Spanish?": "la alga",
+    "What is \"the phytoplankton\" in Spanish?": "el fitoplancton"
+  },
+  "subject": "spanish"
+}
