@@ -3,6 +3,7 @@ package whyxzee.terminalpractice.scenarios;
 import whyxzee.terminalpractice.application.AppConstants;
 import whyxzee.terminalpractice.scenarios.algebra.*;
 import whyxzee.terminalpractice.scenarios.discrete_math.*;
+import whyxzee.terminalpractice.scenarios.geometry.RightTrig;
 import whyxzee.terminalpractice.scenarios.number_sense.*;
 import whyxzee.terminalpractice.scenarios.physics.*;
 
@@ -35,6 +36,12 @@ public class ScenarioConstants {
         }
     };
 
+    static final ArrayList<String> geometryScenarios = new ArrayList<String>() {
+        {
+            add("right triangle trigonometry");
+        }
+    };
+
     static final ArrayList<String> numberSenseScenarios = new ArrayList<String>() {
         {
             add("simplify equations");
@@ -55,7 +62,8 @@ public class ScenarioConstants {
             put("algebra", algebraScenarios);
             put("physics", physicsScenarios);
             put("number sense", numberSenseScenarios);
-            put("discrete mathematics", discreteMathScenarios);
+            // put("discrete mathematics", discreteMathScenarios);
+            put("geometry", geometryScenarios);
         }
     };
 
@@ -81,6 +89,11 @@ public class ScenarioConstants {
             // Discrete Mathematics
             case "combinatorics":
                 new Combinatorics().display();
+                break;
+
+            // Geometry
+            case "right triangle trigonometry":
+                new RightTrig().display();
                 break;
 
             // Number Sense

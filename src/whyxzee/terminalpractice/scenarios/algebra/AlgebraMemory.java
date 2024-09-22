@@ -69,6 +69,7 @@ public class AlgebraMemory extends ScenarioUI implements ActionListener {
             backButton.setFont(AppConstants.medFont);
             backButton.setToolTipText("End the drill early.");
             this.add(backButton, grid);
+            grid.gridy++;
 
             // Display
             display();

@@ -106,6 +106,7 @@ public class Factorial extends ScenarioUI implements ActionListener {
         if (e.getActionCommand().equals("timer")) {
             this.response = textField.getText();
         } else if (e.getActionCommand().equals("end")) {
+            this.response = "";
             shouldBreak = true;
         } else {
             this.response = textField.getText();

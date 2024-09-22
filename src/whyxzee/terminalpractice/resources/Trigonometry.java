@@ -19,6 +19,10 @@ public class Trigonometry {
 
     public static MathContext trigRound = new MathContext(3, RoundingMode.HALF_UP);
 
+    //
+    // Creating the triangle
+    //
+
     /**
      * Creating a triangle using an array of primitive floats. The rules of the
      * array are as follows:
@@ -58,7 +62,7 @@ public class Trigonometry {
      * <ul>
      * <li>Boolean methods (such as hasTwoSides(), hasThreeSides())
      */
-    private void updateLists() {
+    public void updateLists() {
         this.sides = new ArrayList<Float>() {
             {
                 add(x);
@@ -82,13 +86,41 @@ public class Trigonometry {
     }
 
     /**
+     * In case the length of the hypotenuse is smaller than the other sides, it
+     * should rearrange it (only with two sides)
+     */
+    public void rearrange() {
+        float middleman;
+        if (y != null && hypotenuse != null) { // we don't want to do arithmetics w/ null i think
+            if (y > hypotenuse) {
+                middleman = y;
+                y = hypotenuse;
+                hypotenuse = middleman;
+            }
+        } else if (x != null && hypotenuse != null) {
+            if (x > hypotenuse) {
+                middleman = x;
+                x = hypotenuse;
+                hypotenuse = middleman;
+            }
+        }
+        updateLists();
+    }
+
+    //
+    // Solving the triangle.
+    //
+
+    /**
      * Attempts to find missing values of a triangle as if it was a 90 degree
      * triangle.
      */
     public void solve90DegTrig() {
         ArrayList<Float> save = everything; // incase that the triangle isn't 90 degrees, we want to preserve the old
                                             // values
-        if (thetaY != null) { // If theta Y isn't missing, then check for sides to solve the rest.
+
+        // if Theta Y isn't missing, then check for the sides to solve the rest
+        if (thetaY != null) {
             if (hypotenuse != null) {
                 x = hypotenuse * (float) Math.cos(Math.toRadians(thetaY));
                 y = hypotenuse * (float) Math.sin(Math.toRadians(thetaY));
@@ -100,13 +132,18 @@ public class Trigonometry {
                 hypotenuse = y / (float) Math.sin(Math.toRadians(thetaY));
             }
             updateLists();
-            if (isPythagorean()) { // Checks for three sides in case some of the sides are still null.
+
+            // Checks for three sides in case some are still null
+            if (isPythagorean()) {
                 thetaHyp = (float) 90.0;
                 thetaX = (float) 90 - thetaY;
+                updateLists();
             } else {
                 updateFromList(save);
             }
-        } else if (thetaX != null) { // If theta X isn't missing, then check for sides to solve the rest.
+
+            // If theta X isn't missing, then check for sides to solve the rest
+        } else if (thetaX != null) {
             if (hypotenuse != null) {
                 x = hypotenuse * (float) Math.cos(Math.toRadians(thetaX));
                 y = hypotenuse * (float) Math.sin(Math.toRadians(thetaX));
@@ -118,9 +155,12 @@ public class Trigonometry {
                 hypotenuse = y / (float) Math.sin(Math.toRadians(thetaX));
             }
             updateLists();
-            if (isPythagorean()) { // Checks for three sides in case some of the sides are still null.
+
+            // Checks for three sides in case some are still null
+            if (isPythagorean()) {
                 thetaHyp = (float) 90.0;
                 thetaY = (float) 90 - thetaX;
+                updateLists();
             } else {
                 updateFromList(save);
             }
@@ -133,23 +173,43 @@ public class Trigonometry {
                 y = (float) Math.sqrt(Math.pow(hypotenuse, 2) - Math.pow(x, 2));
             }
             updateLists();
-            if (isPythagorean()) { // Checks for three sides in case some of the sides are still null.
+
+            // Checks for three sides in case some are still null
+            if (isPythagorean()) {
                 thetaHyp = (float) 90.0;
                 thetaY = (float) Math.toDegrees(Math.atan(y / x));
                 thetaX = (float) Math.toDegrees(Math.atan(x / y));
+                updateLists();
             } else {
                 updateFromList(save);
             }
         }
-        // System.out.println("Theta Hyp: " + thetaHyp);
-        // System.out.println("Theta Y: " + thetaY);
-        // System.out.println("Theta X: " + thetaX);
-        // System.out.println("X: " + x);
-        // System.out.println("Y: " + y);
-        // System.out.println("Hyp: " + hypotenuse);
     }
 
-    // Checks if a triangle has two sides defined
+    //
+    // Side-based Conditionals
+    //
+
+    /**
+     * Checks if the side is present;
+     * 
+     * @param input with numbers of:
+     *              <ul>
+     *              <li>[1]: X
+     *              <li>[2]: Y
+     *              <li>[3]: Hypotenuse
+     * @return {@code true} if the given side is not null, {@code false} otherwise.
+     */
+    public boolean sidePresent(int input) {
+        if ((input == 1 && x != null) || (input == 2 && y != null) || (input == 3 && hypotenuse != null)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a triangle has two defined sides
+     */
     public boolean hasTwoSides() {
         boolean oneSide = false;
         for (Float i : sides) {
@@ -166,7 +226,6 @@ public class Trigonometry {
 
     /**
      * Checks if all sides of the triangle are defined.
-     * 
      */
     public boolean hasThreeSides() {
         for (Float i : sides) {
@@ -192,6 +251,29 @@ public class Trigonometry {
     }
 
     /**
+     * Checks if the triangle has null values, to prevent arithmetics with null.
+     */
+    public boolean isNull() {
+        // Saving and solving
+        ArrayList<Float> save = everything;
+        this.solve90DegTrig();
+
+        // Checking
+        for (Float i : everything) {
+            if (i == null) {
+                updateFromList(save);
+                return true;
+            }
+        }
+        updateFromList(save);
+        return false;
+    }
+
+    //
+    // Postulate, Conjecture, and Theorem based Conditionals
+    //
+
+    /**
      * Checks if the Triangle Sum Theorem is followed or true.
      * The theorem states that a hypotenuse must be larger than either side of the
      * triangle, but lesser than the sum of both sides.
@@ -206,32 +288,27 @@ public class Trigonometry {
     }
 
     /**
-     * In case the length of the hypotenuse is smaller than the other sides, it
-     * should rearrange it (only with two sides)
+     * An hodgepodge of all postulate, conjecture, and theorem based conditionals.
+     * 
+     * @return
      */
-    public void rearrange() {
-        float middleman;
-        if (y != null && hypotenuse != null) { // we don't want to do arithmetics w/ null i think
-            if (y > hypotenuse) {
-                middleman = y;
-                y = hypotenuse;
-                hypotenuse = middleman;
-            }
-        } else if (x != null && hypotenuse != null) {
-            if (x > hypotenuse) {
-                middleman = x;
-                x = hypotenuse;
-                hypotenuse = middleman;
-            }
-        }
-        updateLists();
-    }
+    public boolean isLegal90Deg() {
+        // Setting vars
+        ArrayList<Float> save = everything;
+        // System.out.println(save);
+        boolean output = true;
 
-    public boolean sidePresent(int input) {
-        if ((input == 1 && x != null) || (input == 2 && y != null) || (input == 3 && hypotenuse != null)) {
-            return true;
+        // Solving
+        solve90DegTrig();
+
+        try {
+            output = isTriSum();
+        } catch (NullPointerException e) {
+            output = false;
         }
-        return false;
+
+        updateFromList(save);
+        return output;
     }
 
     @Override

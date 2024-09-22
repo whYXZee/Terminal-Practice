@@ -199,6 +199,10 @@ public class JSONEditor extends JPanel implements ActionListener {
             this.add(backButton, grid);
             grid.gridy++;
 
+            JOptionPane.showMessageDialog(AppConstants.frame,
+                    "Terms:\n - Each question and answer are separated by a ';'\n - Multiple answers can be put by separating them with a ',' without spaces",
+                    "Editor Information", JOptionPane.ERROR_MESSAGE);
+
             display();
             while (loop) {
                 semaphore.acquire();

@@ -1,9 +1,11 @@
 package whyxzee.terminalpractice.application;
 
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
-
-import javax.swing.JPanel;
 
 import whyxzee.terminalpractice.flashcards.JSONTools;
 import whyxzee.terminalpractice.flashcards.RestrictTerms;
@@ -12,12 +14,9 @@ import whyxzee.terminalpractice.resources.English;
 import javax.swing.JLabel;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import java.text.NumberFormat;
-
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 
 public class ConfigureGoal extends JPanel implements PropertyChangeListener {
     JFormattedTextField goalField = new JFormattedTextField(NumberFormat.getNumberInstance());
@@ -42,26 +41,11 @@ public class ConfigureGoal extends JPanel implements PropertyChangeListener {
                 goalLabel.setFont(AppConstants.medFont);
                 this.add(goalLabel, grid);
                 grid.gridy++;
-
-                goalField.setValue(0);
-                goalField.setFont(AppConstants.smallFont);
-                goalField.setHorizontalAlignment(JFormattedTextField.CENTER);
-                goalField.setColumns(AppConstants.answerColumns); // how big the text field is
-                goalField.addPropertyChangeListener("value", this);
-                this.add(goalField, grid);
                 break;
             case SCENARIOS:
                 goalLabel = new JLabel("How many questions would you like to practice?");
                 this.add(goalLabel, grid);
                 goalLabel.setFont(AppConstants.bigFont);
-                grid.gridy++;
-
-                goalField.setValue(0);
-                goalField.setFont(AppConstants.smallFont);
-                goalField.setColumns(AppConstants.answerColumns); // how big the text field is
-                goalField.setHorizontalAlignment(JFormattedTextField.CENTER);
-                goalField.addPropertyChangeListener("value", this);
-                this.add(goalField, grid);
                 grid.gridy++;
                 break;
             case CUSTOM_DRILLS:
@@ -69,17 +53,16 @@ public class ConfigureGoal extends JPanel implements PropertyChangeListener {
                 goalLabel.setFont(AppConstants.medFont);
                 this.add(goalLabel, grid);
                 grid.gridy++;
-
-                goalField.setValue(0);
-                goalField.setFont(AppConstants.smallFont);
-                goalField.setHorizontalAlignment(JFormattedTextField.CENTER);
-                goalField.setColumns(AppConstants.answerColumns); // how big the text field is
-                goalField.addPropertyChangeListener("value", this);
-                this.add(goalField, grid);
                 break;
             default:
                 break;
         }
+        goalField.setValue(0);
+        goalField.setFont(AppConstants.smallFont);
+        goalField.setHorizontalAlignment(JFormattedTextField.CENTER);
+        goalField.setColumns(AppConstants.answerColumns); // how big the text field is
+        goalField.addPropertyChangeListener("value", this);
+        this.add(goalField, grid);
     }
 
     @Override
@@ -113,7 +96,6 @@ public class ConfigureGoal extends JPanel implements PropertyChangeListener {
                 break;
             case SCENARIOS:
                 if (AppConstants.goal < 1) {
-                    System.out.println("test");
                     JOptionPane.showMessageDialog(AppConstants.frame, "The goal cannot be less than one.",
                             "Input Error",
                             JOptionPane.ERROR_MESSAGE);

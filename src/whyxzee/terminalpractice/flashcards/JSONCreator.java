@@ -47,7 +47,7 @@ public class JSONCreator extends JPanel implements ActionListener {
     JLabel subjectLabel = new JLabel("What is the name of the subject?");
     JLabel setLabel = new JLabel("What is the name of the set?");
     JLabel charIndexLabel = new JLabel("Which character would you like to check with the restriction? [starting at 0]");
-    JLabel restrictLabel = new JLabel("Would you like to add the ability to select what should be chosen?");
+    JLabel restrictLabel = new JLabel("Would you like to add the ability to select what letters should be practiced?");
 
     // Text fields
     JTextField subjectText = new JTextField();
@@ -197,8 +197,12 @@ public class JSONCreator extends JPanel implements ActionListener {
         this.add(backButton, grid);
         grid.gridy++;
 
+        JOptionPane.showMessageDialog(AppConstants.frame,
+                "Terms:\n - Each question and answer are separated by a ';'\n - Multiple answers can be put by separating them with a ',' without spaces",
+                "Creator Information", JOptionPane.ERROR_MESSAGE);
+
+        display();
         while (loop) {
-            display();
             semaphore.acquire();
         }
     }
