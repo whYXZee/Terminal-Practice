@@ -1,12 +1,10 @@
 package whyxzee.terminalpractice.scenarios.physics;
 
-import whyxzee.terminalpractice.application.RunApplication;
+import whyxzee.terminalpractice.application.AppConstants;
 import whyxzee.terminalpractice.resources.AlgebraFunctions;
 import whyxzee.terminalpractice.scenarios.ScenarioConstants;
 import whyxzee.terminalpractice.scenarios.ScenarioUI;
 
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -18,15 +16,12 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
-import javax.swing.Timer;
-
-import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.JOptionPane;
 
 import java.util.ArrayList;
-import java.util.concurrent.Semaphore;
 
 public class Uncertainties extends ScenarioUI implements ActionListener {
 
@@ -35,8 +30,6 @@ public class Uncertainties extends ScenarioUI implements ActionListener {
     boolean shouldBreak = false;
     public int correct = 0;
     public String response = "";
-    Timer timer = new Timer(ScenarioConstants.timerInMS, this);
-    Semaphore internalSemaphore = new Semaphore(0);
     JTextField textField;
     public JLabel correctIncorrect = new JLabel();
 
@@ -68,63 +61,57 @@ public class Uncertainties extends ScenarioUI implements ActionListener {
         grid.insets = new Insets(8, 8, 8, 8);
         grid.anchor = GridBagConstraints.CENTER;
 
-        for (int i = 0; i < RunApplication.goal; i++) {
-            RunApplication.getFontSize();
+        for (int i = 0; i < AppConstants.goal; i++) {
             // Showing the equation
             randomize();
-            JLabel questionTracker = new JLabel("Question " + (i + 1) + "/" + RunApplication.goal);
-            questionTracker.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 2));
+            JLabel questionTracker = new JLabel("Question " + (i + 1) + "/" + AppConstants.goal);
+            questionTracker.setFont(AppConstants.biggerFont);
             this.add(questionTracker, grid);
             grid.gridy++;
             printQuestion();
 
             textField = new JTextField();
-            textField.setColumns(RunApplication.getColumns());
+            textField.setColumns(AppConstants.answerColumns);
             textField.setHorizontalAlignment(JTextField.CENTER);
-            textField.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 4));
+            textField.setFont(AppConstants.smallFont);
             textField.addActionListener(this);
             this.add(textField, grid);
             grid.gridy++;
 
-            // Timer
-            if (ScenarioConstants.timerEnabled) {
-                timer.restart();
-                timer.setActionCommand("timer");
-                timer.start();
-            }
-
             JButton backButton = new JButton("End practice");
             backButton.addActionListener(this);
             backButton.setActionCommand("end");
-            backButton.setPreferredSize(new Dimension(150, 25));
+            backButton.setPreferredSize(AppConstants.smallButtonDimension);
+            backButton.setFont(AppConstants.medFont);
             backButton.setToolTipText("End the drill early.");
             backButton.setMnemonic(KeyEvent.VK_E);
             this.add(backButton, grid);
             grid.gridy++;
 
+            // Display
             display();
             textField.requestFocusInWindow();
+            ScenarioConstants.scenarioSemaphore.acquire();
 
-            internalSemaphore.acquire();
-
+            // Checking the input
+            correctIncorrect.setFont(AppConstants.medFont);
             if (solve().equals(response)) {
                 correctIncorrect = new JLabel("Correct!");
+                correctIncorrect.setFont(AppConstants.bigFont);
                 correct++;
             } else if (shouldBreak) {
                 break;
             } else {
                 correctIncorrect = new JLabel("Incorrect, the answer was: " + solve());
+                correctIncorrect.setFont(AppConstants.bigFont);
             }
-            this.remove(Box.createVerticalGlue());
             this.add(correctIncorrect, grid);
-            this.add(Box.createVerticalGlue());
             display();
             Thread.sleep(2000);
             this.removeAll();
         }
-        correctIncorrect = new JLabel("Congratuations, you got " + correct + " correct!");
-        display();
-        Thread.sleep(2000);
+        JOptionPane.showMessageDialog(AppConstants.frame, "You got " + correct + " correct!", "Scenario Completion",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     // joyce was here! :) tehe
@@ -138,11 +125,7 @@ public class Uncertainties extends ScenarioUI implements ActionListener {
             this.response = textField.getText();
         }
 
-        if (ScenarioConstants.timerEnabled) {
-            timer.stop();
-        }
-
-        internalSemaphore.release();
+        ScenarioConstants.scenarioSemaphore.release();
     }
 
     private void printQuestion() {
@@ -175,7 +158,7 @@ public class Uncertainties extends ScenarioUI implements ActionListener {
                 break;
             default:
         }
-        question.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 3));
+        question.setFont(AppConstants.medFont);
         this.add(question, grid);
         grid.gridy++;
     }

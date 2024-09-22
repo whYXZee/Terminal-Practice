@@ -2,7 +2,7 @@ package whyxzee.terminalpractice.scenarios;
 
 import javax.swing.JPanel;
 
-import whyxzee.terminalpractice.application.RunApplication;
+import whyxzee.terminalpractice.application.AppConstants;
 
 public class ScenarioUI extends JPanel {
 
@@ -10,7 +10,7 @@ public class ScenarioUI extends JPanel {
     }
 
     public void display() {
-        RunApplication.frame.setContentPane(this);
-        RunApplication.frame.setVisible(true);
+        AppConstants.frame.setContentPane(this);
+        AppConstants.frame.setVisible(true);
     }
 }

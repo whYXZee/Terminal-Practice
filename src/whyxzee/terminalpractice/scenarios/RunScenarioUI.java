@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import whyxzee.terminalpractice.application.RunApplication;
+import whyxzee.terminalpractice.application.AppConstants;
 
 import javax.swing.JLabel;
 
@@ -70,7 +70,7 @@ public class RunScenarioUI extends JPanel implements ActionListener {
     }
 
     public void display() {
-        RunApplication.frame.setContentPane(this);
-        RunApplication.frame.setVisible(true);
+        AppConstants.frame.setContentPane(this);
+        AppConstants.frame.setVisible(true);
     }
 }

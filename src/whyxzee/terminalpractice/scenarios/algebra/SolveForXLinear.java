@@ -1,37 +1,33 @@
 package whyxzee.terminalpractice.scenarios.algebra;
 
-import whyxzee.terminalpractice.application.RunApplication;
+import whyxzee.terminalpractice.application.AppConstants;
 import whyxzee.terminalpractice.resources.AlgebraFunctions;
 import whyxzee.terminalpractice.resources.Equation;
 import whyxzee.terminalpractice.resources.Fraction;
 import whyxzee.terminalpractice.scenarios.ScenarioConstants;
 import whyxzee.terminalpractice.scenarios.ScenarioUI;
 
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import javax.swing.Timer;
 
-import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.JOptionPane;
 
 import java.util.ArrayList;
-import java.util.concurrent.Semaphore;
 
 public class SolveForXLinear extends ScenarioUI implements ActionListener {
+    //
+    // General variables
+    //
     boolean shouldBreak = false;
     public int correct = 0;
     public String response = "";
-    Timer timer = new Timer(4500, this);
-    Semaphore internalSemaphore = new Semaphore(0);
-    // public Semaphore externalSemaphore = new Semaphore(0);
     JTextField textField;
     public JLabel correctIncorrect = new JLabel();
 
@@ -44,66 +40,63 @@ public class SolveForXLinear extends ScenarioUI implements ActionListener {
         grid.insets = new Insets(8, 8, 8, 8);
         grid.anchor = GridBagConstraints.CENTER;
 
-        for (int i = 0; i < RunApplication.goal; i++) {
-            RunApplication.getFontSize();
-            // Showing the equation
-            Equation eq = randomize();
-            JLabel questionTracker = new JLabel("Question " + (i + 1) + "/" + RunApplication.goal);
-            JLabel question = new JLabel("Solve for x: " + eq);
-            questionTracker.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 2));
-            question.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 3));
+        for (int i = 0; i < AppConstants.goal; i++) {
+            // Question tracker
+            JLabel questionTracker = new JLabel("Question " + (i + 1) + "/" + AppConstants.goal);
+            questionTracker.setFont(AppConstants.biggerFont);
             this.add(questionTracker, grid);
             grid.gridy++;
+
+            // Question
+            Equation eq = randomize();
+            JLabel question = new JLabel("Solve for x: " + eq);
+            question.setFont(AppConstants.medFont);
             this.add(question, grid);
             grid.gridy++;
 
+            // Answer box
             textField = new JTextField();
-            textField.setColumns(RunApplication.getColumns());
+            textField.setColumns(AppConstants.answerColumns);
             textField.setHorizontalAlignment(JTextField.CENTER);
-            textField.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 4));
+            textField.setFont(AppConstants.smallFont);
             textField.addActionListener(this);
             this.add(textField, grid);
             grid.gridy++;
 
-            // Timer stuff
-            timer.restart();
-            timer.setActionCommand("timer");
-            timer.start();
-
+            // Back button
             JButton backButton = new JButton("End practice");
             backButton.setActionCommand("end");
-            // backButton.setHorizontalTextPosition(AbstractButton.CENTER);
-            // backButton.setVerticalTextPosition(AbstractButton.CENTER);
-            backButton.setPreferredSize(new Dimension(150, 25));
+            backButton.addActionListener(this);
+            backButton.setPreferredSize(AppConstants.smallButtonDimension);
+            backButton.setFont(AppConstants.medFont);
             backButton.setToolTipText("End the drill early.");
             backButton.setMnemonic(KeyEvent.VK_E);
-            backButton.addActionListener(this);
             this.add(backButton, grid);
             grid.gridy++;
 
+            // Display
             display();
             textField.requestFocusInWindow();
+            ScenarioConstants.scenarioSemaphore.acquire();
 
-            internalSemaphore.acquire();
-
+            // Checking the input
             if (solve(eq).equals(response)) {
                 correctIncorrect = new JLabel("Correct!");
+                correctIncorrect.setFont(AppConstants.bigFont);
                 correct++;
             } else if (shouldBreak) {
                 break;
             } else {
                 correctIncorrect = new JLabel("Incorrect, the answer was: " + solve(eq));
+                correctIncorrect.setFont(AppConstants.bigFont);
             }
-            this.remove(Box.createVerticalGlue());
             this.add(correctIncorrect, grid);
-            this.add(Box.createVerticalGlue());
             display();
             Thread.sleep(2000);
             this.removeAll();
         }
-        correctIncorrect = new JLabel("Congratuations, you got " + correct + " correct!");
-        display();
-        Thread.sleep(2000);
+        JOptionPane.showMessageDialog(AppConstants.frame, "You got " + correct + " correct!", "Scenario Completion",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
@@ -115,8 +108,7 @@ public class SolveForXLinear extends ScenarioUI implements ActionListener {
         } else {
             this.response = textField.getText();
         }
-        timer.stop();
-        internalSemaphore.release();
+        ScenarioConstants.scenarioSemaphore.release();
     }
 
     private Equation randomize() {

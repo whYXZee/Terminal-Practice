@@ -2,7 +2,6 @@ package whyxzee.terminalpractice.flashcards;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -11,10 +10,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -29,42 +28,49 @@ import javax.swing.JTextArea;
 
 import java.text.NumberFormat;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 
-import whyxzee.terminalpractice.application.RunApplication;
+import whyxzee.terminalpractice.application.AppConstants;
 
 public class JSONEditor extends JPanel implements ActionListener {
     Semaphore semaphore = new Semaphore(0);
 
+    public static boolean restrict = false;
+    private boolean loop = true;
+    public static long beginningCharIndex = 0;
+    private static int numAnswers = 0;
+    private static int numQuestions = 0;
     public static String subject = "";
     public static String set = "";
-    public static boolean restrict = false;
-    public static long beginningCharIndex = 0;
-    // public static String file = "";
     public static String questions = "";
     public static String answers = "";
-    boolean loop = true;
     File file = new File("./src/whyxzee/terminalpractice/flashcards/custom/.gitkeep");
 
     GridBagConstraints grid = new GridBagConstraints();
 
+    // Labels
     JLabel subjectLabel = new JLabel("What is the name of the subject?");
     JLabel setLabel = new JLabel("What is the name of the set?");
+    JLabel restrictLabel = new JLabel("Would you like to add the ability to select what should be chosen?");
     JLabel charIndexLabel = new JLabel("Which character would you like to check with the restriction? [starting at 0]");
 
+    // Text fields
     JTextField subjectText = new JTextField();
     JTextField setText = new JTextField();
+    JFormattedTextField charIndexField = new JFormattedTextField(NumberFormat.getNumberInstance());
+    JTextArea questionBox = new JTextArea(10, AppConstants.jsonColumns);
+    JTextArea answerBox = new JTextArea(10, AppConstants.jsonColumns);
+
+    // Buttons
     JButton addTerm = new JButton("Add Term");
     JButton doneButton = new JButton("Done");
-    JLabel restrictLabel = new JLabel("Would you like to add the ability to select what should be chosen?");
+    JButton backButton = new JButton("Go Back");
+    ButtonGroup buttonGroup = new ButtonGroup();
     JRadioButton noRadioButton = new JRadioButton("No");
     JRadioButton yesRadioButton = new JRadioButton("Yes");
-    ButtonGroup buttonGroup = new ButtonGroup();
-    JFormattedTextField charIndexField = new JFormattedTextField(NumberFormat.getNumberInstance());
-    JTextArea questionBox = new JTextArea(10, RunApplication.getColumns() * 2);
-    JTextArea answerBox = new JTextArea(10, RunApplication.getColumns() * 2);
 
     JScrollPane scrollPane = new JScrollPane();
 
@@ -86,94 +92,111 @@ public class JSONEditor extends JPanel implements ActionListener {
             set = (String) jsonO.get("setName");
             restrict = (boolean) jsonO.get("restrictLetters");
             beginningCharIndex = (long) jsonO.get("beginningCharIndex");
+            numAnswers = 0;
+            numQuestions = 0;
+
             @SuppressWarnings("unchecked")
             HashMap<String, String> terms = (HashMap<String, String>) jsonO.get("termList");
             Set<String> keySet = terms.keySet();
             questions = JSONTools.arrayListToString(keySet);
             answers = JSONTools.answersFromKey(terms, keySet);
 
-            // Creating required text fields
+            // Subject
+            subjectLabel.setFont(AppConstants.smallFont);
             this.add(subjectLabel, grid);
             grid.gridx++;
-            subjectText.setColumns(RunApplication.getColumns() * 2);
+            subjectText.setFont(AppConstants.smallFont);
+            subjectText.setColumns(AppConstants.jsonColumns);
             subjectText.setText(subject);
-            // subjectText.addActionListener(this);
-            // subjectText.setActionCommand("subject");
             this.add(subjectText, grid);
             grid.gridy++;
             grid.gridx--;
 
+            // Set name
+            setLabel.setFont(AppConstants.smallFont);
             this.add(setLabel, grid);
             grid.gridx++;
-            setText.setColumns(RunApplication.getColumns() * 2);
+            setText.setColumns(AppConstants.jsonColumns);
             setText.setText(set);
-            // setText.addActionListener(this);
-            // setText.setActionCommand("set");
+            setText.setFont(AppConstants.smallFont);
             this.add(setText, grid);
             grid.gridy++;
             grid.gridx--;
 
+            // Restriction
+            restrictLabel.setFont(AppConstants.smallFont);
             this.add(restrictLabel, grid);
             grid.gridx++;
             yesRadioButton.addActionListener(this);
             yesRadioButton.setActionCommand("yesRestrict");
             yesRadioButton.setSelected(restrict);
+            yesRadioButton.setFont(AppConstants.smallFont);
             noRadioButton.addActionListener(this);
             noRadioButton.setActionCommand("noRestrict");
             noRadioButton.setSelected(!restrict);
+            noRadioButton.setFont(AppConstants.smallFont);
             buttonGroup.add(yesRadioButton);
             buttonGroup.add(noRadioButton);
             this.add(yesRadioButton, grid);
             grid.gridx++;
             this.add(noRadioButton, grid);
             grid.gridy++;
-            grid.gridx--;
-            grid.gridx--;
+            grid.gridx -= 2;
 
+            // Restriction index
+            charIndexLabel.setFont(AppConstants.smallFont);
             this.add(charIndexLabel, grid);
             grid.gridx++;
-            charIndexField.setColumns(RunApplication.getColumns() * 2);
+            charIndexField.setColumns(AppConstants.jsonColumns);
             charIndexField.setValue(beginningCharIndex);
-            // charIndexField.addActionListener(this);
-            // charIndexField.setActionCommand("subject");
+            charIndexField.setFont(AppConstants.smallFont);
             this.add(charIndexField, grid);
             grid.gridy++;
             grid.gridx--;
 
+            // Questions and answers
             JLabel questionLabel = new JLabel("Questions:");
+            questionLabel.setFont(AppConstants.smallFont);
             this.add(questionLabel, grid);
             grid.gridx++;
             JLabel answerLabel = new JLabel("Answers:");
+            answerLabel.setFont(AppConstants.smallFont);
             this.add(answerLabel, grid);
             grid.gridy++;
             grid.gridx--;
 
-            // Container container = new Container();
-            // container.
-
-            // this.add(questionBox, grid);
             JScrollPane questionScrollPane = new JScrollPane(questionBox, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                     JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             this.add(questionScrollPane, grid);
             questionBox.setText(questions);
+            questionBox.setFont(AppConstants.smallFont);
             grid.gridx++;
-            // this.add(answerBox, grid);
             JScrollPane answerScrollPane = new JScrollPane(answerBox, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                     JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             this.add(answerScrollPane, grid);
             answerBox.setText(answers);
+            answerBox.setFont(AppConstants.smallFont);
             grid.gridy++;
             grid.gridx--;
 
             // Creating "done" button
             doneButton.setActionCommand("done");
-            doneButton.setHorizontalTextPosition(AbstractButton.CENTER);
-            doneButton.setVerticalTextPosition(AbstractButton.CENTER);
-            doneButton.setPreferredSize(new Dimension(150, 25));
-            doneButton.setToolTipText("Answer questions regarding pre-made flashcard content.");
             doneButton.setMnemonic(KeyEvent.VK_D);
+            doneButton.setPreferredSize(AppConstants.smallButtonDimension);
+            doneButton.setFont(AppConstants.medFont);
+            doneButton.setToolTipText("Answer questions regarding pre-made flashcard content.");
             doneButton.addActionListener(this);
             this.add(doneButton, grid);
+            grid.gridy++;
+
+            // Back button
+            backButton.setActionCommand("back");
+            backButton.addActionListener(this);
+            backButton.setMnemonic(KeyEvent.VK_B);
+            backButton.setPreferredSize(AppConstants.smallButtonDimension);
+            backButton.setFont(AppConstants.medFont);
+            backButton.setToolTipText("Go back to the menu.");
+            this.add(backButton, grid);
             grid.gridy++;
 
             display();
@@ -181,7 +204,6 @@ public class JSONEditor extends JPanel implements ActionListener {
                 semaphore.acquire();
             }
         } catch (IOException | ParseException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -189,37 +211,67 @@ public class JSONEditor extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (semaphore.hasQueuedThreads()) {
+            String action = e.getActionCommand();
             subject = subjectText.getText();
             set = setText.getText();
             questions = questionBox.getText();
             answers = answerBox.getText();
             beginningCharIndex = ((Number) charIndexField.getValue()).longValue();
 
-            if (e.getActionCommand().equals("yesRestrict") || e.getActionCommand().equals("noRestrict")) {
+            if (action.equals("back")) {
+                loop = false;
+                AppConstants.gameEnum = AppConstants.Game.NONE;
+                AppConstants.semaphore.release();
+            } else if (action.equals("yesRestrict") || action.equals("noRestrict")) {
                 restrict = !restrict;
-            } else if (e.getActionCommand().equals("done") && checkIfDone()) {
+            } else if (action.equals("done") && checkIfDone()) {
                 JSONTools.editJSON(this.file);
                 loop = false;
-                RunApplication.gameEnum = RunApplication.Game.NONE;
-                RunApplication.semaphore.release();
+                AppConstants.gameEnum = AppConstants.Game.NONE;
+                AppConstants.semaphore.release();
             }
             semaphore.release();
         }
     }
 
     public void display() {
-        RunApplication.frame.setContentPane(this);
-        RunApplication.frame.setVisible(true);
+        AppConstants.frame.setContentPane(this);
+        AppConstants.frame.setVisible(true);
     }
 
     private boolean checkIfDone() {
-        System.out.println("checking if done");
+        // Updating values
+        numQuestions = JSONTools.parseArrayList(questions).size();
+        numAnswers = JSONTools.parseArrayList(answers).size();
+
+        // Setting vars
         boolean returnFalse = true;
+        ArrayList<String> missing = new ArrayList<String>();
+
         if (subject.equals("")) {
             returnFalse = false;
+            missing.add("no subject argument");
         }
         if (set.equals("")) {
             returnFalse = false;
+            missing.add("no set name argument");
+        }
+        if (beginningCharIndex < 0) {
+            returnFalse = false;
+            missing.add("negative chararacter index");
+        }
+        if (numAnswers != numQuestions) {
+            returnFalse = false;
+            missing.add("there are an unequal amount of questions and answers");
+        }
+        if (numAnswers == 0 && numQuestions == 0) {
+            returnFalse = false;
+            missing.add("there are no questions nor answers");
+        }
+
+        if (!returnFalse) {
+            JOptionPane.showMessageDialog(AppConstants.frame,
+                    "Error: " + missing + ".", "Missing arguments", JOptionPane.ERROR_MESSAGE);
         }
         return returnFalse;
     }

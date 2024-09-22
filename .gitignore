@@ -1,7 +1,9 @@
 # Ignore
 bin
 .vscode
+Output
 src/whyxzee/terminalpractice/flashcards/custom/*
+exeScript.iss
 
 # Keep
 !src/whyxzee/terminalpractice/flashcards/custom/.gitkeep

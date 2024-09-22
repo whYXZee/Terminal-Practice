@@ -1,12 +1,10 @@
 package whyxzee.terminalpractice.scenarios.physics;
 
-import whyxzee.terminalpractice.application.RunApplication;
+import whyxzee.terminalpractice.application.AppConstants;
 import whyxzee.terminalpractice.resources.Trigonometry;
 import whyxzee.terminalpractice.scenarios.ScenarioConstants;
 import whyxzee.terminalpractice.scenarios.ScenarioUI;
 
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -15,21 +13,33 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import java.math.BigDecimal;
+
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.JOptionPane;
 
 import java.util.ArrayList;
-import java.util.concurrent.Semaphore;
 
 public class ProjectileMotion extends ScenarioUI implements ActionListener {
+    //
+    // General variables
+    //
+    boolean shouldBreak = false;
+    public int correct = 0;
+    public String response = "";
+    JTextField textField;
+    public JLabel correctIncorrect = new JLabel();
+
+    //
+    // Scenario-specific variables
+    //
+
     // enums to determine problem type
     private static ProblemType problemType = ProblemType.NONE;
     private static GivenVal givenVal = GivenVal.NONE;
 
-    /**
-     * What part of the motion needs to be found?
-     */
+    // What part of the motion needs to be found?
     private enum ProblemType {
         NONE,
         INIT_VH, // initial velocity of hypotenuse
@@ -47,9 +57,7 @@ public class ProjectileMotion extends ScenarioUI implements ActionListener {
         TOTAL_X, // total x displacement
     }
 
-    /**
-     * What values from the motion are given?
-     */
+    // What values from the motion are given?
     private enum GivenVal {
         NONE,
         INIT_SIDES, // two sides from initial triangle
@@ -71,13 +79,6 @@ public class ProjectileMotion extends ScenarioUI implements ActionListener {
         }
     };
 
-    boolean shouldBreak = false;
-    public int correct = 0;
-    public String response = "";
-    Semaphore internalSemaphore = new Semaphore(0);
-    public Semaphore externalSemaphore = new Semaphore(0);
-    JTextField textField;
-    public JLabel correctIncorrect = new JLabel();
     static JLabel lookingFor = new JLabel();
 
     public ProjectileMotion() throws InterruptedException {
@@ -89,67 +90,71 @@ public class ProjectileMotion extends ScenarioUI implements ActionListener {
         grid.insets = new Insets(8, 8, 8, 8);
         grid.anchor = GridBagConstraints.CENTER;
 
-        for (int i = 0; i < RunApplication.goal; i++) {
-            RunApplication.getFontSize();
+        for (int i = 0; i < AppConstants.goal; i++) {
             // Resetting the equation
             triangle.updateFromList(nullList);
 
-            // Showing the equation
-            randomize();
-            printQuestion();
-            JLabel questionTracker = new JLabel("Question " + (i + 1) + "/" + RunApplication.goal);
-            JLabel question = new JLabel(triangle.toString());
-
-            questionTracker.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 2));
-            question.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 3));
-            lookingFor.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 3));
-
+            // Question tracker
+            JLabel questionTracker = new JLabel("Question " + (i + 1) + "/" + AppConstants.goal);
+            questionTracker.setFont(AppConstants.biggerFont);
             this.add(questionTracker, grid);
             grid.gridy++;
+
+            // Question
+            randomize();
+            JLabel question = new JLabel(triangle.toString());
+            question.setFont(AppConstants.medFont);
             this.add(question, grid);
             grid.gridy++;
+
+            printQuestion();
+            lookingFor.setFont(AppConstants.medFont);
             this.add(lookingFor, grid);
             grid.gridy++;
 
+            // Answer box
             textField = new JTextField();
-            textField.setColumns(RunApplication.getColumns());
-            textField.setHorizontalAlignment(JTextField.CENTER);
-            textField.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 4));
             textField.addActionListener(this);
+            textField.setColumns(AppConstants.answerColumns);
+            textField.setFont(AppConstants.smallFont);
+            textField.setHorizontalAlignment(JTextField.CENTER);
             this.add(textField, grid);
             grid.gridy++;
 
+            // End button
             JButton backButton = new JButton("End practice");
-            backButton.setActionCommand("end");
-            backButton.setPreferredSize(new Dimension(150, 25));
-            backButton.setToolTipText("End the drill early.");
-            backButton.setMnemonic(KeyEvent.VK_E);
             backButton.addActionListener(this);
+            backButton.setActionCommand("end");
+            backButton.setMnemonic(KeyEvent.VK_E);
+            backButton.setPreferredSize(AppConstants.smallButtonDimension);
+            backButton.setFont(AppConstants.medFont);
+            backButton.setToolTipText("End the drill early.");
             this.add(backButton, grid);
             grid.gridy++;
 
+            // Display
             display();
             textField.requestFocusInWindow();
+            ScenarioConstants.scenarioSemaphore.acquire();
 
-            internalSemaphore.acquire();
-
-            // Answering the question
+            // Checking the input
             if (solve().toString().equals(response)) {
                 correctIncorrect = new JLabel("Correct!");
+                correctIncorrect.setFont(AppConstants.bigFont);
                 correct++;
             } else if (shouldBreak) {
                 break;
             } else {
                 correctIncorrect = new JLabel("Incorrect, the answer was: " + solve());
+                correctIncorrect.setFont(AppConstants.bigFont);
             }
             this.add(correctIncorrect, grid);
             display();
             Thread.sleep(2000);
             this.removeAll();
         }
-        correctIncorrect = new JLabel("Congratuations, you got " + correct + " correct!");
-        display();
-        Thread.sleep(2000);
+        JOptionPane.showMessageDialog(AppConstants.frame, "You got " + correct + " correct!", "Scenario Completion",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
@@ -159,7 +164,7 @@ public class ProjectileMotion extends ScenarioUI implements ActionListener {
         } else {
             this.response = textField.getText();
         }
-        internalSemaphore.release();
+        ScenarioConstants.scenarioSemaphore.release();
     }
 
     /**

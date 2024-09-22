@@ -1,7 +1,5 @@
 package whyxzee.terminalpractice.flashcards;
 
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -17,9 +15,10 @@ import java.util.concurrent.Semaphore;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import whyxzee.terminalpractice.application.RunApplication;
+import whyxzee.terminalpractice.application.AppConstants;
 
 public class RunDrillsUI extends JPanel implements ActionListener {
     // UI constants
@@ -54,29 +53,28 @@ public class RunDrillsUI extends JPanel implements ActionListener {
         };
         Collections.shuffle(shuffled);
         int totalAnswers = AnswerSet.totalAnswers(terms, bannedLetters, (int) beginCharIndex);
-        if (RunApplication.goal > totalAnswers) {
-            RunApplication.goal = totalAnswers;
+        if (AppConstants.goal > totalAnswers) {
+            AppConstants.goal = totalAnswers;
         }
         for (String i : shuffled) {
-            RunApplication.getFontSize();
             this.answers = new AnswerSet(terms.get(i));
             if (answers.answerIsAllowed(bannedLetters, (int) beginCharIndex)) {
-                questionTracker = new JLabel("Question " + (termsCompleted + 1) + "/" + RunApplication.goal + ":");
-                questions = RunApplication.divideLabel(i);
+                // Question tracker
+                questionTracker = new JLabel("Question " + (termsCompleted + 1) + "/" + AppConstants.goal + ":");
+                questionTracker.setFont(AppConstants.biggerFont);
 
-                // Changing size of the labels
-                questionTracker.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize));
-
+                questions = AppConstants.divideLabel(i);
                 textField = new JTextField();
                 textField.addActionListener(this);
-                textField.setColumns(RunApplication.getColumns());
+                textField.setColumns(AppConstants.answerColumns);
                 textField.setHorizontalAlignment(JTextField.CENTER);
-                textField.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 2));
+                textField.setFont(AppConstants.bigFont);
 
                 JButton backButton = new JButton("End practice");
                 backButton.addActionListener(this);
                 backButton.setActionCommand("end");
-                backButton.setPreferredSize(new Dimension(150, 25));
+                backButton.setPreferredSize(AppConstants.smallButtonDimension);
+                backButton.setFont(AppConstants.medFont);
                 backButton.setToolTipText("End the drill early.");
                 backButton.setMnemonic(KeyEvent.VK_E);
 
@@ -84,7 +82,7 @@ public class RunDrillsUI extends JPanel implements ActionListener {
                 this.add(questionTracker, grid);
                 grid.gridy++;
                 for (JLabel label : questions) {
-                    label.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 2));
+                    label.setFont(AppConstants.bigFont);
                     this.add(label, grid);
                     grid.gridy++;
                 }
@@ -106,20 +104,25 @@ public class RunDrillsUI extends JPanel implements ActionListener {
                     if (answers.inSet(response)) {
                         if (answers.sizeAnswers() == 0) {
                             correctIncorrect = new JLabel("Correct!");
+                            correctIncorrect.setFont(AppConstants.medFont);
+                            this.add(correctIncorrect, grid);
+                            display();
+                            Thread.sleep(2000);
                         } else {
-                            correctIncorrect = new JLabel("Correct! Other answers include: \"" + answers + "\".");
+                            JOptionPane.showMessageDialog(AppConstants.frame,
+                                    "Other answers include: \"" + answers + " \".",
+                                    "Correct!",
+                                    JOptionPane.INFORMATION_MESSAGE);
                         }
                         correct++;
                     } else {
-                        correctIncorrect = new JLabel("Incorrect, answers include: \"" + answers + "\".");
+                        JOptionPane.showMessageDialog(AppConstants.frame, "Answers include: \"" + answers + "\".",
+                                "Incorrect",
+                                JOptionPane.ERROR_MESSAGE);
                     }
                     termsCompleted++;
-                    correctIncorrect.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 4));
-                    this.add(correctIncorrect, grid);
-                    display();
-                    Thread.sleep(2000);
-                    if (termsCompleted == RunApplication.goal) {
-                        this.remove(correctIncorrect);
+
+                    if (termsCompleted == AppConstants.goal) {
                         break;
                     }
                 } catch (InterruptedException f) {
@@ -128,15 +131,14 @@ public class RunDrillsUI extends JPanel implements ActionListener {
                 this.removeAll();
             }
         }
-        correctIncorrect = new JLabel("Congratulations, you got " + correct + " correct!");
-        this.add(correctIncorrect, grid);
-        display();
-        Thread.sleep(3000);
+        JOptionPane.showMessageDialog(AppConstants.frame, "You got " + correct + " correct!", "Drill Completion",
+                JOptionPane.INFORMATION_MESSAGE);
+
         if (termsCompleted == 0 || shouldBreak || termsCompleted != shuffled.size()
-                || termsCompleted == RunApplication.goal) {
+                || termsCompleted == AppConstants.goal) {
             // to release the semaphore in case all words were restricted, but not when its
             // already released.
-            RunApplication.semaphore.release();
+            AppConstants.semaphore.release();
         }
     }
 
@@ -156,8 +158,8 @@ public class RunDrillsUI extends JPanel implements ActionListener {
     }
 
     public void display() {
-        RunApplication.frame.setContentPane(this);
-        RunApplication.frame.setVisible(true);
+        AppConstants.frame.setContentPane(this);
+        AppConstants.frame.setVisible(true);
         textField.requestFocusInWindow();
     }
 }

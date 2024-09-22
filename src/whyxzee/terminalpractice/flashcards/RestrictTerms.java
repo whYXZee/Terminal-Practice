@@ -1,9 +1,8 @@
 package whyxzee.terminalpractice.flashcards;
 
-import whyxzee.terminalpractice.application.RunApplication;
+import whyxzee.terminalpractice.application.AppConstants;
 import whyxzee.terminalpractice.resources.English;
 
-import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -14,6 +13,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import java.util.ArrayList;
@@ -59,18 +59,17 @@ public class RestrictTerms extends JPanel implements ActionListener {
         grid.gridy = 0;
         grid.insets = new Insets(8, 8, 8, 8);
         grid.anchor = GridBagConstraints.CENTER;
-        RunApplication.getFontSize();
 
         checkBoxGrid.gridx = 0;
         checkBoxGrid.gridy = 0;
         checkBoxGrid.insets = new Insets(8, 8, 8, 8);
         checkBoxGrid.anchor = GridBagConstraints.CENTER;
 
-        RunApplication.bannedLetters = new ArrayList<String>(English.characters.keySet());
-        RunApplication.whitelistArray = new ArrayList<String>();
+        AppConstants.bannedLetters = new ArrayList<String>(English.characters.keySet());
+        AppConstants.whitelistArray = new ArrayList<String>();
         JLabel restrictLabel = new JLabel(
                 "What letters would you like to practice?");
-        restrictLabel.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 2));
+        restrictLabel.setFont(AppConstants.bigFont);
         this.add(restrictLabel, grid);
         grid.gridy++;
 
@@ -106,11 +105,19 @@ public class RestrictTerms extends JPanel implements ActionListener {
         if (e.getActionCommand().equals("ready")) {
             for (JCheckBox i : array) {
                 if (!i.equals(all) && i.isSelected()) {
-                    RunApplication.whitelistArray.add(i.getText().toLowerCase());
+                    AppConstants.whitelistArray.add(i.getText().toLowerCase());
                 }
             }
-            RunApplication.bannedLetters.removeAll(RunApplication.whitelistArray);
-            RunApplication.semaphore.release();
+
+            // to prevent no letters being selected.
+            if (AppConstants.whitelistArray.size() == 0) {
+                JOptionPane.showMessageDialog(AppConstants.frame,
+                        "No letters have been selected. Please select a letter or select \"all\".", "Letter Error",
+                        JOptionPane.ERROR_MESSAGE);
+            } else {
+                AppConstants.bannedLetters.removeAll(AppConstants.whitelistArray);
+                AppConstants.semaphore.release();
+            }
         } else if (e.getActionCommand().equals("All")) {
             for (JCheckBox i : array) {
                 if (!i.equals(all)) {
@@ -121,7 +128,7 @@ public class RestrictTerms extends JPanel implements ActionListener {
     }
 
     public void display() {
-        RunApplication.frame.setContentPane(this);
-        RunApplication.frame.setVisible(true);
+        AppConstants.frame.setContentPane(this);
+        AppConstants.frame.setVisible(true);
     }
 }

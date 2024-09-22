@@ -111,7 +111,6 @@ public class JSONTools {
         ArrayList<String> output = new ArrayList<String>();
         if (directory != null) {
             for (File i : jsons) {
-                System.out.println(i.getPath());
                 try {
                     JSONObject jsonO = (JSONObject) new JSONParser().parse(new FileReader(i));
                     // removed conditional && !output.contains(jsonO.get("setName")
@@ -133,7 +132,7 @@ public class JSONTools {
      * 
      * @return
      */
-    private static ArrayList<String> parseArrayList(String input) {
+    public static ArrayList<String> parseArrayList(String input) {
         ArrayList<String> output = new ArrayList<String>();
         String stringedChar = "";
         for (Character i : input.toCharArray()) {
@@ -177,7 +176,6 @@ public class JSONTools {
                 } catch (NullPointerException e) {
                     System.out.println("subject: " + subject);
                     System.out.println("set: " + set);
-                    // System.out.println("path: " + path);
                 }
 
             }
@@ -254,7 +252,6 @@ public class JSONTools {
      * @param path path of the JSON file, starting with "./src/".
      */
     public static void editJSON(File path) {
-        System.out.println(path.getName());
         try {
             // Getting the file
             JSONObject jsonO = new JSONObject();
@@ -269,13 +266,10 @@ public class JSONTools {
             ArrayList<String> questions = parseArrayList(JSONEditor.questions);
             ArrayList<String> answers = parseArrayList(JSONEditor.answers);
             Map<String, String> map = new HashMap<String, String>();
-            // System.out.println(questions.size());
-            // System.out.println(answers.size());
             int termSize = questions.size();
             if (termSize < answers.size()) {
                 termSize = answers.size();
             }
-            // System.out.println(termSize);
             questions = equalizeTerms(questions, termSize);
             answers = equalizeTerms(answers, termSize);
             for (int i = 0; i < termSize; i++) {

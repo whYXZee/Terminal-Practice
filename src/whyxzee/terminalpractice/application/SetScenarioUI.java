@@ -3,9 +3,14 @@ package whyxzee.terminalpractice.application;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 // import java.awt.event.KeyEvent;
-import javax.swing.AbstractButton;
+
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import whyxzee.terminalpractice.flashcards.FlashcardConstants;
+import whyxzee.terminalpractice.flashcards.JSONTools;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,8 +21,6 @@ import java.util.Set;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Dimension;
-// import java.awt.Font;
 
 public class SetScenarioUI extends JPanel implements ActionListener {
     List<JButton> buttonList = new ArrayList<JButton>();
@@ -36,8 +39,21 @@ public class SetScenarioUI extends JPanel implements ActionListener {
 
         // Creating buttons from hashmap
         for (String i : list) {
-            buttonList.add(new JButton(RunApplication.capitalize(i)));
+            buttonList.add(new JButton(AppConstants.capitalize(i)));
         }
+
+        JLabel setLabel = new JLabel();
+        switch (AppConstants.gameEnum) {
+            case SCENARIOS:
+                setLabel = new JLabel("Choose a scenario:");
+                break;
+            default:
+                setLabel = new JLabel("Choose a set:");
+                break;
+        }
+        setLabel.setFont(AppConstants.bigFont);
+        this.add(setLabel, grid);
+        grid.gridy++;
 
         // adding data for every button
         for (int i = 0; i < buttonList.size(); i++) {
@@ -45,37 +61,58 @@ public class SetScenarioUI extends JPanel implements ActionListener {
             index.addActionListener(this);
             index.setActionCommand(index.getText().toLowerCase());
 
-            index.setHorizontalAlignment(AbstractButton.CENTER);
-            index.setVerticalTextPosition(AbstractButton.CENTER);
-            index.setPreferredSize(new Dimension(250, 25));
+            index.setPreferredSize(AppConstants.wideButtonDimension);
+            index.setFont(AppConstants.medFont);
 
             this.add(index, grid);
             grid.gridy++;
         }
 
+        // Back button
         JButton backButton = new JButton("Go Back");
-        backButton.setActionCommand("go back");
+        backButton.setActionCommand("back");
         backButton.addActionListener(this);
-        // this.add(backButton);
+        backButton.setFont(AppConstants.smallFont);
+        this.add(backButton, grid);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("go back")) {
-            RunApplication.set = "";
-            RunApplication.subject = "";
-        }
-        for (JButton i : buttonList) {
-            if (e.getActionCommand().equals(i.getText().toLowerCase())) {
-                RunApplication.set = i.getText().toLowerCase();
+        if (e.getActionCommand().equals("back")) {
+            new SubjectUI(AppConstants.subjectSet).display();
+        } else {
+            for (JButton i : buttonList) {
+                if (e.getActionCommand().equals(i.getText().toLowerCase())) {
+                    AppConstants.set = i.getText().toLowerCase();
+                }
             }
+            switch (AppConstants.gameEnum) {
+                case DRILLS:
+                    AppConstants.json = FlashcardConstants.flashcardHashMap.get(AppConstants.subject)
+                            .get(AppConstants.set);
+                    new ConfigureGoal(JSONTools.getCustomHashMap(AppConstants.json).size()).display();
+                    break;
+                case SCENARIOS:
+                    new ConfigureGoal(0).display();
+                    break;
+                case JSON_EDITOR:
+                    AppConstants.semaphore.release();
+                    break;
+                case CUSTOM_DRILLS:
+                    AppConstants.json = JSONTools.getJSONPath(AppConstants.subject, AppConstants.set,
+                            "./src/whyxzee/terminalpractice/flashcards/custom/");
+                    new ConfigureGoal(JSONTools.getCustomHashMap(AppConstants.json).size()).display();
+                    break;
+                default:
+                    break;
+            }
+
         }
-        RunApplication.semaphore.release();
     }
 
     public void display() {
-        // this.setOpaque(true);
-        RunApplication.frame.setContentPane(this);
-        RunApplication.frame.setVisible(true);
+        AppConstants.frame.setContentPane(new JScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
+        AppConstants.frame.setVisible(true);
     }
 }

@@ -1,5 +1,7 @@
 package whyxzee.terminalpractice.resources;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class English {
@@ -43,7 +45,9 @@ public class English {
             put("agr-", "field");
             put("amph-/amphi-", "both");
             put("a-/an-", "not,without");
-            put("an-/ana-", "again,against,back up"); // again, against, back,,up
+            put("an-/ana-", "again,against,back up"); // again,
+                                                      // against,
+                                                      // back,,up
             put("andr-", "masculine,man");
             put("anem-", "wind");
             put("ant-/anti-", "against,opposed to,preventitive");
@@ -58,7 +62,16 @@ public class English {
             put("arthr-", "joint");
             put("astr-", "star");
             put("athl-", "prize");
-            put("auto-", "self"); // can also be "aut-" as well as directed from within
+            put("auto-", "self"); // can
+                                  // also
+                                  // be
+                                  // "aut-"
+                                  // as
+                                  // well
+                                  // as
+                                  // directed
+                                  // from
+                                  // within
             put("axio-", "merit");
             // B
             put("bar-", "weight"); // can also be weight
@@ -66,7 +79,8 @@ public class English {
             put("bathy-/batho-", "depth,deep");
             put("bibl-", "book");
             put("bio-", "life");
-            put("blenn-", "slime"); // technically from mucus but whatevs
+            put("blenn-", "slime"); // technically from
+                                    // mucus but whatevs
             put("blast-", "cell with nucleus,germ,embryo,bud");
             put("bor-", "north");
             put("botan-", "plant");
@@ -574,7 +588,11 @@ public class English {
             put("coll-", "hill,neck");
             put("color-", "color");
             put("con-/co-/col-/com-/cor-", "with,together");
-            put("condi-", "season" /* as in spices */);
+            put("condi-", "season" /*
+                                    * as
+                                    * in
+                                    * spices
+                                    */);
             put("contra-", "against");
             put("cord-", "heart");
             put("corn-", "horn");
@@ -666,7 +684,12 @@ public class English {
             put("flect-/flex-", "bend");
             put("flig-/flict-", "strike");
             put("flor-", "flower");
-            put("foc-", "hearth"); // double check also what's hearth :P
+            put("foc-", "hearth"); // double
+                                   // check
+                                   // also
+                                   // what's
+                                   // hearth
+                                   // :P
             put("fod-/foss-", "dig");
             // put("foen-","hay");
             put("foli-", "leaf");
@@ -744,7 +767,8 @@ public class English {
             put("jac-/-ject-", "cast,throw");
             put("janu-", "door");
             put("joc-", "joke");
-            put("jug-", "yoke"); // whats yoke
+            put("jug-", "yoke"); // whats
+                                 // yoke
             put("jung-/junct-", "join");
             put("junior-", "younger");
             put("jus-/jur-/judic-", "law,justice");
@@ -769,7 +793,13 @@ public class English {
             put("led-/les-", "hurt");
             put("leg-", "law,send");
             put("leni-", "gentle");
-            put("leo-", "lion"); // really should be "leon-" but womp womp
+            put("leo-", "lion"); // really
+                                 // should
+                                 // be
+                                 // "leon-"
+                                 // but
+                                 // womp
+                                 // womp
             put("lev-", "lift,light");
             put("liber-", "free");
             put("libr-", "book");
@@ -1267,4 +1297,25 @@ public class English {
             putAll(latinRoots);
         }
     };
+
+    public static ArrayList<String> words = new ArrayList<String>(
+            Arrays.asList("Balloon", "Committee", "Success", "Doodle", "Keen",
+                    "Coffee", "Puppy", "Bubble", "Sassafras", "Letter",
+                    "Eerie", "Occur", "Bitter", "Add", "Eclipse",
+                    "Mississippi", "Paddle", "Cabbage", "Silly", "Chatter",
+                    "Effort", "Affect", "Poppy", "Happen", "Baggage",
+                    "Happy", "Fuzzy", "Sneeze", "Coo", "Raccoon",
+                    "Cabbie", "Boo", "Creep", "Hoodoo", "Muffin",
+                    "Giggling", "Riffraff", "Tattletale", "Zigzag", "Rattle",
+                    "Kiddie", "Dillydally", "Buzzer", "Dazzle", "Ripper",
+                    "Snazzy", "Tippy", "Nanny", "Fluffy", "Sassy",
+                    "Twinkle", "Meme", "Bookkeeper", "Dodo", "Giggle",
+                    "Mimic", "Consensus", "Tattle", "Jolly", "Teepee",
+                    "Spoon", "Boomerang", "Afford", "Noodle", "Doodad",
+                    "Coddle", "Eddied", "Fiddler", "Kettle", "Wobble",
+                    "Daffodil", "Nanny", "Gooey", "Popcorn", "Wobbly",
+                    "Noodle", "Fiddle", "Cuddle", "Bobby", "Bitter",
+                    "Cinnamon", "Dabble", "Riffle", "Addict", "Nuzzle",
+                    "Scribble", "Cuddle", "Buzz", "Waddle", "Fuzz",
+                    "Razzmatazz", "Muff", "Fluff", "Bobby", "Seesaw"));
 }

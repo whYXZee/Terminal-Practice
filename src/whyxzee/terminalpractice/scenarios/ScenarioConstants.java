@@ -1,6 +1,6 @@
 package whyxzee.terminalpractice.scenarios;
 
-import whyxzee.terminalpractice.application.RunApplication;
+import whyxzee.terminalpractice.application.AppConstants;
 import whyxzee.terminalpractice.scenarios.algebra.*;
 import whyxzee.terminalpractice.scenarios.discrete_math.*;
 import whyxzee.terminalpractice.scenarios.number_sense.*;
@@ -69,7 +69,7 @@ public class ScenarioConstants {
         grid.anchor = GridBagConstraints.CENTER;
         grid.gridx = 0;
         grid.gridy = 0;
-        switch (RunApplication.set) {
+        switch (AppConstants.set) {
             // Algebra
             case "algebraic memory":
                 new AlgebraMemory().display();
