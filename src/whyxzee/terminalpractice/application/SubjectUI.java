@@ -79,6 +79,9 @@ public class SubjectUI extends JPanel implements ActionListener {
                 }
             }
             switch (AppConstants.gameEnum) {
+                case FLASHCARDS:
+                    new SetScenarioUI(FlashcardConstants.flashcardHashMap.get(AppConstants.subject).keySet()).display();
+                    break;
                 case DRILLS:
                     new SetScenarioUI(FlashcardConstants.flashcardHashMap.get(AppConstants.subject).keySet())
                             .display();
@@ -89,6 +92,10 @@ public class SubjectUI extends JPanel implements ActionListener {
                             .display();
                     break;
                 case JSON_EDITOR:
+                    new SetScenarioUI(new HashSet<String>(JSONTools.getCustomSets(AppConstants.subject))).display();
+                    break;
+
+                case CUSTOM_FLASHCARDS:
                     new SetScenarioUI(new HashSet<String>(JSONTools.getCustomSets(AppConstants.subject))).display();
                     break;
                 case CUSTOM_DRILLS:

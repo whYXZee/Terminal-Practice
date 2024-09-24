@@ -9,7 +9,7 @@ public class FlashcardConstants {
         {
             put("animals", new File("./src/whyxzee/terminalpractice/flashcards/spanish/Animals.json"));
             put("plants", new File("./src/whyxzee/terminalpractice/flashcards/spanish/Plants.json"));
-            put("nationalities and ethnicities",
+            put("nationalities, ethnicities, & religions",
                     new File("./src/whyxzee/terminalpractice/flashcards/spanish/NationsEthnicities.json"));
             // put("spanish phonetics", new
             // File("./src/whyxzee/terminalpractice/flashcards/spanish/EsPhonetics.json"));

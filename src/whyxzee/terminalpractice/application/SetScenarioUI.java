@@ -87,6 +87,11 @@ public class SetScenarioUI extends JPanel implements ActionListener {
                 }
             }
             switch (AppConstants.gameEnum) {
+                case FLASHCARDS:
+                    AppConstants.json = FlashcardConstants.flashcardHashMap.get(AppConstants.subject)
+                            .get(AppConstants.set);
+                    AppConstants.semaphore.release();
+                    break;
                 case DRILLS:
                     AppConstants.json = FlashcardConstants.flashcardHashMap.get(AppConstants.subject)
                             .get(AppConstants.set);
@@ -96,6 +101,12 @@ public class SetScenarioUI extends JPanel implements ActionListener {
                     new ConfigureGoal(0).display();
                     break;
                 case JSON_EDITOR:
+                    AppConstants.semaphore.release();
+                    break;
+
+                case CUSTOM_FLASHCARDS:
+                    AppConstants.json = JSONTools.getJSONPath(AppConstants.subject, AppConstants.set,
+                            "./src/whyxzee/terminalpractice/flashcards/custom/");
                     AppConstants.semaphore.release();
                     break;
                 case CUSTOM_DRILLS:

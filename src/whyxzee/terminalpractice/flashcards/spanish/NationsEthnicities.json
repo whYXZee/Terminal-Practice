@@ -1,5 +1,5 @@
 {
-  "setName": "nations and ethnicities",
+  "setName": "nationalities, ethnicities, & religions",
   "restrictLetters": false,
   "beginningCharIndex": 0,
   "termList": {
@@ -12,6 +12,7 @@
     "What is \"Scandinavian\" in Spanish?": "escandinavo,escandinava",
     "What is \"African\" in Spanish?": "africano,africana",
     "What is \"indigenous\" in Spanish?": "indígena,nativo,nativa,local",
+    "What is \"Middle Eastern\" in Spanish?": "de Oriente Medio,de Medio Oriente",
 
     "What is \"Muslim\" in Spanish?": "musulmán,musulmana,islámico,islámica",
     "What is \"Hindu\" in Spanish?": "hindú",
@@ -45,6 +46,11 @@
     "What is \"Estonian\" in Spanish?": "estonio",
     "What is \"Ukrainian\" in Spanish?": "ucraniano,ucraniana",
     "What is \"Greek\" in Spanish?": "griego,griega",
+    "What is \"Italian\" in Spanish?": "italiano,italiana",
+    "What is \"Portuguese\" in Spanish?": "portugués,portuguesa",
+    "What is \"Austrian\" in Spanish?": "austriaco,austriaca",
+    "What is \"Slovakian\" in Spanish?": "eslovaco,eslovaca",
+    "What is \"Turkish\" in Spanish?": "turco,turca",
 
     "What is \"Canadian\" in Spanish?": "canadiense",
     "What is \"American\" in Spanish? (from the United States)": "estadounidense",
@@ -56,6 +62,17 @@
     "What is \"Nicaraguan\" in Spanish?": "nicaragüense",
     "What is \"Costa Rican\" in Spanish?": "costarricense,costarriqueño",
     "What is \"Panamanian\" in Spanish?": "panameño,panameña",
+
+    "What is \"Brazilian\" in Spanish?": "brasileño,brasileña",
+    "What is \"Colombian\" in Spanish?": "colombiano,colombiana",
+    "What is \"Venezuelan\" in Spanish?": "venezolano,venezolana",
+    "What is \"Ecuadorian\" in Spanish?": "ecuatoriano,ecuatoriana",
+    "What is \"Peruvian\" in Spanish?": "peruano,peruana",
+    "What is \"Bolivian\" in Spanish?": "boliviano,boliviana",
+    "What is \"Chilean\" in Spanish?": "chileno,chilena",
+    "What is \"Argentinian\" in Spanish?": "argentino,argentina",
+    "What is \"Paraguayan\" in Spanish?": "paraguayo,paraguaya",
+    "What is \"Uruguayan\" in Spanish?": "uruguayo,uruguaya",
 
     "What is \"Australian\" in Spanish?": "australiano,australiana"
   },

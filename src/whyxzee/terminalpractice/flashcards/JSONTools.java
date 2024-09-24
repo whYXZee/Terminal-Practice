@@ -27,8 +27,8 @@ public class JSONTools {
         JSONObject jsonO = new JSONObject();
 
         // Adding needed paramaters
-        jsonO.put("subject", JSONCreator.subject);
-        jsonO.put("setName", JSONCreator.set);
+        jsonO.put("subject", JSONCreator.subject.toLowerCase());
+        jsonO.put("setName", JSONCreator.set.toLowerCase());
         jsonO.put("restrictLetters", JSONCreator.restrict);
         jsonO.put("beginningCharIndex", JSONCreator.beginningCharIndex);
 
@@ -40,8 +40,8 @@ public class JSONTools {
         if (termSize < answers.size()) {
             termSize = answers.size();
         }
-        questions = equalizeTerms(questions, termSize);
-        answers = equalizeTerms(answers, termSize);
+        // questions = equalizeTerms(questions, termSize);
+        // answers = equalizeTerms(answers, termSize);
         for (int i = 0; i < termSize; i++) {
             map.put(questions.get(i), answers.get(i));
         }
@@ -257,8 +257,8 @@ public class JSONTools {
             JSONObject jsonO = new JSONObject();
             PrintWriter pw = new PrintWriter(path);
 
-            jsonO.put("subject", JSONEditor.subject);
-            jsonO.put("setName", JSONEditor.set);
+            jsonO.put("subject", JSONEditor.subject.toLowerCase());
+            jsonO.put("setName", JSONEditor.set.toLowerCase());
             jsonO.put("restrictLetters", JSONEditor.restrict);
             jsonO.put("beginningCharIndex", JSONEditor.beginningCharIndex);
 
@@ -270,8 +270,8 @@ public class JSONTools {
             if (termSize < answers.size()) {
                 termSize = answers.size();
             }
-            questions = equalizeTerms(questions, termSize);
-            answers = equalizeTerms(answers, termSize);
+            // questions = equalizeTerms(questions, termSize);
+            // answers = equalizeTerms(answers, termSize);
             for (int i = 0; i < termSize; i++) {
                 map.put(questions.get(i), answers.get(i));
             }

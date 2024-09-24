@@ -65,9 +65,8 @@ public class GameSelection extends JPanel implements ActionListener {
             }
         }
 
-        flashcardButton.setToolTipText("Coming soon!");
+        flashcardButton.setToolTipText("Go through pre-made flashcards.");
         flashcardButton.setMnemonic(KeyEvent.VK_F);
-        flashcardButton.setEnabled(false);
 
         drillsButton.setToolTipText("Answer questions regarding pre-made flashcard content.");
         drillsButton.setMnemonic(KeyEvent.VK_D);
@@ -75,15 +74,12 @@ public class GameSelection extends JPanel implements ActionListener {
         scenariosButton.setToolTipText("Answer randomized questions.");
         scenariosButton.setMnemonic(KeyEvent.VK_S);
 
-        // customFlashcardsButton.setEnabled(isCustomAvailable);
-        // if (customFlashcardsButton.isEnabled()) {
-        // customFlashcardsButton.setToolTipText("Go through custom-made sets in the
-        // form of flashcards.");
-        // } else {
-        // customFlashcardsButton.setToolTipText("No custom sets detected.");
-        // }
-        customFlashcardsButton.setEnabled(false);
-        customFlashcardsButton.setToolTipText("Coming soon!");
+        customFlashcardsButton.setEnabled(isCustomAvailable);
+        if (customFlashcardsButton.isEnabled()) {
+            customFlashcardsButton.setToolTipText("Go through custom-made flashcards.");
+        } else {
+            customFlashcardsButton.setToolTipText("No custom sets detected.");
+        }
 
         customDrillsButton.setEnabled(isCustomAvailable);
         if (customDrillsButton.isEnabled()) {
@@ -131,6 +127,9 @@ public class GameSelection extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String action = e.getActionCommand();
         if (action.equals("Flashcards")) {
+            AppConstants.gameEnum = AppConstants.Game.FLASHCARDS;
+            AppConstants.subjectSet = FlashcardConstants.flashcardHashMap.keySet();
+            new SubjectUI(AppConstants.subjectSet).display();
 
         } else if (action.equals("Drills")) {
             AppConstants.gameEnum = AppConstants.Game.DRILLS;
@@ -153,6 +152,11 @@ public class GameSelection extends JPanel implements ActionListener {
 
         } else if (action.equals("Custom Drills")) {
             AppConstants.gameEnum = AppConstants.Game.CUSTOM_DRILLS;
+            AppConstants.subjectSet = new HashSet<String>(JSONTools.getCustomSubjects());
+            new SubjectUI(AppConstants.subjectSet).display();
+
+        } else if (action.equals("Custom Flashcards")) {
+            AppConstants.gameEnum = AppConstants.Game.CUSTOM_FLASHCARDS;
             AppConstants.subjectSet = new HashSet<String>(JSONTools.getCustomSubjects());
             new SubjectUI(AppConstants.subjectSet).display();
         }

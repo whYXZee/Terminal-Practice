@@ -26,6 +26,7 @@ public class ScenarioConstants {
         {
             add("algebraic memory");
             add("solve for x (linear)");
+            add("factoring");
             // add("quadratic factors");
         }
     };
@@ -84,6 +85,9 @@ public class ScenarioConstants {
                 break;
             case "solve for x (linear)":
                 new SolveForXLinear().display();
+                break;
+            case "factoring":
+                new Factoring().display();
                 break;
 
             // Discrete Mathematics

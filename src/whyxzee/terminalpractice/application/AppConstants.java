@@ -49,10 +49,13 @@ public class AppConstants {
     public static int jsonColumns = 10;
     public static Dimension smallButtonDimension = new Dimension(10, 10);
     public static Dimension wideButtonDimension = new Dimension(10, 10);
+    public static Dimension flashcardDimension = new Dimension(10, 10);
 
     public enum Game {
+        FLASHCARDS,
         DRILLS,
         SCENARIOS,
+        CUSTOM_FLASHCARDS,
         CUSTOM_DRILLS,
         JSON_EDITOR,
         JSON_CREATOR,
@@ -89,11 +92,16 @@ public class AppConstants {
 
         smallButtonDimension = new Dimension(width / 5, height / 15);
         wideButtonDimension = new Dimension(width / 2, height / 15);
+        flashcardDimension = new Dimension((int) (width / 1.5), height / 2);
 
         // Declaring UI screens
         GoAgain loopQuestion = new GoAgain();
         while (run) {
             switch (gameEnum) {
+                case FLASHCARDS:
+                    new FlashcardUI(JSONTools.getCustomHashMap(json)).display();
+                    semaphore.acquire();
+                    break;
                 case DRILLS:
                     new RunDrillsUI(JSONTools.getCustomHashMap(json), bannedLetters,
                             JSONTools.getBeginningCharIndex(json)).display();
@@ -103,10 +111,8 @@ public class AppConstants {
                     semaphore.acquire();
                     break;
                 case SCENARIOS:
-                    // Playing the scenario.
                     ScenarioConstants.runScenario();
 
-                    // Repeat the scenario or nah
                     loopQuestion.display();
                     semaphore.acquire();
                     break;
@@ -121,6 +127,10 @@ public class AppConstants {
                     semaphore.acquire();
                     break;
 
+                case CUSTOM_FLASHCARDS:
+                    new FlashcardUI(JSONTools.getCustomHashMap(json)).display();
+                    semaphore.acquire();
+                    break;
                 case CUSTOM_DRILLS:
                     new RunDrillsUI(JSONTools.getCustomHashMap(json), bannedLetters,
                             JSONTools.getBeginningCharIndex(json)).display();
@@ -198,7 +208,7 @@ public class AppConstants {
     }
 
     private static String getRandomSplash() {
-        switch (new Random().nextInt(8) + 1) {
+        switch (new Random().nextInt(10) + 1) {
             case 1:
                 return "0 != 1, and 0! = 1"; // factorial & boolean algebra joke
             case 2:
@@ -206,15 +216,19 @@ public class AppConstants {
             case 3:
                 return "Sodium Bromide";
             case 4:
-                return "1 + 1 = 10";
+                return "1 + 1 = 10"; // binary joke
             case 5:
-                return "My problems are sqrt(-1)";
+                return "My problems are sqrt(-1)"; // imaginary problems
             case 6:
                 return "3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679";
             case 7:
                 return "123 is the same as 132"; // combination joke
             case 8:
                 return "21 P 2 = -34, trust"; // joke due to bit limits from originally using longs
+            case 9:
+                return "SOH CAH TOA";
+            case 10:
+                return "Tu madre";
             default:
                 return "";
         }

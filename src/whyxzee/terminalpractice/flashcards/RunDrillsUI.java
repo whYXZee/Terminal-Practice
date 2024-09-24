@@ -63,20 +63,23 @@ public class RunDrillsUI extends JPanel implements ActionListener {
                 questionTracker = new JLabel("Question " + (termsCompleted + 1) + "/" + AppConstants.goal + ":");
                 questionTracker.setFont(AppConstants.biggerFont);
 
+                // Questions
                 questions = AppConstants.divideLabel(i);
+
+                // Answer box
                 textField = new JTextField();
                 textField.addActionListener(this);
                 textField.setColumns(AppConstants.answerColumns);
                 textField.setHorizontalAlignment(JTextField.CENTER);
                 textField.setFont(AppConstants.bigFont);
 
-                JButton backButton = new JButton("End practice");
-                backButton.addActionListener(this);
-                backButton.setActionCommand("end");
-                backButton.setPreferredSize(AppConstants.smallButtonDimension);
-                backButton.setFont(AppConstants.medFont);
-                backButton.setToolTipText("End the drill early.");
-                backButton.setMnemonic(KeyEvent.VK_E);
+                JButton endButton = new JButton("End practice");
+                endButton.addActionListener(this);
+                endButton.setActionCommand("end");
+                endButton.setPreferredSize(AppConstants.smallButtonDimension);
+                endButton.setFont(AppConstants.medFont);
+                endButton.setToolTipText("End the drill early.");
+                endButton.setMnemonic(KeyEvent.VK_E);
 
                 // Adding the components
                 this.add(questionTracker, grid);
@@ -89,7 +92,7 @@ public class RunDrillsUI extends JPanel implements ActionListener {
                 grid.gridy++;
                 this.add(textField, grid);
                 grid.gridy++;
-                this.add(backButton, grid);
+                this.add(endButton, grid);
                 grid.gridy++;
 
                 display();
