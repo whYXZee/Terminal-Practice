@@ -37,9 +37,9 @@ public class JSONTools {
         ArrayList<String> answers = parseArrayList(JSONCreator.answers);
         Map<String, String> map = new HashMap<String, String>();
         int termSize = questions.size();
-        if (termSize < answers.size()) {
-            termSize = answers.size();
-        }
+        // if (termSize < answers.size()) {
+        // termSize = answers.size();
+        // }
         // questions = equalizeTerms(questions, termSize);
         // answers = equalizeTerms(answers, termSize);
         for (int i = 0; i < termSize; i++) {
@@ -267,9 +267,9 @@ public class JSONTools {
             ArrayList<String> answers = parseArrayList(JSONEditor.answers);
             Map<String, String> map = new HashMap<String, String>();
             int termSize = questions.size();
-            if (termSize < answers.size()) {
-                termSize = answers.size();
-            }
+            // if (termSize < answers.size()) {
+            // termSize = answers.size();
+            // }
             // questions = equalizeTerms(questions, termSize);
             // answers = equalizeTerms(answers, termSize);
             for (int i = 0; i < termSize; i++) {

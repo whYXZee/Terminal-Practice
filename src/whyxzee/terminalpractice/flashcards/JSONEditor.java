@@ -55,7 +55,8 @@ public class JSONEditor extends JPanel implements ActionListener {
     JLabel subjectLabel = new JLabel("What is the name of the subject?");
     JLabel setLabel = new JLabel("What is the name of the set?");
     JLabel restrictLabel = new JLabel("Would you like to add the ability to select what should be chosen?");
-    JLabel charIndexLabel = new JLabel("Which character would you like to check with the restriction? [starting at 0]");
+    JLabel charIndexLabel = new JLabel(
+            "Which character (including spaces) would you like to check for the restriction?");
 
     // Text fields
     JTextField subjectText = new JTextField();
@@ -148,7 +149,7 @@ public class JSONEditor extends JPanel implements ActionListener {
             this.add(charIndexLabel, grid);
             grid.gridx++;
             charIndexField.setColumns(AppConstants.jsonColumns);
-            charIndexField.setValue(beginningCharIndex);
+            charIndexField.setValue(beginningCharIndex + 1);
             charIndexField.setFont(AppConstants.smallFont);
             this.add(charIndexField, grid);
             grid.gridy++;
@@ -201,10 +202,13 @@ public class JSONEditor extends JPanel implements ActionListener {
 
             JOptionPane.showMessageDialog(AppConstants.frame,
                     "Terms:\n - Each question and answer are separated by a ';'\n - Multiple answers can be put by separating them with a ',' without spaces",
-                    "Editor Information", JOptionPane.ERROR_MESSAGE);
+                    "Editor Information", JOptionPane.INFORMATION_MESSAGE);
 
             display();
             while (loop) {
+                // From the charIndex
+                charIndexField.setEnabled(restrict);
+
                 semaphore.acquire();
             }
         } catch (IOException | ParseException e) {
@@ -220,7 +224,7 @@ public class JSONEditor extends JPanel implements ActionListener {
             set = setText.getText();
             questions = questionBox.getText();
             answers = answerBox.getText();
-            beginningCharIndex = ((Number) charIndexField.getValue()).longValue();
+            beginningCharIndex = ((Number) charIndexField.getValue()).longValue() - 1;
 
             if (action.equals("back")) {
                 loop = false;
@@ -228,6 +232,8 @@ public class JSONEditor extends JPanel implements ActionListener {
                 AppConstants.semaphore.release();
             } else if (action.equals("yesRestrict") || action.equals("noRestrict")) {
                 restrict = !restrict;
+                beginningCharIndex = 0;
+                charIndexField.setValue(beginningCharIndex + 1);
             } else if (action.equals("done") && checkIfDone()) {
                 JSONTools.editJSON(this.file);
                 loop = false;
@@ -246,7 +252,17 @@ public class JSONEditor extends JPanel implements ActionListener {
     private boolean checkIfDone() {
         // Updating values
         numQuestions = JSONTools.parseArrayList(questions).size();
-        numAnswers = JSONTools.parseArrayList(answers).size();
+
+        // Checking answers and index numbers
+        ArrayList<String> answerList = JSONTools.parseArrayList(answers);
+        numAnswers = answerList.size();
+        int maxChar = 0;
+        for (String i : answerList) {
+            int maxCharsInAnswer = new AnswerSet(i).maxCharactersInAnswer(maxChar);
+            if (maxCharsInAnswer > maxChar) {
+                maxChar = maxCharsInAnswer;
+            }
+        }
 
         // Setting vars
         boolean returnFalse = true;
@@ -260,9 +276,16 @@ public class JSONEditor extends JPanel implements ActionListener {
             returnFalse = false;
             missing.add("no set name argument");
         }
-        if (beginningCharIndex < 0) {
+        if ((beginningCharIndex == -1) && restrict) {
+            returnFalse = false;
+            missing.add("zero character index");
+        } else if ((beginningCharIndex < 0) && restrict) {
             returnFalse = false;
             missing.add("negative chararacter index");
+        }
+        if ((beginningCharIndex > maxChar) && restrict) {
+            returnFalse = false;
+            missing.add("beginning character index is greater than the maximum characters in an answer.");
         }
         if (numAnswers != numQuestions) {
             returnFalse = false;

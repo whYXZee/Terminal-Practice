@@ -46,7 +46,8 @@ public class JSONCreator extends JPanel implements ActionListener {
     // Labels
     JLabel subjectLabel = new JLabel("What is the name of the subject?");
     JLabel setLabel = new JLabel("What is the name of the set?");
-    JLabel charIndexLabel = new JLabel("Which character would you like to check with the restriction? [starting at 0]");
+    JLabel charIndexLabel = new JLabel(
+            "Which character (including spaces) would you like to check for the restriction?");
     JLabel restrictLabel = new JLabel("Would you like to add the ability to select what letters should be practiced?");
 
     // Text fields
@@ -65,7 +66,10 @@ public class JSONCreator extends JPanel implements ActionListener {
     JRadioButton noRadioButton = new JRadioButton("No");
     JRadioButton yesRadioButton = new JRadioButton("Yes");
 
-    JScrollPane scrollPane = new JScrollPane();
+    // Panels
+    JPanel restrictionButtons = new JPanel();
+
+    GridBagConstraints restrictGrid = new GridBagConstraints();
 
     public JSONCreator() throws InterruptedException {
         // Resetting the values of each text
@@ -84,6 +88,12 @@ public class JSONCreator extends JPanel implements ActionListener {
         grid.gridy = 0;
         grid.insets = new Insets(8, 8, 8, 8);
         grid.anchor = GridBagConstraints.EAST;
+
+        restrictionButtons.setLayout(new GridBagLayout());
+        restrictGrid.gridx = 0;
+        restrictGrid.gridy = 0;
+        restrictGrid.insets = new Insets(8, 8, 8, 8);
+        restrictGrid.anchor = GridBagConstraints.WEST;
 
         // Subject
         subjectLabel.setFont(AppConstants.smallFont);
@@ -123,18 +133,19 @@ public class JSONCreator extends JPanel implements ActionListener {
         noRadioButton.setFont(AppConstants.smallFont);
         buttonGroup.add(yesRadioButton);
         buttonGroup.add(noRadioButton);
-        this.add(yesRadioButton, grid);
-        grid.gridx++;
-        this.add(noRadioButton, grid);
+        restrictionButtons.add(yesRadioButton, restrictGrid);
+        restrictGrid.gridx++;
+        restrictionButtons.add(noRadioButton, restrictGrid);
+        this.add(restrictionButtons, grid);
         grid.gridy++;
-        grid.gridx -= 2;
+        grid.gridx--;
 
         // Restriction index
         charIndexLabel.setFont(AppConstants.smallFont);
         this.add(charIndexLabel, grid);
         grid.gridx++;
         charIndexField.setColumns(AppConstants.jsonColumns);
-        charIndexField.setValue(beginningCharIndex);
+        charIndexField.setValue(beginningCharIndex + 1);
         charIndexField.setFont(AppConstants.smallFont);
         this.add(charIndexField, grid);
         grid.gridy++;
@@ -199,10 +210,13 @@ public class JSONCreator extends JPanel implements ActionListener {
 
         JOptionPane.showMessageDialog(AppConstants.frame,
                 "Terms:\n - Each question and answer are separated by a ';'\n - Multiple answers can be put by separating them with a ',' without spaces",
-                "Creator Information", JOptionPane.ERROR_MESSAGE);
+                "Creator Information", JOptionPane.INFORMATION_MESSAGE);
 
         display();
         while (loop) {
+            // From the charIndex
+            charIndexField.setEnabled(restrict);
+
             semaphore.acquire();
         }
     }
@@ -216,7 +230,7 @@ public class JSONCreator extends JPanel implements ActionListener {
             file = jsonName.getText();
             questions = questionBox.getText();
             answers = answerBox.getText();
-            beginningCharIndex = ((Number) charIndexField.getValue()).longValue();
+            beginningCharIndex = ((Number) charIndexField.getValue()).longValue() - 1;
 
             if (action.equals("back")) {
                 loop = false;
@@ -224,6 +238,8 @@ public class JSONCreator extends JPanel implements ActionListener {
                 AppConstants.semaphore.release();
             } else if (action.equals("yesRestrict") || (action.equals("noRestrict"))) {
                 restrict = !restrict;
+                beginningCharIndex = 0;
+                charIndexField.setValue(beginningCharIndex + 1);
             } else if (action.equals("done") && checkIfDone()) {
                 try {
                     JSONTools.createJSON();
@@ -245,7 +261,17 @@ public class JSONCreator extends JPanel implements ActionListener {
     private boolean checkIfDone() {
         // Updating values
         numQuestions = JSONTools.parseArrayList(questions).size();
-        numAnswers = JSONTools.parseArrayList(answers).size();
+
+        // Checking answers and index numbers
+        ArrayList<String> answerList = JSONTools.parseArrayList(answers);
+        numAnswers = answerList.size();
+        int maxChar = 0;
+        for (String i : answerList) {
+            int maxCharsInAnswer = new AnswerSet(i).maxCharactersInAnswer(maxChar);
+            if (maxCharsInAnswer > maxChar) {
+                maxChar = maxCharsInAnswer;
+            }
+        }
 
         // Setting vars
         boolean returnFalse = true;
@@ -260,9 +286,16 @@ public class JSONCreator extends JPanel implements ActionListener {
             returnFalse = false;
             missing.add("no set name argument");
         }
-        if (beginningCharIndex < 0) {
+        if ((beginningCharIndex == -1) && restrict) {
+            returnFalse = false;
+            missing.add("zero character index");
+        } else if ((beginningCharIndex < 0) && restrict) {
             returnFalse = false;
             missing.add("negative chararacter index");
+        }
+        if ((beginningCharIndex > maxChar) && restrict) {
+            returnFalse = false;
+            missing.add("beginning character index is greater than the maximum characters in an answer.");
         }
         if (file.equals("")) {
             returnFalse = false;

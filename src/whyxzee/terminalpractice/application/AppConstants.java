@@ -50,6 +50,7 @@ public class AppConstants {
     public static Dimension smallButtonDimension = new Dimension(10, 10);
     public static Dimension wideButtonDimension = new Dimension(10, 10);
     public static Dimension flashcardDimension = new Dimension(10, 10);
+    public static Dimension jsonDimension = new Dimension(10, 10);
 
     public enum Game {
         FLASHCARDS,
@@ -93,6 +94,7 @@ public class AppConstants {
         smallButtonDimension = new Dimension(width / 5, height / 15);
         wideButtonDimension = new Dimension(width / 2, height / 15);
         flashcardDimension = new Dimension((int) (width / 1.5), height / 2);
+        jsonDimension = new Dimension(width, height);
 
         // Declaring UI screens
         GoAgain loopQuestion = new GoAgain();
@@ -208,13 +210,13 @@ public class AppConstants {
     }
 
     private static String getRandomSplash() {
-        switch (new Random().nextInt(10) + 1) {
+        switch (new Random().nextInt(9) + 1) {
             case 1:
                 return "0 != 1, and 0! = 1"; // factorial & boolean algebra joke
             case 2:
                 return "Mitochondria is the powerhouse of the cell";
             case 3:
-                return "Sodium Bromide";
+                return "Sodium Bromide"; // NaBrO
             case 4:
                 return "1 + 1 = 10"; // binary joke
             case 5:
@@ -227,8 +229,6 @@ public class AppConstants {
                 return "21 P 2 = -34, trust"; // joke due to bit limits from originally using longs
             case 9:
                 return "SOH CAH TOA";
-            case 10:
-                return "Tu madre";
             default:
                 return "";
         }

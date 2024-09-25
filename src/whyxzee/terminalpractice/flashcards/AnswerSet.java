@@ -119,6 +119,19 @@ public class AnswerSet {
         return answerSet.size();
     }
 
+    /**
+     * 
+     */
+    public int maxCharactersInAnswer(int maxChars) {
+        for (String i : answerSet) {
+            int charsInAnswer = i.toCharArray().length - 1;
+            if (charsInAnswer > maxChars) {
+                maxChars = charsInAnswer;
+            }
+        }
+        return maxChars;
+    }
+
     @Override
     public String toString() {
         String output = "";

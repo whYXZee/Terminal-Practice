@@ -56,6 +56,7 @@ public class RunDrillsUI extends JPanel implements ActionListener {
         if (AppConstants.goal > totalAnswers) {
             AppConstants.goal = totalAnswers;
         }
+
         for (String i : shuffled) {
             this.answers = new AnswerSet(terms.get(i));
             if (answers.answerIsAllowed(bannedLetters, (int) beginCharIndex)) {
