@@ -23,7 +23,12 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 public class SubjectUI extends JPanel implements ActionListener {
+    // Vars
     List<JButton> buttonList = new ArrayList<JButton>();
+
+    // UI Components
+    JLabel subjectLabel = new JLabel("Choose a subject:");
+    JButton backButton = new JButton("Go Back");
 
     public SubjectUI(Set<String> inputSet) {
 
@@ -44,7 +49,6 @@ public class SubjectUI extends JPanel implements ActionListener {
             buttonList.add(new JButton(AppConstants.capitalize(i)));
         }
 
-        JLabel subjectLabel = new JLabel("Choose a subject:");
         subjectLabel.setFont(AppConstants.bigFont);
         this.add(subjectLabel, grid);
         grid.gridy++;
@@ -61,7 +65,6 @@ public class SubjectUI extends JPanel implements ActionListener {
         }
 
         // Back button
-        JButton backButton = new JButton("Go Back");
         backButton.addActionListener(this);
         backButton.setActionCommand("back");
         backButton.setFont(AppConstants.smallFont);
@@ -111,5 +114,53 @@ public class SubjectUI extends JPanel implements ActionListener {
         AppConstants.frame.setContentPane(new JScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
         AppConstants.frame.setVisible(true);
+    }
+
+    /**
+     * Resizes the components in a SubjectUI.
+     */
+    public void resize() {
+        for (JButton i : buttonList) {
+            subjectLabel.setFont(AppConstants.bigFont);
+            i.setFont(AppConstants.medFont);
+            i.setPreferredSize(AppConstants.wideButtonDimension);
+        }
+        backButton.setFont(AppConstants.smallFont);
+    }
+}
+
+// fix later
+class SubjectDaemon extends Thread {
+    SubjectUI ui;
+
+    public SubjectDaemon(SubjectUI ui) {
+        super("SubjectDaemon");
+        this.ui = ui;
+    }
+
+    public void run() {
+        boolean shouldRun = true;
+        while (shouldRun) {
+            switch (AppConstants.gameEnum) {
+                case FLASHCARDS:
+                    ui.resize();
+                    break;
+                case DRILLS:
+                    ui.resize();
+                    break;
+                case JSON_EDITOR:
+                    ui.resize();
+                    break;
+
+                case CUSTOM_FLASHCARDS:
+                    ui.resize();
+                    break;
+                case CUSTOM_DRILLS:
+                    ui.resize();
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }

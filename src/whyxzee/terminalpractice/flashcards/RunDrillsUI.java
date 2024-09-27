@@ -21,20 +21,24 @@ import javax.swing.JTextField;
 import whyxzee.terminalpractice.application.AppConstants;
 
 public class RunDrillsUI extends JPanel implements ActionListener {
+    DrillsDaemon daemon;
+
     // UI constants
     int correct = 0;
     int termsCompleted = 0;
     AnswerSet answers;
     String response;
-
     Semaphore drillSemaphore = new Semaphore(0);
-    JLabel questionTracker;
-    JLabel[] questions;
+    boolean shouldBreak = false;
+    boolean buffer = false;
+
+    // UI components
+    JLabel questionTracker = new JLabel("");
+    JLabel[] questions = {};
+    JButton endButton = new JButton("End practice");
     JTextField textField = new JTextField();
     public JLabel correctIncorrect = new JLabel();
     GridBagConstraints grid = new GridBagConstraints();
-    boolean shouldBreak = false;
-    boolean buffer = false;
 
     public RunDrillsUI(HashMap<String, String> terms, ArrayList<String> bannedLetters, long beginCharIndex)
             throws InterruptedException {
@@ -57,6 +61,10 @@ public class RunDrillsUI extends JPanel implements ActionListener {
             AppConstants.goal = totalAnswers;
         }
 
+        daemon = new DrillsDaemon(this);
+        daemon.setDaemon(true);
+        daemon.start();
+
         for (String i : shuffled) {
             this.answers = new AnswerSet(terms.get(i));
             if (answers.answerIsAllowed(bannedLetters, (int) beginCharIndex)) {
@@ -70,11 +78,10 @@ public class RunDrillsUI extends JPanel implements ActionListener {
                 // Answer box
                 textField = new JTextField();
                 textField.addActionListener(this);
-                textField.setColumns(AppConstants.answerColumns);
                 textField.setHorizontalAlignment(JTextField.CENTER);
+                textField.setColumns(AppConstants.answerColumns);
                 textField.setFont(AppConstants.bigFont);
 
-                JButton endButton = new JButton("End practice");
                 endButton.addActionListener(this);
                 endButton.setActionCommand("end");
                 endButton.setPreferredSize(AppConstants.smallButtonDimension);
@@ -165,5 +172,44 @@ public class RunDrillsUI extends JPanel implements ActionListener {
         AppConstants.frame.setContentPane(this);
         AppConstants.frame.setVisible(true);
         textField.requestFocusInWindow();
+    }
+
+    public void resize() {
+        questionTracker.setFont(AppConstants.biggerFont);
+        for (JLabel label : questions) {
+            label.setFont(AppConstants.bigFont);
+        }
+
+        textField.setColumns(AppConstants.answerColumns);
+        textField.setFont(AppConstants.bigFont);
+
+        endButton.setPreferredSize(AppConstants.smallButtonDimension);
+        endButton.setFont(AppConstants.medFont);
+    }
+}
+
+class DrillsDaemon extends Thread {
+    private RunDrillsUI ui;
+
+    public DrillsDaemon(RunDrillsUI ui) {
+        super("DrillsFrameDaemon");
+        this.ui = ui;
+    }
+
+    public void run() {
+        boolean shouldRun = true;
+        while (shouldRun) {
+            switch (AppConstants.gameEnum) {
+                case DRILLS:
+                    ui.resize();
+                    break;
+                case CUSTOM_DRILLS:
+                    ui.resize();
+                    break;
+                default:
+                    shouldRun = false;
+                    break;
+            }
+        }
     }
 }

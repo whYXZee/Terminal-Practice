@@ -8,6 +8,7 @@ import java.awt.Insets;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import whyxzee.terminalpractice.flashcards.FlashcardConstants;
@@ -18,8 +19,14 @@ import java.util.HashSet;
 import java.util.concurrent.Semaphore;
 
 public class GameSelection extends JPanel implements ActionListener {
-    boolean isCustomAvailable;
+    GameDaemon daemon;
     Semaphore gameSemaphore = new Semaphore(0);
+    // Vars
+    boolean isCustomAvailable;
+
+    // Labels
+    JLabel menuLabel = new JLabel("Terminal Practice");
+    JLabel splashText = new JLabel(AppConstants.splash);
 
     // Button Constants
     JButton flashcardButton = new JButton("Flashcards");
@@ -35,11 +42,16 @@ public class GameSelection extends JPanel implements ActionListener {
     JButton[] buttonArray = { flashcardButton, drillsButton, scenariosButton, customFlashcardsButton,
             customDrillsButton, creatorButton, editorButton, shareButton, importButton, removeButton };
 
+    // Panels
+    JPanel buttonPanel = new JPanel();
+
     public GameSelection(boolean isCustomAvailable) {
         this.isCustomAvailable = isCustomAvailable;
 
         // Layout
         this.setLayout(new GridBagLayout());
+
+        buttonPanel.setLayout(new GridBagLayout());
         GridBagConstraints grid = new GridBagConstraints();
         grid.gridx = 0;
         grid.gridy = 0;
@@ -54,7 +66,7 @@ public class GameSelection extends JPanel implements ActionListener {
             i.setPreferredSize(AppConstants.smallButtonDimension);
             i.setFont(AppConstants.medFont);
 
-            this.add(i, grid);
+            buttonPanel.add(i, grid);
             grid.gridy++;
 
             tick++;
@@ -121,6 +133,20 @@ public class GameSelection extends JPanel implements ActionListener {
         removeButton.setEnabled(false);
         removeButton.setToolTipText("Coming soon!");
 
+        // Labels
+        menuLabel.setFont(AppConstants.biggerFont);
+        splashText.setFont(AppConstants.medFont);
+
+        // Adding everything
+        grid.gridy = 0;
+        grid.gridx = 0;
+
+        this.add(menuLabel, grid);
+        grid.gridy++;
+        this.add(splashText, grid);
+        grid.gridy++;
+        this.add(buttonPanel, grid);
+
     }
 
     @Override
@@ -165,5 +191,42 @@ public class GameSelection extends JPanel implements ActionListener {
     public void display() {
         AppConstants.frame.setContentPane(this);
         AppConstants.frame.setVisible(true);
+
+        daemon = new GameDaemon(this);
+        daemon.setDaemon(true);
+        daemon.start();
+    }
+
+    public void resize() {
+        for (JButton i : buttonArray) {
+            i.setFont(AppConstants.medFont);
+            i.setPreferredSize(AppConstants.smallButtonDimension);
+        }
+
+        menuLabel.setFont(AppConstants.biggerFont);
+        splashText.setFont(AppConstants.medFont);
+    }
+}
+
+class GameDaemon extends Thread {
+    private GameSelection ui;
+
+    public GameDaemon(GameSelection ui) {
+        super("MenuFrameDaemon");
+        this.ui = ui;
+    }
+
+    public void run() {
+        boolean shouldRun = true;
+        while (shouldRun) {
+            switch (AppConstants.gameEnum) {
+                case NONE:
+                    ui.resize();
+                    break;
+                default:
+                    shouldRun = false;
+                    break;
+            }
+        }
     }
 }

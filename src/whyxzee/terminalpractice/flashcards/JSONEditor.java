@@ -3,6 +3,7 @@ package whyxzee.terminalpractice.flashcards;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.GridBagLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
@@ -36,6 +37,7 @@ import java.util.concurrent.Semaphore;
 import whyxzee.terminalpractice.application.AppConstants;
 
 public class JSONEditor extends JPanel implements ActionListener {
+    JSONEditorDaemon daemon;
     Semaphore semaphore = new Semaphore(0);
 
     public static boolean restrict = false;
@@ -49,21 +51,22 @@ public class JSONEditor extends JPanel implements ActionListener {
     public static String answers = "";
     File file = new File("./src/whyxzee/terminalpractice/flashcards/custom/.gitkeep");
 
-    GridBagConstraints grid = new GridBagConstraints();
-
     // Labels
+    JLabel gameLabel = new JLabel("Set Editor");
     JLabel subjectLabel = new JLabel("What is the name of the subject?");
     JLabel setLabel = new JLabel("What is the name of the set?");
     JLabel restrictLabel = new JLabel("Would you like to add the ability to select what should be chosen?");
     JLabel charIndexLabel = new JLabel(
             "Which character (including spaces) would you like to check for the restriction?");
+    JLabel questionLabel = new JLabel("Questions:");
+    JLabel answerLabel = new JLabel("Answers:");
 
     // Text fields
     JTextField subjectText = new JTextField();
     JTextField setText = new JTextField();
     JFormattedTextField charIndexField = new JFormattedTextField(NumberFormat.getNumberInstance());
-    JTextArea questionBox = new JTextArea(10, AppConstants.jsonColumns);
-    JTextArea answerBox = new JTextArea(10, AppConstants.jsonColumns);
+    JTextArea questionBox = new JTextArea(10, JSONTools.jsonColumns);
+    JTextArea answerBox = new JTextArea(10, JSONTools.jsonColumns);
 
     // Buttons
     JButton addTerm = new JButton("Add Term");
@@ -73,7 +76,14 @@ public class JSONEditor extends JPanel implements ActionListener {
     JRadioButton noRadioButton = new JRadioButton("No");
     JRadioButton yesRadioButton = new JRadioButton("Yes");
 
-    JScrollPane scrollPane = new JScrollPane();
+    // Panels
+    JPanel restrictionButtons = new JPanel();
+    JPanel optionsPanel = new JPanel();
+    JPanel buttonsPanel = new JPanel();
+
+    GridBagConstraints grid = new GridBagConstraints();
+    GridBagConstraints optionsGrid = new GridBagConstraints();
+    GridBagConstraints restrictGrid = new GridBagConstraints();
 
     public JSONEditor(File file) throws InterruptedException {
         this.file = file;
@@ -82,11 +92,28 @@ public class JSONEditor extends JPanel implements ActionListener {
         grid.gridx = 0;
         grid.gridy = 0;
         grid.insets = new Insets(8, 8, 8, 8);
-        grid.anchor = GridBagConstraints.EAST;
+        grid.anchor = GridBagConstraints.CENTER;
+
+        restrictionButtons.setLayout(new GridBagLayout());
+        restrictGrid.gridx = 0;
+        restrictGrid.gridy = 0;
+        restrictGrid.insets = new Insets(8, 8, 8, 8);
+        restrictGrid.anchor = GridBagConstraints.WEST;
+
+        optionsPanel.setLayout(new GridBagLayout());
+        optionsPanel.setPreferredSize(JSONTools.jsonDimension);
+        optionsGrid.gridx = 0;
+        optionsGrid.gridy = 0;
+        optionsGrid.insets = new Insets(8, 8, 8, 8);
+        optionsGrid.anchor = GridBagConstraints.EAST;
 
         // Getting the variables
         try {
             JSONObject jsonO = (JSONObject) new JSONParser().parse(new FileReader(file));
+
+            gameLabel.setFont(AppConstants.biggerFont);
+            this.add(gameLabel, grid);
+            grid.gridy++;
 
             // Setting the variables
             subject = (String) jsonO.get("subject");
@@ -104,30 +131,30 @@ public class JSONEditor extends JPanel implements ActionListener {
 
             // Subject
             subjectLabel.setFont(AppConstants.smallFont);
-            this.add(subjectLabel, grid);
-            grid.gridx++;
+            optionsPanel.add(subjectLabel, optionsGrid);
+            optionsGrid.gridx++;
             subjectText.setFont(AppConstants.smallFont);
-            subjectText.setColumns(AppConstants.jsonColumns);
+            subjectText.setColumns(JSONTools.jsonColumns);
             subjectText.setText(subject);
-            this.add(subjectText, grid);
-            grid.gridy++;
-            grid.gridx--;
+            optionsPanel.add(subjectText, optionsGrid);
+            optionsGrid.gridy++;
+            optionsGrid.gridx--;
 
             // Set name
             setLabel.setFont(AppConstants.smallFont);
-            this.add(setLabel, grid);
-            grid.gridx++;
-            setText.setColumns(AppConstants.jsonColumns);
+            optionsPanel.add(setLabel, optionsGrid);
+            optionsGrid.gridx++;
+            setText.setColumns(JSONTools.jsonColumns);
             setText.setText(set);
             setText.setFont(AppConstants.smallFont);
-            this.add(setText, grid);
-            grid.gridy++;
-            grid.gridx--;
+            optionsPanel.add(setText, optionsGrid);
+            optionsGrid.gridy++;
+            optionsGrid.gridx--;
 
             // Restriction
             restrictLabel.setFont(AppConstants.smallFont);
-            this.add(restrictLabel, grid);
-            grid.gridx++;
+            optionsPanel.add(restrictLabel, optionsGrid);
+            optionsGrid.gridx++;
             yesRadioButton.addActionListener(this);
             yesRadioButton.setActionCommand("yesRestrict");
             yesRadioButton.setSelected(restrict);
@@ -138,57 +165,62 @@ public class JSONEditor extends JPanel implements ActionListener {
             noRadioButton.setFont(AppConstants.smallFont);
             buttonGroup.add(yesRadioButton);
             buttonGroup.add(noRadioButton);
-            this.add(yesRadioButton, grid);
-            grid.gridx++;
-            this.add(noRadioButton, grid);
-            grid.gridy++;
-            grid.gridx -= 2;
+            restrictionButtons.add(yesRadioButton, restrictGrid);
+            restrictGrid.gridx++;
+            restrictionButtons.add(noRadioButton, restrictGrid);
+            optionsPanel.add(restrictionButtons, optionsGrid);
+            optionsGrid.gridy++;
+            optionsGrid.gridx--;
 
             // Restriction index
             charIndexLabel.setFont(AppConstants.smallFont);
-            this.add(charIndexLabel, grid);
-            grid.gridx++;
-            charIndexField.setColumns(AppConstants.jsonColumns);
+            optionsPanel.add(charIndexLabel, optionsGrid);
+            optionsGrid.gridx++;
+            charIndexField.setColumns(JSONTools.jsonColumns);
             charIndexField.setValue(beginningCharIndex + 1);
             charIndexField.setFont(AppConstants.smallFont);
-            this.add(charIndexField, grid);
-            grid.gridy++;
-            grid.gridx--;
+            optionsPanel.add(charIndexField, optionsGrid);
+            optionsGrid.gridy++;
+            optionsGrid.gridx--;
 
             // Questions and answers
-            JLabel questionLabel = new JLabel("Questions:");
             questionLabel.setFont(AppConstants.smallFont);
-            this.add(questionLabel, grid);
-            grid.gridx++;
-            JLabel answerLabel = new JLabel("Answers:");
+            optionsPanel.add(questionLabel, optionsGrid);
+            optionsGrid.gridx++;
             answerLabel.setFont(AppConstants.smallFont);
-            this.add(answerLabel, grid);
-            grid.gridy++;
-            grid.gridx--;
+            optionsPanel.add(answerLabel, optionsGrid);
+            optionsGrid.gridy++;
+            optionsGrid.gridx--;
 
             JScrollPane questionScrollPane = new JScrollPane(questionBox, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                     JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            this.add(questionScrollPane, grid);
+            optionsPanel.add(questionScrollPane, optionsGrid);
             questionBox.setText(questions);
             questionBox.setFont(AppConstants.smallFont);
-            grid.gridx++;
+            optionsGrid.gridx++;
             JScrollPane answerScrollPane = new JScrollPane(answerBox, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                     JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            this.add(answerScrollPane, grid);
+            optionsPanel.add(answerScrollPane, optionsGrid);
             answerBox.setText(answers);
             answerBox.setFont(AppConstants.smallFont);
+            optionsGrid.gridy++;
+            optionsGrid.gridx--;
+
+            this.add(optionsPanel, grid);
             grid.gridy++;
-            grid.gridx--;
+
+            optionsGrid.gridy = 0;
+            optionsGrid.gridx = 0;
 
             // Creating "done" button
             doneButton.setActionCommand("done");
+            doneButton.addActionListener(this);
             doneButton.setMnemonic(KeyEvent.VK_D);
             doneButton.setPreferredSize(AppConstants.smallButtonDimension);
             doneButton.setFont(AppConstants.medFont);
             doneButton.setToolTipText("Answer questions regarding pre-made flashcard content.");
-            doneButton.addActionListener(this);
-            this.add(doneButton, grid);
-            grid.gridy++;
+            buttonsPanel.add(doneButton, optionsGrid);
+            optionsGrid.gridx++;
 
             // Back button
             backButton.setActionCommand("back");
@@ -197,14 +229,21 @@ public class JSONEditor extends JPanel implements ActionListener {
             backButton.setPreferredSize(AppConstants.smallButtonDimension);
             backButton.setFont(AppConstants.medFont);
             backButton.setToolTipText("Go back to the menu.");
-            this.add(backButton, grid);
-            grid.gridy++;
+            buttonsPanel.add(backButton, optionsGrid);
+            optionsGrid.gridx++;
+
+            this.add(buttonsPanel, grid);
 
             JOptionPane.showMessageDialog(AppConstants.frame,
                     "Terms:\n - Each question and answer are separated by a ';'\n - Multiple answers can be put by separating them with a ',' without spaces",
                     "Editor Information", JOptionPane.INFORMATION_MESSAGE);
 
             display();
+
+            daemon = new JSONEditorDaemon(this);
+            daemon.setDaemon(true);
+            daemon.start();
+
             while (loop) {
                 // From the charIndex
                 charIndexField.setEnabled(restrict);
@@ -301,5 +340,69 @@ public class JSONEditor extends JPanel implements ActionListener {
                     "Error: " + missing + ".", "Missing arguments", JOptionPane.ERROR_MESSAGE);
         }
         return returnFalse;
+    }
+
+    /**
+     * Resizes the sizes of components.
+     */
+    public void resize() {
+        buttonsPanel.setPreferredSize(new Dimension(AppConstants.flashcardDimension.width,
+                AppConstants.smallButtonDimension.height + 16));
+        optionsPanel.setPreferredSize(JSONTools.jsonDimension);
+
+        gameLabel.setFont(AppConstants.biggerFont);
+
+        subjectLabel.setFont(AppConstants.smallFont);
+        subjectText.setColumns(JSONTools.jsonColumns);
+        subjectText.setFont(AppConstants.smallFont);
+
+        setLabel.setFont(AppConstants.smallFont);
+        setText.setColumns(JSONTools.jsonColumns);
+        setText.setFont(AppConstants.smallFont);
+
+        restrictLabel.setFont(AppConstants.smallFont);
+        yesRadioButton.setFont(AppConstants.smallFont);
+        noRadioButton.setFont(AppConstants.smallFont);
+
+        charIndexLabel.setFont(AppConstants.smallFont);
+        charIndexField.setColumns(JSONTools.jsonColumns);
+        charIndexField.setFont(AppConstants.smallFont);
+
+        questionLabel.setFont(AppConstants.smallFont);
+        answerLabel.setFont(AppConstants.smallFont);
+        questionBox.setFont(AppConstants.smallFont);
+        answerBox.setFont(AppConstants.smallFont);
+
+        doneButton.setPreferredSize(AppConstants.smallButtonDimension);
+        doneButton.setFont(AppConstants.medFont);
+
+        backButton.setPreferredSize(AppConstants.smallButtonDimension);
+        backButton.setFont(AppConstants.medFont);
+    }
+}
+
+/**
+ * The custom daemon for the JSON Creator.
+ */
+class JSONEditorDaemon extends Thread {
+    private JSONEditor ui;
+
+    public JSONEditorDaemon(JSONEditor ui) {
+        super("EditorFrameDaemon");
+        this.ui = ui;
+    }
+
+    public void run() {
+        boolean shouldRun = true;
+        while (shouldRun) {
+            switch (AppConstants.gameEnum) {
+                case JSON_EDITOR:
+                    ui.resize();
+                    break;
+                default:
+                    shouldRun = false;
+                    break;
+            }
+        }
     }
 }

@@ -1,10 +1,14 @@
 package whyxzee.terminalpractice.flashcards;
 
+import java.awt.Dimension;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+
+// import javax.swing.
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,8 +19,16 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import whyxzee.terminalpractice.application.AppConstants;
+
 @SuppressWarnings("unchecked") // cuz I don't wanna deal w/ warnings
 public class JSONTools {
+    // Vars
+    public static Dimension jsonRestrictDimension = new Dimension(10, 10);
+    public static Dimension jsonDimension = new Dimension(10, 10);
+    public static int jsonColumns = 10;
+    public static int jsonRows = 10;
+
     /**
      * Creates a JSON of the flashcard set.
      * 
@@ -37,11 +49,6 @@ public class JSONTools {
         ArrayList<String> answers = parseArrayList(JSONCreator.answers);
         Map<String, String> map = new HashMap<String, String>();
         int termSize = questions.size();
-        // if (termSize < answers.size()) {
-        // termSize = answers.size();
-        // }
-        // questions = equalizeTerms(questions, termSize);
-        // answers = equalizeTerms(answers, termSize);
         for (int i = 0; i < termSize; i++) {
             map.put(questions.get(i), answers.get(i));
         }
@@ -315,5 +322,12 @@ public class JSONTools {
             output = output + map.get(i) + ";\n";
         }
         return output;
+    }
+
+    public static void resize() {
+        jsonRestrictDimension = new Dimension(jsonColumns, AppConstants.height / 15);
+        jsonDimension = new Dimension((int) (AppConstants.width / 1.25), (int) (AppConstants.height / 1.4));
+        jsonColumns = AppConstants.width / 50;
+        jsonRows = AppConstants.height / 150;
     }
 }

@@ -3,6 +3,9 @@ package whyxzee.terminalpractice.application;
 import whyxzee.terminalpractice.flashcards.*;
 import whyxzee.terminalpractice.scenarios.ScenarioConstants;
 
+import java.awt.Dimension;
+import java.awt.Font;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -14,9 +17,6 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
-
-import java.awt.Font;
-import java.awt.Dimension;
 
 public class AppConstants {
     //
@@ -39,18 +39,17 @@ public class AppConstants {
 
     static String splash = getRandomSplash();
     public static JFrame frame = new JFrame("Terminal Practice: " + splash);
-    // public static JScrollPane scroll = new JScrollPane();
 
     public static Font biggerFont = new Font("Arial", Font.PLAIN, 10);
     public static Font bigFont = new Font("Arial", Font.PLAIN, 10);
     public static Font medFont = new Font("Arial", Font.PLAIN, 10);
     public static Font smallFont = new Font("Arial", Font.PLAIN, 10);
     public static int answerColumns = 10;
-    public static int jsonColumns = 10;
+    public static int width = 10;
+    public static int height = 10;
     public static Dimension smallButtonDimension = new Dimension(10, 10);
     public static Dimension wideButtonDimension = new Dimension(10, 10);
     public static Dimension flashcardDimension = new Dimension(10, 10);
-    public static Dimension jsonDimension = new Dimension(10, 10);
 
     public enum Game {
         FLASHCARDS,
@@ -78,26 +77,29 @@ public class AppConstants {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setVisible(true);
-        frame.setResizable(false);
+        frame.setResizable(true);
 
         // Setting the UI
-        int width = frame.getBounds().width;
-        int height = frame.getBounds().height;
+        width = frame.getBounds().width;
+        height = frame.getBounds().height;
 
         biggerFont = new Font("Arial", Font.PLAIN, width / 20); // standard
         bigFont = new Font("Arial", Font.PLAIN, width / 40);
         medFont = new Font("Arial", Font.PLAIN, width / 60);
         smallFont = new Font("Arial", Font.PLAIN, width / 80);
-        answerColumns = width / 100;
-        jsonColumns = width / 50;
+        answerColumns = width / 75;
 
         smallButtonDimension = new Dimension(width / 5, height / 15);
         wideButtonDimension = new Dimension(width / 2, height / 15);
-        flashcardDimension = new Dimension((int) (width / 1.5), height / 2);
-        jsonDimension = new Dimension(width, height);
 
         // Declaring UI screens
         GoAgain loopQuestion = new GoAgain();
+
+        // Daemon thread
+        FrameDaemon frameDaemon = new FrameDaemon();
+        frameDaemon.setDaemon(true);
+        frameDaemon.start();
+
         while (run) {
             switch (gameEnum) {
                 case FLASHCARDS:
@@ -210,7 +212,7 @@ public class AppConstants {
     }
 
     private static String getRandomSplash() {
-        switch (new Random().nextInt(9) + 1) {
+        switch (new Random().nextInt(10) + 1) {
             case 1:
                 return "0 != 1, and 0! = 1"; // factorial & boolean algebra joke
             case 2:
@@ -229,6 +231,8 @@ public class AppConstants {
                 return "21 P 2 = -34, trust"; // joke due to bit limits from originally using longs
             case 9:
                 return "SOH CAH TOA";
+            case 10:
+                return "ihatebeans"; // reference to the json used to test a lot of things
             default:
                 return "";
         }
@@ -245,5 +249,32 @@ public class AppConstants {
 
         }
         return false;
+    }
+
+    public static void resize() {
+        biggerFont = new Font("Arial", Font.PLAIN, width / 20); // standard
+        bigFont = new Font("Arial", Font.PLAIN, width / 40);
+        medFont = new Font("Arial", Font.PLAIN, width / 60);
+        smallFont = new Font("Arial", Font.PLAIN, width / 80);
+        answerColumns = width / 75;
+
+        smallButtonDimension = new Dimension(width / 5, height / 15);
+        wideButtonDimension = new Dimension(width / 2, height / 15);
+        flashcardDimension = new Dimension((int) (width / 1.25), height / 2);
+    }
+}
+
+class FrameDaemon extends Thread {
+    public FrameDaemon() {
+        super("FrameDaemon");
+    }
+
+    public void run() {
+        while (true) {
+            AppConstants.width = AppConstants.frame.getBounds().width;
+            AppConstants.height = AppConstants.frame.getBounds().height;
+            AppConstants.resize();
+            JSONTools.resize();
+        }
     }
 }

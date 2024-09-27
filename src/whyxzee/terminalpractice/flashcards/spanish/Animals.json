@@ -34,7 +34,18 @@
     "What is \"the shark\" in Spanish?": "el tiburón",
     "What is \"the whale\" in Spanish?": "la ballena",
     "What is \"the elephant \" in Spanish?": "el elefante,la elefanta",
-    "What is \"the crab\" in Spanish?": "el cangrejo"
+    "What is \"the crab\" in Spanish?": "el cangrejo",
+
+    "What is \"the snake\" in Spanish?": "la serpiente,la víbora,la culebra",
+    "What is \"the rat\" in Spanish?": "la rata",
+    "What is \"the mouse\" in Spanish?": "el ratón,la ratona",
+    "What is \"the scorpion\" in Spanish?": "el escorpión",
+    "What is \"the bat\" in Spanish?": "el murciélago",
+
+    "What is \"the ant\" in Spanish?": "la hormiga",
+    "What is \"the bee\" in Spanish?": "la abeja",
+    "What is \"the wasp\" in Spanish?": "la avispa",
+    "What is \"the lightning bug\" or \"the firefly\" in Spanish?": "la luciérnaga,el lampírido"
   },
   "subject": "spanish"
 }
