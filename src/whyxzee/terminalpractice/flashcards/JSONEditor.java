@@ -37,7 +37,7 @@ import java.util.concurrent.Semaphore;
 import whyxzee.terminalpractice.application.AppConstants;
 
 public class JSONEditor extends JPanel implements ActionListener {
-    JSONEditorDaemon daemon;
+    // JSONEditorDaemon daemon;
     Semaphore semaphore = new Semaphore(0);
 
     public static boolean restrict = false;
@@ -240,9 +240,9 @@ public class JSONEditor extends JPanel implements ActionListener {
 
             display();
 
-            daemon = new JSONEditorDaemon(this);
-            daemon.setDaemon(true);
-            daemon.start();
+            // daemon = new JSONEditorDaemon(this);
+            // daemon.setDaemon(true);
+            // daemon.start();
 
             while (loop) {
                 // From the charIndex

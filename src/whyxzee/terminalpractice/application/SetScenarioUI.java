@@ -1,31 +1,37 @@
 package whyxzee.terminalpractice.application;
 
+import whyxzee.terminalpractice.flashcards.FlashcardConstants;
+import whyxzee.terminalpractice.flashcards.JSONTools;
+
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-// import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import whyxzee.terminalpractice.flashcards.FlashcardConstants;
-import whyxzee.terminalpractice.flashcards.JSONTools;
-
 import java.util.ArrayList;
 import java.util.Collections;
-// import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-
 public class SetScenarioUI extends JPanel implements ActionListener {
+    private static SetScenarioDaemon daemon;
+
+    // Vars
+    public static boolean activeScreen = false;
     List<JButton> buttonList = new ArrayList<JButton>();
 
+    // UI Components
+    JLabel setLabel = new JLabel();
+    JButton backButton = new JButton("Go Back");
+
     public SetScenarioUI(Set<String> inputSet) {
+        // Layout
         this.setLayout(new GridBagLayout());
         GridBagConstraints grid = new GridBagConstraints();
         grid.gridx = 0;
@@ -42,7 +48,6 @@ public class SetScenarioUI extends JPanel implements ActionListener {
             buttonList.add(new JButton(AppConstants.capitalize(i)));
         }
 
-        JLabel setLabel = new JLabel();
         switch (AppConstants.gameEnum) {
             case SCENARIOS:
                 setLabel = new JLabel("Choose a scenario:");
@@ -69,7 +74,6 @@ public class SetScenarioUI extends JPanel implements ActionListener {
         }
 
         // Back button
-        JButton backButton = new JButton("Go Back");
         backButton.setActionCommand("back");
         backButton.addActionListener(this);
         backButton.setFont(AppConstants.smallFont);
@@ -78,6 +82,7 @@ public class SetScenarioUI extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        activeScreen = false;
         if (e.getActionCommand().equals("back")) {
             new SubjectUI(AppConstants.subjectSet).display();
         } else {
@@ -117,13 +122,46 @@ public class SetScenarioUI extends JPanel implements ActionListener {
                 default:
                     break;
             }
-
         }
     }
 
     public void display() {
+        activeScreen = true;
         AppConstants.frame.setContentPane(new JScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
         AppConstants.frame.setVisible(true);
+
+        daemon = new SetScenarioDaemon(this);
+        daemon.setDaemon(true);
+        daemon.start();
+    }
+
+    public void resize() {
+        setLabel.setFont(AppConstants.bigFont);
+        backButton.setFont(AppConstants.smallFont);
+
+        try {
+            for (JButton i : buttonList) {
+                i.setPreferredSize(AppConstants.wideButtonDimension);
+                i.setFont(AppConstants.medFont);
+            }
+        } catch (java.util.ConcurrentModificationException e) {
+
+        }
+    }
+}
+
+class SetScenarioDaemon extends Thread {
+    SetScenarioUI ui;
+
+    public SetScenarioDaemon(SetScenarioUI ui) {
+        super("SetScenarioDaemon");
+        this.ui = ui;
+    }
+
+    public void run() {
+        while (SetScenarioUI.activeScreen) {
+            ui.resize();
+        }
     }
 }

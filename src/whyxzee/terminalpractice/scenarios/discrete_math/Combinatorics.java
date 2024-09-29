@@ -7,33 +7,14 @@ import whyxzee.terminalpractice.scenarios.ExampleObjects;
 import whyxzee.terminalpractice.scenarios.ScenarioConstants;
 import whyxzee.terminalpractice.scenarios.ScenarioUI;
 
-import java.awt.Dimension;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-
 import java.math.BigInteger;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JOptionPane;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Combinatorics extends ScenarioUI implements ActionListener {
-    //
-    // General variables
-    //
-    boolean shouldBreak = false;
-    int correct = 0;
-    public String response = "";
-    static JLabel[] questions;
-    JTextField textField;
-    JLabel correctIncorrect = new JLabel();
+import javax.swing.JOptionPane;
 
+public class Combinatorics extends ScenarioUI {
     //
     // Scenario-specific variables
     //
@@ -60,98 +41,12 @@ public class Combinatorics extends ScenarioUI implements ActionListener {
     }
 
     public Combinatorics() throws InterruptedException {
-        // Layout
-        this.setLayout(new GridBagLayout());
-        correctIncorrect.setFont(AppConstants.biggerFont);
-
-        for (int i = 0; i < AppConstants.goal; i++) {
-            // Question tracker
-            JLabel questionTracker = new JLabel("Question " + (i + 1) + "/" + AppConstants.goal);
-            questionTracker.setFont(AppConstants.biggerFont);
-            this.add(questionTracker, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
-
-            // Question
-            randomize();
-            printQuestion();
-
-            // Answer box
-            textField = new JTextField();
-            textField.addActionListener(this);
-            textField.setColumns(AppConstants.answerColumns);
-            textField.setFont(AppConstants.smallFont);
-            textField.setHorizontalAlignment(JTextField.CENTER);
-            this.add(textField, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
-
-            // End button
-            JButton backButton = new JButton("End practice");
-            backButton.addActionListener(this);
-            backButton.setActionCommand("end");
-            backButton.setMnemonic(KeyEvent.VK_E);
-            backButton.setPreferredSize(AppConstants.smallButtonDimension);
-            backButton.setFont(AppConstants.medFont);
-            backButton.setToolTipText("End the drill early.");
-            this.add(backButton, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
-
-            // Display
-            display();
-            textField.requestFocusInWindow();
-            ScenarioConstants.scenarioSemaphore.acquire();
-
-            // Checking the input
-            try {
-                if (solve().equals(new BigInteger(response))) {
-                    correctIncorrect = new JLabel("Correct!");
-                    correctIncorrect.setFont(AppConstants.bigFont);
-                    this.add(correctIncorrect, ScenarioConstants.grid);
-                    correct++;
-
-                    display();
-                    Thread.sleep(2000);
-                } else if (shouldBreak) {
-                    break;
-                } else {
-                    correctIncorrect = new JLabel("Incorrect, the answer was: " + solve());
-                    correctIncorrect.setFont(AppConstants.bigFont);
-                    printHowTo();
-                    ScenarioConstants.scenarioSemaphore.acquire();
-                }
-            } catch (NumberFormatException error) {
-                if (shouldBreak) {
-                    break;
-                } else {
-                    correctIncorrect = new JLabel("Incorrect, the answer was: " + solve());
-                    correctIncorrect.setFont(AppConstants.bigFont);
-                    printHowTo();
-                    ScenarioConstants.scenarioSemaphore.acquire();
-                }
-            }
-            this.removeAll();
-        }
-        JOptionPane.showMessageDialog(AppConstants.frame, "You got " + correct + " correct!", "Scenario Completion",
-                JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("end")) {
-            shouldBreak = true;
-        } else if (e.getActionCommand().equals("move on")) {
-
-        } else {
-            this.response = textField.getText();
-        }
-        ScenarioConstants.scenarioSemaphore.release();
-    }
-
-    /**
-     * Randomizes the combinatorics problem.
-     */
-    private static void randomize() {
+    public void randomize() {
         object.randomizeObject();
-        switch (6) {
+        switch (0) {
             case 0:
                 problemType = ProblemType.PERMUTATION_ALLOCATION;
                 do {
@@ -248,23 +143,18 @@ public class Combinatorics extends ScenarioUI implements ActionListener {
         }
     }
 
-    /**
-     * Solves the combinatoric problem.
-     * 
-     * @return the combinatoric as a {@code BigInteger}, as the problems can get
-     *         big.
-     */
-    private static BigInteger solve() {
+    @Override
+    public String solve() {
         BigInteger combination = BigInteger.valueOf(1);
         switch (problemType) {
             case PERMUTATION_ALLOCATION:
-                return DiscreteMath.permutation(n_1, r);
+                return DiscreteMath.permutation(n_1, r).toString();
             case PERMUTATION_GROUPED:
-                return DiscreteMath.factorial(n_1 - grouped + 1).multiply(DiscreteMath.factorial(grouped));
+                return DiscreteMath.factorial(n_1 - grouped + 1).multiply(DiscreteMath.factorial(grouped)).toString();
             case PERMUTATION_CIRCULAR:
-                return DiscreteMath.factorial(n_1 - 1);
+                return DiscreteMath.factorial(n_1 - 1).toString();
             case PERMUTATION_CLOCK_COUNTER_CLOCK:
-                return DiscreteMath.factorial(n_1 - 1).divide(BigInteger.valueOf(2));
+                return DiscreteMath.factorial(n_1 - 1).divide(BigInteger.valueOf(2)).toString();
             case PERMUTATION_GENERALIZED_TOTAL:
                 denominator = BigInteger.valueOf(1);
                 totalNumbers = 0;
@@ -272,10 +162,10 @@ public class Combinatorics extends ScenarioUI implements ActionListener {
                     totalNumbers += i;
                     denominator = denominator.multiply(DiscreteMath.factorial(i));
                 }
-                return DiscreteMath.factorial(totalNumbers).divide(denominator);
+                return DiscreteMath.factorial(totalNumbers).divide(denominator).toString();
 
             case COMBINATION_ALLOCATION:
-                return DiscreteMath.combination(n_1, r);
+                return DiscreteMath.combination(n_1, r).toString();
             case COMBINATION_GENERALIZATION_TOTAL:
                 totalNumbers = 0;
                 for (int i : groups) {
@@ -288,18 +178,16 @@ public class Combinatorics extends ScenarioUI implements ActionListener {
                     totalNumbers -= groups[i - 1];
                     System.out.println(i);
                 }
-                return DiscreteMath.factorial(totalNumbers).divide(denominator);
+                return DiscreteMath.factorial(totalNumbers).divide(denominator).toString();
 
             case PARTITION_ALLOCATION:
 
         }
-        return new BigInteger("1");
+        return "1";
     }
 
-    /**
-     * Prints the combinatoric question.
-     */
-    private void printQuestion() {
+    @Override
+    public void getQuestion() {
         switch (problemType) {
             case PERMUTATION_ALLOCATION:
                 switch (ScenarioConstants.rng.nextInt(2)) {
@@ -371,26 +259,10 @@ public class Combinatorics extends ScenarioUI implements ActionListener {
 
                 break;
         }
-        for (JLabel j : questions) {
-            j.setFont(AppConstants.medFont);
-            this.add(j, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
-        }
     }
 
-    /**
-     * Prints how to solve the combinatoric problem.
-     */
-    private void printHowTo() {
-        // Resetting the frame:
-        this.removeAll();
-        ScenarioConstants.grid.gridx = 0;
-        ScenarioConstants.grid.gridy = 0;
-
-        // Adding everything
-        JLabel[] howToLabels = {};
-        this.add(correctIncorrect, ScenarioConstants.grid);
-        ScenarioConstants.grid.gridy++;
+    @Override
+    public void getHowTo() {
         switch (problemType) {
             case PERMUTATION_ALLOCATION:
                 howToLabels = AppConstants.divideLabel("No two " + object.plural + " can occupy the same "
@@ -453,24 +325,12 @@ public class Combinatorics extends ScenarioUI implements ActionListener {
                             + "must occur.");
                 }
                 break;
-
         }
-        for (JLabel label : howToLabels) {
-            label.setFont(AppConstants.medFont);
-            this.add(label, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
-        }
+    }
 
-        // Button
-        JButton continueButton = new JButton("Continue");
-        continueButton.setActionCommand("move on");
-        continueButton.setPreferredSize(new Dimension(150, 25));
-        continueButton.setToolTipText("Continue to the next problem.");
-        continueButton.setMnemonic(KeyEvent.VK_C);
-        continueButton.addActionListener(this);
-        this.add(continueButton, ScenarioConstants.grid);
-        ScenarioConstants.grid.gridy++;
-
-        display();
+    @Override
+    public void printInfo() {
+        JOptionPane.showMessageDialog(AppConstants.frame, "Solve the given permutation or combination.",
+                "Scenario Instructions", JOptionPane.INFORMATION_MESSAGE);
     }
 }

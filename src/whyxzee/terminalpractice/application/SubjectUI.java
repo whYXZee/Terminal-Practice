@@ -23,15 +23,17 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 public class SubjectUI extends JPanel implements ActionListener {
+    private static SubjectDaemon daemon;
+
     // Vars
-    List<JButton> buttonList = new ArrayList<JButton>();
+    List<JButton> buttonList = new ArrayList<JButton>(); // never make this private static, idk why
+    public static boolean activeScreen = false;
 
     // UI Components
     JLabel subjectLabel = new JLabel("Choose a subject:");
     JButton backButton = new JButton("Go Back");
 
     public SubjectUI(Set<String> inputSet) {
-
         // Layout
         this.setLayout(new GridBagLayout());
         GridBagConstraints grid = new GridBagConstraints();
@@ -73,6 +75,7 @@ public class SubjectUI extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        activeScreen = false;
         if (e.getActionCommand().equals("back")) {
             new GameSelection(AppConstants.checkCustom()).display();
         } else {
@@ -111,25 +114,34 @@ public class SubjectUI extends JPanel implements ActionListener {
     }
 
     public void display() {
+        activeScreen = true;
         AppConstants.frame.setContentPane(new JScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
         AppConstants.frame.setVisible(true);
+
+        daemon = new SubjectDaemon(this);
+        daemon.setDaemon(true);
+        daemon.start();
     }
 
     /**
      * Resizes the components in a SubjectUI.
      */
     public void resize() {
-        for (JButton i : buttonList) {
-            subjectLabel.setFont(AppConstants.bigFont);
-            i.setFont(AppConstants.medFont);
-            i.setPreferredSize(AppConstants.wideButtonDimension);
+        subjectLabel.setFont(AppConstants.bigFont);
+
+        try {
+            for (JButton i : buttonList) {
+                i.setFont(AppConstants.medFont);
+                i.setPreferredSize(AppConstants.wideButtonDimension);
+            }
+        } catch (java.util.ConcurrentModificationException e) {
+
         }
         backButton.setFont(AppConstants.smallFont);
     }
 }
 
-// fix later
 class SubjectDaemon extends Thread {
     SubjectUI ui;
 
@@ -139,28 +151,8 @@ class SubjectDaemon extends Thread {
     }
 
     public void run() {
-        boolean shouldRun = true;
-        while (shouldRun) {
-            switch (AppConstants.gameEnum) {
-                case FLASHCARDS:
-                    ui.resize();
-                    break;
-                case DRILLS:
-                    ui.resize();
-                    break;
-                case JSON_EDITOR:
-                    ui.resize();
-                    break;
-
-                case CUSTOM_FLASHCARDS:
-                    ui.resize();
-                    break;
-                case CUSTOM_DRILLS:
-                    ui.resize();
-                    break;
-                default:
-                    break;
-            }
+        while (SubjectUI.activeScreen) {
+            ui.resize();
         }
     }
 }

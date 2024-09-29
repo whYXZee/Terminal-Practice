@@ -45,7 +45,13 @@
     "What is \"the ant\" in Spanish?": "la hormiga",
     "What is \"the bee\" in Spanish?": "la abeja",
     "What is \"the wasp\" in Spanish?": "la avispa",
-    "What is \"the lightning bug\" or \"the firefly\" in Spanish?": "la luciérnaga,el lampírido"
+    "What is \"the lightning bug\" or \"the firefly\" in Spanish?": "la luciérnaga,el lampírido",
+    "What is \"the scarab\" in Spanish?": "el escarabajo",
+
+    "What is \"the eagle\" in Spanish?": "la águila",
+    "What is \"the vulture\" in Spanish?": "el buitre",
+    "What is \"the raven\" in Spanish?": "el cuervo",
+    "What is \"the kiwi\" in Spanish?": "el kiwi"
   },
   "subject": "spanish"
 }

@@ -294,7 +294,7 @@ public class Trigonometry {
      */
     public boolean isLegal90Deg() {
         // Setting vars
-        ArrayList<Float> save = everything;
+        ArrayList<Float> save = everything; // to save the triangle for questions
         // System.out.println(save);
         boolean output = true;
 

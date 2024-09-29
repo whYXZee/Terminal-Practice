@@ -30,7 +30,6 @@ public class RunDrillsUI extends JPanel implements ActionListener {
     String response;
     Semaphore drillSemaphore = new Semaphore(0);
     boolean shouldBreak = false;
-    boolean buffer = false;
 
     // UI components
     JLabel questionTracker = new JLabel("");
@@ -65,29 +64,33 @@ public class RunDrillsUI extends JPanel implements ActionListener {
         daemon.setDaemon(true);
         daemon.start();
 
+        //
+        // Setting component data
+        //
+        questionTracker.setFont(AppConstants.biggerFont);
+
+        textField.addActionListener(this);
+        textField.setHorizontalAlignment(JTextField.CENTER);
+        textField.setColumns(AppConstants.answerColumns);
+        textField.setFont(AppConstants.bigFont);
+
+        endButton.addActionListener(this);
+        endButton.setActionCommand("end");
+        endButton.setPreferredSize(AppConstants.smallButtonDimension);
+        endButton.setFont(AppConstants.medFont);
+        endButton.setToolTipText("End the drill early.");
+        endButton.setMnemonic(KeyEvent.VK_E);
+
         for (String i : shuffled) {
             this.answers = new AnswerSet(terms.get(i));
             if (answers.answerIsAllowed(bannedLetters, (int) beginCharIndex)) {
                 // Question tracker
-                questionTracker = new JLabel("Question " + (termsCompleted + 1) + "/" + AppConstants.goal + ":");
-                questionTracker.setFont(AppConstants.biggerFont);
+                questionTracker.setText("Question " + (termsCompleted + 1) + "/" + AppConstants.goal + ":");
 
                 // Questions
                 questions = AppConstants.divideLabel(i);
 
-                // Answer box
-                textField = new JTextField();
-                textField.addActionListener(this);
-                textField.setHorizontalAlignment(JTextField.CENTER);
-                textField.setColumns(AppConstants.answerColumns);
-                textField.setFont(AppConstants.bigFont);
-
-                endButton.addActionListener(this);
-                endButton.setActionCommand("end");
-                endButton.setPreferredSize(AppConstants.smallButtonDimension);
-                endButton.setFont(AppConstants.medFont);
-                endButton.setToolTipText("End the drill early.");
-                endButton.setMnemonic(KeyEvent.VK_E);
+                textField.setText("");
 
                 // Adding the components
                 this.add(questionTracker, grid);
@@ -104,10 +107,9 @@ public class RunDrillsUI extends JPanel implements ActionListener {
                 grid.gridy++;
 
                 display();
-                buffer = false;
                 drillSemaphore.acquire();
-                buffer = true;
                 if (shouldBreak) {
+                    termsCompleted++;
                     break;
                 }
 
@@ -142,15 +144,17 @@ public class RunDrillsUI extends JPanel implements ActionListener {
                 this.removeAll();
             }
         }
-        JOptionPane.showMessageDialog(AppConstants.frame, "You got " + correct + " correct!", "Drill Completion",
-                JOptionPane.INFORMATION_MESSAGE);
 
-        if (termsCompleted == 0 || shouldBreak || termsCompleted != shuffled.size()
-                || termsCompleted == AppConstants.goal) {
-            // to release the semaphore in case all words were restricted, but not when its
-            // already released.
-            AppConstants.semaphore.release();
+        if (termsCompleted == 0) {
+            JOptionPane.showMessageDialog(AppConstants.frame, "No available terms, due to restriction issues.",
+                    "Drill Completion",
+                    JOptionPane.ERROR_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(AppConstants.frame, "You got " + correct + " correct!", "Drill Completion",
+                    JOptionPane.INFORMATION_MESSAGE);
         }
+
+        AppConstants.semaphore.release();
     }
 
     @Override
@@ -158,7 +162,7 @@ public class RunDrillsUI extends JPanel implements ActionListener {
         if (e.getActionCommand().equals("end")) {
             shouldBreak = true;
             drillSemaphore.release();
-        } else if (!buffer) {
+        } else if (drillSemaphore.hasQueuedThreads()) {
             try {
                 this.response = textField.getText();
             } catch (NullPointerException error) {

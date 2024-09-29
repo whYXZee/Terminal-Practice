@@ -12,6 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 
 public class GoAgain extends JPanel implements ActionListener {
+    GoAgainDaemon daemon;
+
     // Vars
     public static boolean activeScreen = false;
 
@@ -20,7 +22,6 @@ public class GoAgain extends JPanel implements ActionListener {
     JButton continueButton = new JButton("Yes");
     JButton endButton = new JButton("No");
     GridBagConstraints grid = new GridBagConstraints();
-    GoAgainDaemon daemon;
 
     public GoAgain() {
         // Layout

@@ -16,7 +16,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 
 public class FlashcardUI extends JPanel implements ActionListener {
@@ -26,10 +28,10 @@ public class FlashcardUI extends JPanel implements ActionListener {
     // Vars
     private static boolean isQuestion = true;
     private static boolean run = true;
-    private static boolean buffer = true;
     private static int index = 0;
     private static String question = "";
     private HashMap<String, String> set = new HashMap<String, String>();
+    private List<String> terms = new ArrayList<String>();
 
     // UI Constants
     private static JButton nextButton = new JButton("Next");
@@ -43,7 +45,7 @@ public class FlashcardUI extends JPanel implements ActionListener {
     private static JPanel extraButtons = new JPanel();
 
     private static JButton[] flashcardControls = { backButton, flipButton, nextButton };
-    private static JLabel[] flashcardText = {};
+    private JLabel[] flashcardText = {};
 
     private static GridBagConstraints grid = new GridBagConstraints();
     private static GridBagConstraints flashcardGrid = new GridBagConstraints();
@@ -54,7 +56,9 @@ public class FlashcardUI extends JPanel implements ActionListener {
         this.set = set;
         index = 0;
         run = true;
-        question = (String) set.keySet().toArray()[0];
+        terms = new ArrayList<String>(set.keySet());
+        // question = (String) set.keySet().toArray()[0];
+        question = terms.get(0);
         flashcardText = AppConstants.divideLabel(question);
 
         // Layout
@@ -73,34 +77,89 @@ public class FlashcardUI extends JPanel implements ActionListener {
         daemon.setDaemon(true);
         daemon.start();
 
+        //
+        // Setting data
+        //
+
+        // Card tracker
+        cardTracker.setFont(AppConstants.biggerFont);
+        this.add(cardTracker, grid);
+        grid.gridy++;
+
+        // Text in flashcard
+        for (JLabel j : flashcardText) {
+            j.setFont(AppConstants.bigFont);
+        }
+
+        // Flashcard
+        flashcard.setLayout(new GridBagLayout());
+        flashcard.setPreferredSize(AppConstants.flashcardDimension);
+        this.add(new JScrollPane(flashcard, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), grid);
+        grid.gridy++;
+
+        // Flashcard buttons
+        flashcardButtons.setLayout(new GridBagLayout());
+        flashcardButtons.setPreferredSize(
+                new Dimension(AppConstants.flashcardDimension.width,
+                        AppConstants.smallButtonDimension.height + 16));
+        for (JButton j : flashcardControls) {
+            j.addActionListener(this);
+            j.setActionCommand(j.getText().toLowerCase());
+            j.setFont(AppConstants.medFont);
+            j.setPreferredSize(AppConstants.smallButtonDimension);
+            flashcardButtons.add(j, flashcardButtonsGrid);
+            flashcardButtonsGrid.gridx++;
+        }
+        this.add(flashcardButtons, grid);
+        grid.gridy++;
+
+        backButton.setMnemonic(KeyEvent.VK_B);
+        backButton.setToolTipText("Go to the previous term.");
+
+        flipButton.setMnemonic(KeyEvent.VK_F);
+        flipButton.setToolTipText("Flip the flashcard.");
+
+        nextButton.setMnemonic(KeyEvent.VK_N);
+        nextButton.setToolTipText("Go to the next term");
+
+        // Extra buttons
+        extraButtons.setLayout(new GridBagLayout());
+        extraButtons.setPreferredSize(
+                new Dimension(AppConstants.flashcardDimension.width,
+                        AppConstants.smallButtonDimension.height + 16));
+
+        endButton.addActionListener(this);
+        endButton.setActionCommand("end");
+        endButton.setPreferredSize(AppConstants.smallButtonDimension);
+        endButton.setFont(AppConstants.medFont);
+        endButton.setToolTipText("Go to the main menu.");
+        endButton.setMnemonic(KeyEvent.VK_E);
+        extraButtons.add(endButton, flashcardButtonsGrid);
+        flashcardButtonsGrid.gridx++;
+
+        goToButton.addActionListener(this);
+        goToButton.setActionCommand("go to");
+        goToButton.setPreferredSize(AppConstants.smallButtonDimension);
+        goToButton.setFont(AppConstants.medFont);
+        goToButton.setToolTipText("Choose which card to go to, instead of spamming next/back.");
+        goToButton.setMnemonic(KeyEvent.VK_G);
+        extraButtons.add(goToButton, flashcardButtonsGrid);
+
+        this.add(extraButtons, grid);
+
         while (run) {
-            buffer = true;
-            System.out.println(index);
-
-            // UI
-            flashcardGrid.gridx = 0;
-            flashcardGrid.gridy = 0;
-            flashcardGrid.insets = new Insets(8, 2, 8, 2);
-            flashcardGrid.anchor = GridBagConstraints.CENTER;
-
             // Text
-            cardTracker = new JLabel("Card " + (index + 1) + "/" + set.keySet().size());
-            cardTracker.setFont(AppConstants.biggerFont);
-            this.add(cardTracker, grid);
-            grid.gridy++;
+            cardTracker.setText("Card " + (index + 1) + "/" + set.keySet().size());
 
             // Adding the flashcard panel
-            flashcard.setLayout(new GridBagLayout());
-            flashcard.setPreferredSize(AppConstants.flashcardDimension);
             for (JLabel j : flashcardText) {
                 j.setFont(AppConstants.bigFont);
                 flashcard.add(j, flashcardGrid);
                 flashcardGrid.gridy++;
             }
 
-            this.add(new JScrollPane(flashcard, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                    JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), grid);
-            grid.gridy++;
+            flashcardGrid.gridy = 0;
 
             //
             // Setting the flashcard buttons
@@ -117,64 +176,7 @@ public class FlashcardUI extends JPanel implements ActionListener {
                 backButton.setEnabled(true);
             }
 
-            backButton.setMnemonic(KeyEvent.VK_B);
-            backButton.setToolTipText("Go to the previous term.");
-
-            flipButton.setMnemonic(KeyEvent.VK_F);
-            flipButton.setToolTipText("Flip the flashcard.");
-
-            nextButton.setMnemonic(KeyEvent.VK_N);
-            nextButton.setToolTipText("Go to the next term");
-
-            flashcardButtons.setLayout(new GridBagLayout());
-            flashcardButtons.setPreferredSize(
-                    new Dimension(AppConstants.flashcardDimension.width,
-                            AppConstants.smallButtonDimension.height + 16));
-            for (JButton j : flashcardControls) {
-                j.addActionListener(this);
-                j.setActionCommand(j.getText().toLowerCase());
-                j.setFont(AppConstants.medFont);
-                j.setPreferredSize(AppConstants.smallButtonDimension);
-                flashcardButtons.add(j, flashcardButtonsGrid);
-                flashcardButtonsGrid.gridx++;
-            }
-            flashcardButtonsGrid.gridy = 0;
-            flashcardButtonsGrid.gridx = 0;
-            this.add(flashcardButtons, grid);
-            grid.gridy++;
-
-            //
-            // Other buttons
-            //
-            extraButtons.setLayout(new GridBagLayout());
-            extraButtons.setPreferredSize(
-                    new Dimension(AppConstants.flashcardDimension.width,
-                            AppConstants.smallButtonDimension.height + 16));
-
-            // End button
-            endButton.addActionListener(this);
-            endButton.setActionCommand("end");
-            endButton.setPreferredSize(AppConstants.smallButtonDimension);
-            endButton.setFont(AppConstants.medFont);
-            endButton.setToolTipText("Go to the main menu.");
-            endButton.setMnemonic(KeyEvent.VK_E);
-            extraButtons.add(endButton, flashcardButtonsGrid);
-            flashcardButtonsGrid.gridx++;
-
-            // Go to button
-            goToButton.addActionListener(this);
-            goToButton.setActionCommand("go to");
-            goToButton.setPreferredSize(AppConstants.smallButtonDimension);
-            goToButton.setFont(AppConstants.medFont);
-            goToButton.setToolTipText("Choose which card to go to, instead of spamming next/back.");
-            goToButton.setMnemonic(KeyEvent.VK_G);
-            extraButtons.add(goToButton, flashcardButtonsGrid);
-            flashcardButtonsGrid.gridy++;
-
-            this.add(extraButtons, grid);
-
             display();
-            buffer = false;
             semaphore.acquire();
         }
     }
@@ -184,16 +186,21 @@ public class FlashcardUI extends JPanel implements ActionListener {
         // Declaring vars
         String action = e.getActionCommand();
 
-        if (!buffer) {
+        // System.out.println("action: " + action + " question: " + question + " index:"
+        // + index);
+
+        if (semaphore.hasQueuedThreads()) {
             if (action.equals("next")) {
                 index++;
                 isQuestion = true;
-                question = (String) set.keySet().toArray()[index];
+                // question = (String) set.keySet().toArray()[index];
+                question = terms.get(index);
                 flashcardText = AppConstants.divideLabel(question);
             } else if (action.equals("back")) {
                 index--;
                 isQuestion = true;
-                question = (String) set.keySet().toArray()[index];
+                // question = (String) set.keySet().toArray()[index];
+                question = terms.get(index);
                 flashcardText = AppConstants.divideLabel(question);
             } else if (action.equals("flip")) {
                 if (isQuestion) {
@@ -211,18 +218,26 @@ public class FlashcardUI extends JPanel implements ActionListener {
                 boolean getInput = true;
                 while (getInput) {
                     try {
-                        index = Integer
-                                .valueOf(JOptionPane.showInputDialog("What card would you like to go to?", index + 1))
-                                - 1;
-                        if (index >= 0 && set.keySet().size() >= index + 1) {
+                        int formerIndex = index;
+                        String input = JOptionPane.showInputDialog("What card would you like to go to?", index + 1);
+                        if (input == null) {
+                            index = formerIndex;
                             getInput = false;
-                            isQuestion = true;
-                            question = (String) set.keySet().toArray()[index];
-                            flashcardText = AppConstants.divideLabel(question);
                         } else {
-                            JOptionPane.showMessageDialog(AppConstants.frame,
-                                    "Invalid input, please put a number in between 1 and " + set.keySet().size() + ".",
-                                    "Input Error", JOptionPane.ERROR_MESSAGE);
+                            index = Integer.valueOf(input) - 1;
+                            // System.out.println(index);
+                            if (index >= 0 && set.keySet().size() >= index + 1) {
+                                getInput = false;
+                                isQuestion = true;
+                                // question = (String) set.keySet().toArray()[index];
+                                question = terms.get(index);
+                                flashcardText = AppConstants.divideLabel(question);
+                            } else {
+                                JOptionPane.showMessageDialog(AppConstants.frame,
+                                        "Invalid input, please put a number in between 1 and " + set.keySet().size()
+                                                + ".",
+                                        "Input Error", JOptionPane.ERROR_MESSAGE);
+                            }
                         }
                     } catch (NumberFormatException error) {
                         JOptionPane.showMessageDialog(AppConstants.frame, "Invalid input, please put numbers",
@@ -231,16 +246,21 @@ public class FlashcardUI extends JPanel implements ActionListener {
                 }
             }
             semaphore.release();
-            this.removeAll();
-            buffer = true;
+            flashcard.removeAll();
         }
     }
 
+    /**
+     * Displays the flashcard UI.
+     */
     public void display() {
         AppConstants.frame.setContentPane(this);
         AppConstants.frame.setVisible(true);
     }
 
+    /**
+     * Resizes components of the flashcard UI.
+     */
     public void resize() {
         cardTracker.setFont(AppConstants.biggerFont);
 
@@ -270,6 +290,7 @@ public class FlashcardUI extends JPanel implements ActionListener {
     }
 }
 
+// Cuases "flashing", fix later
 class FlashcardDaemon extends Thread {
     FlashcardUI ui;
 

@@ -5,42 +5,29 @@ import whyxzee.terminalpractice.resources.AlgebraFunctions;
 import whyxzee.terminalpractice.scenarios.ScenarioConstants;
 import whyxzee.terminalpractice.scenarios.ScenarioUI;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
 import javax.swing.JOptionPane;
 
 import java.util.ArrayList;
 
-public class Uncertainties extends ScenarioUI implements ActionListener {
+public class Uncertainties extends ScenarioUI {
+    //
+    // Scenario-specific variables
+    //
+    String finalNum = "";
+    String finalError = "";
+    double max = 0;
+    double min = 0;
 
-    GridBagConstraints grid = new GridBagConstraints();
-    // Scenairo Constants
-    boolean shouldBreak = false;
-    public int correct = 0;
-    public String response = "";
-    JTextField textField;
-    public JLabel correctIncorrect = new JLabel();
-
-    // Scenario-specific Constants
     static MathContext round = new MathContext(4, RoundingMode.HALF_UP);
     static ArrayList<BigDecimal> measurements = new ArrayList<BigDecimal>();
     static ArrayList<String> uncertainties = new ArrayList<String>();
     static int power = 0;
 
     enum ProblemType {
-        NONE,
         ABS_UNCERTAINTY,
         FRAC_UNCERTAINTY,
         PER_UNCERTAINTY,
@@ -51,149 +38,49 @@ public class Uncertainties extends ScenarioUI implements ActionListener {
         POWER
     }
 
-    ProblemType problemType = ProblemType.NONE;
+    ProblemType problemType = ProblemType.ABS_UNCERTAINTY;
 
     public Uncertainties() throws InterruptedException {
-        // Layout
-        this.setLayout(new GridBagLayout());
-        grid.gridx = 0;
-        grid.gridy = 0;
-        grid.insets = new Insets(8, 8, 8, 8);
-        grid.anchor = GridBagConstraints.CENTER;
 
-        for (int i = 0; i < AppConstants.goal; i++) {
-            // Showing the equation
-            randomize();
-            JLabel questionTracker = new JLabel("Question " + (i + 1) + "/" + AppConstants.goal);
-            questionTracker.setFont(AppConstants.biggerFont);
-            this.add(questionTracker, grid);
-            grid.gridy++;
-            printQuestion();
-
-            textField = new JTextField();
-            textField.setColumns(AppConstants.answerColumns);
-            textField.setHorizontalAlignment(JTextField.CENTER);
-            textField.setFont(AppConstants.smallFont);
-            textField.addActionListener(this);
-            this.add(textField, grid);
-            grid.gridy++;
-
-            JButton backButton = new JButton("End practice");
-            backButton.addActionListener(this);
-            backButton.setActionCommand("end");
-            backButton.setPreferredSize(AppConstants.smallButtonDimension);
-            backButton.setFont(AppConstants.medFont);
-            backButton.setToolTipText("End the drill early.");
-            backButton.setMnemonic(KeyEvent.VK_E);
-            this.add(backButton, grid);
-            grid.gridy++;
-
-            // Display
-            display();
-            textField.requestFocusInWindow();
-            ScenarioConstants.scenarioSemaphore.acquire();
-
-            // Checking the input
-            correctIncorrect.setFont(AppConstants.medFont);
-            if (solve().equals(response)) {
-                correctIncorrect = new JLabel("Correct!");
-                correctIncorrect.setFont(AppConstants.bigFont);
-                correct++;
-            } else if (shouldBreak) {
-                break;
-            } else {
-                correctIncorrect = new JLabel("Incorrect, the answer was: " + solve());
-                correctIncorrect.setFont(AppConstants.bigFont);
-            }
-            this.add(correctIncorrect, grid);
-            display();
-            Thread.sleep(2000);
-            this.removeAll();
-        }
-        JOptionPane.showMessageDialog(AppConstants.frame, "You got " + correct + " correct!", "Scenario Completion",
-                JOptionPane.INFORMATION_MESSAGE);
     }
 
     // joyce was here! :) tehe
+
+    /**
+     * Randomizes the uncertainties problem
+     */
     @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("timer")) {
-            this.response = textField.getText();
-        } else if (e.getActionCommand().equals("end")) {
-            shouldBreak = true;
-        } else {
-            this.response = textField.getText();
-        }
-
-        ScenarioConstants.scenarioSemaphore.release();
-    }
-
-    private void printQuestion() {
-        JLabel question = new JLabel();
-        switch (problemType) {
-            case ABS_UNCERTAINTY:
-                question = new JLabel("Find the absolute uncertainty: " + measurements);
-                break;
-            case FRAC_UNCERTAINTY:
-                question = new JLabel("Find the fractional uncertainty: " + measurements);
-                break;
-            case PER_UNCERTAINTY:
-                question = new JLabel("Find the percent uncertainty: " + measurements);
-                break;
-            case ADD:
-                question = new JLabel("Find the sum of the uncertainties (absolute): " + uncertainties);
-                break;
-            case SUBTRACT:
-                question = new JLabel(
-                        "Find the difference of the uncertainties (absolute): " + uncertainties);
-                break;
-            case MULTIPLY:
-                question = new JLabel("Find the product of the uncertainties (percent): " + uncertainties);
-                break;
-            case DIVIDE:
-                question = new JLabel("Find the quotient of the uncertainties (percent): " + uncertainties);
-                break;
-            case POWER:
-                question = new JLabel("Find the uncertainty w/ the power of " + power + " (percent): " + uncertainties);
-                break;
-            default:
-        }
-        question.setFont(AppConstants.medFont);
-        this.add(question, grid);
-        grid.gridy++;
-    }
-
-    private void randomize() {
-        switch (ScenarioConstants.rng.nextInt(8) + 1) {
-            case 1:
+    public void randomize() {
+        switch (ScenarioConstants.rng.nextInt(8)) {
+            case 0:
                 problemType = ProblemType.ABS_UNCERTAINTY;
                 measurements = randomizeMeasurements();
                 break;
-            case 2:
+            case 1:
                 problemType = ProblemType.FRAC_UNCERTAINTY;
                 measurements = randomizeMeasurements();
                 break;
-            case 3:
+            case 2:
                 problemType = ProblemType.PER_UNCERTAINTY;
                 measurements = randomizeMeasurements();
                 break;
-            case 4:
+            case 3:
                 problemType = ProblemType.ADD;
                 uncertainties = randomizeUncertainties();
                 break;
-            case 5:
+            case 4:
                 problemType = ProblemType.SUBTRACT;
                 uncertainties = randomizeUncertainties();
                 break;
-            case 6:
+            case 5:
                 problemType = ProblemType.MULTIPLY;
                 uncertainties = randomizeUncertainties();
                 break;
-            case 7:
+            case 6:
                 problemType = ProblemType.DIVIDE;
                 uncertainties = randomizeUncertainties();
                 break;
-            case 8:
+            case 7:
                 problemType = ProblemType.POWER;
                 uncertainties = new ArrayList<String>() {
                     {
@@ -204,72 +91,10 @@ public class Uncertainties extends ScenarioUI implements ActionListener {
                 break;
             default:
         }
-
     }
 
-    /**
-     * Randomizes the given set of measurements.
-     * 
-     * @return
-     */
-    private ArrayList<BigDecimal> randomizeMeasurements() {
-        ArrayList<BigDecimal> output = new ArrayList<BigDecimal>();
-        double x = ScenarioConstants.rng.nextInt(12) + 1;
-        for (int i = 0; i < ScenarioConstants.rng.nextInt(6) + 2; i++) {
-            output.add(new BigDecimal(x + Math.random(), round));
-        }
-        return output;
-    }
-
-    private ArrayList<String> randomizeUncertainties() {
-        return new ArrayList<String>() {
-            {
-                add(getUncertainty(randomizeMeasurements()));
-                add(getUncertainty(randomizeMeasurements()));
-            }
-        };
-    }
-
-    /**
-     * Parses the number from uncertainties (<number> +- <error>).
-     * 
-     * @param input
-     * @return
-     */
-    private BigDecimal parseNumberUncertainty(String input) {
-        String stringedNum = "";
-        for (Character i : input.toCharArray()) {
-            if (!i.equals(' ')) { // we never need to go to the other side, so if it is then we break.
-                stringedNum = stringedNum + i;
-            } else {
-                break;
-            }
-        }
-        return new BigDecimal(Double.valueOf(stringedNum), round);
-    }
-
-    /**
-     * Parses the error from uncertainties (<number> +- <error>).
-     * 
-     * @param input
-     * @return
-     */
-    private BigDecimal parseErrorUncertainty(String input) {
-        String stringedNum = "";
-        boolean isError = false;
-        for (Character i : input.toCharArray()) {
-            if (i.equals('+')) {
-                isError = true;
-            } else if (isError && (Character.isDigit(i) || i.equals('.'))) {
-                stringedNum += i;
-            }
-        }
-        return new BigDecimal(Double.valueOf(stringedNum), round);
-    }
-
-    private String solve() {
-        String finalNum = "";
-        String finalError = "";
+    @Override
+    public String solve() {
         switch (problemType) {
             case ABS_UNCERTAINTY:
                 return getUncertainty(measurements);
@@ -335,12 +160,206 @@ public class Uncertainties extends ScenarioUI implements ActionListener {
         }
     }
 
+    @Override
+    public void getQuestion() {
+        switch (problemType) {
+            case ABS_UNCERTAINTY:
+                questions = AppConstants
+                        .divideLabel("Find the absolute uncertainty: " + measurements + " (answer as # +- #)");
+                break;
+            case FRAC_UNCERTAINTY:
+                questions = AppConstants
+                        .divideLabel("Find the fractional uncertainty: " + measurements + " (answer as # +- #)");
+                break;
+            case PER_UNCERTAINTY:
+                questions = AppConstants
+                        .divideLabel("Find the percent uncertainty: " + measurements + " (answer as # +- #%)");
+                break;
+            case ADD:
+                questions = AppConstants.divideLabel(
+                        "Find the sum of the uncertainties (absolute): " + uncertainties + " (answer as # +- #)");
+                break;
+            case SUBTRACT:
+                questions = AppConstants.divideLabel(
+                        "Find the difference of the uncertainties (absolute): " + uncertainties
+                                + " (answer as # +- #)");
+                break;
+            case MULTIPLY:
+                questions = AppConstants
+                        .divideLabel("Find the product of the uncertainties (percent): " + uncertainties
+                                + " (answer as # +- #%)");
+                break;
+            case DIVIDE:
+                questions = AppConstants
+                        .divideLabel("Find the quotient of the uncertainties (percent): " + uncertainties
+                                + " (answer as # +- #%)");
+                break;
+            case POWER:
+                questions = AppConstants
+                        .divideLabel("Find the uncertainty w/ the power of " + power + " (percent): " + uncertainties
+                                + " (answer as # +- #%)");
+                break;
+            default:
+        }
+    }
+
+    @Override
+    public void getHowTo() {
+        double error1 = 0;
+        double error2 = 0;
+
+        switch (problemType) {
+            case ABS_UNCERTAINTY:
+                howToLabels = AppConstants.divideLabel("To find the value, average all the values (add" +
+                        " them all, the divide them by the number of values). Then, to find the uncertainty, subtract "
+                        + "the max value from the minimum value and divide by 2: (" + max + " - " + min + ") / 2.");
+                break;
+            case FRAC_UNCERTAINTY:
+                howToLabels = AppConstants.divideLabel("To find the value, average all the values (add" +
+                        " them all, the divide them by the number of values). Then, to find the uncertainty you "
+                        + "begin by, subtracting the max value from the minimum value and divide by 2: [(" + max + " - "
+                        + min + ") / 2] = " + finalError + ". Afterwards, divide the error by the value: " + finalError
+                        + "/" + finalNum
+                        + ".");
+                break;
+            case PER_UNCERTAINTY:
+                howToLabels = AppConstants.divideLabel("To find the value, average all the values (add" +
+                        " them all, the divide them by the number of values). Then, to find the uncertainty you "
+                        + "begin by, subtracting the max value from the minimum value and divide by 2: [(" + max + " - "
+                        + min + ") / 2] = " + finalError + ". Afterwards, divide the error by the value (" + finalError
+                        + "/ " + finalNum + ") and change it to a percentage.");
+                break;
+            case ADD:
+                howToLabels = AppConstants.divideLabel("To find the sum of the value, add both values: "
+                        + parseNumberUncertainty(uncertainties.get(0)) + " + "
+                        + parseNumberUncertainty(uncertainties.get(1)) + " = " + finalNum
+                        + ". Then, to find the uncertainty you add both uncertainties: "
+                        + parseErrorUncertainty(uncertainties.get(0)) + " + "
+                        + parseErrorUncertainty(uncertainties.get(1)) + " = "
+                        + finalError + ".");
+                break;
+            case SUBTRACT:
+                howToLabels = AppConstants.divideLabel("To find the difference of the value, subtract both values: "
+                        + parseNumberUncertainty(uncertainties.get(0)) + " - "
+                        + parseNumberUncertainty(uncertainties.get(1)) + " = " + finalNum
+                        + ". Then, to find the uncertainty you subtract both uncertainties: "
+                        + parseErrorUncertainty(uncertainties.get(0)) + " - "
+                        + parseErrorUncertainty(uncertainties.get(1)) + " = "
+                        + finalError + ".");
+                break;
+            case MULTIPLY:
+                error1 = parseErrorUncertainty(uncertainties.get(0)).doubleValue()
+                        / parseNumberUncertainty(uncertainties.get(0)).doubleValue() * 100;
+                error2 = parseErrorUncertainty(uncertainties.get(1)).doubleValue()
+                        / parseNumberUncertainty(uncertainties.get(1)).doubleValue() * 100;
+                howToLabels = AppConstants.divideLabel("To find the product of the value, multiply both values: "
+                        + parseNumberUncertainty(uncertainties.get(0)) + " * "
+                        + parseNumberUncertainty(uncertainties.get(1)) + " = " + finalNum
+                        + ". Then, to find the uncertainty you add both percent uncertainties: "
+                        + error1 + " + " + error2 + " = " + finalError + "%.");
+                break;
+            case DIVIDE:
+                error1 = parseErrorUncertainty(uncertainties.get(0)).doubleValue()
+                        / parseNumberUncertainty(uncertainties.get(0)).doubleValue() * 100;
+                error2 = parseErrorUncertainty(uncertainties.get(1)).doubleValue()
+                        / parseNumberUncertainty(uncertainties.get(1)).doubleValue() * 100;
+                howToLabels = AppConstants.divideLabel("To find the quotient of the value, divide both values: "
+                        + parseNumberUncertainty(uncertainties.get(0)) + " / "
+                        + parseNumberUncertainty(uncertainties.get(1)) + " = " + finalNum
+                        + ". Then, to find the uncertainty you add both percent uncertainties: "
+                        + error1 + " + " + error2 + " = " + finalError + "%.");
+                break;
+            case POWER:
+                error1 = parseErrorUncertainty(uncertainties.get(0)).doubleValue()
+                        / parseNumberUncertainty(uncertainties.get(0)).doubleValue() * 100;
+                howToLabels = AppConstants.divideLabel("First, get the power of the value: "
+                        + parseNumberUncertainty(uncertainties.get(0)) + "^( " + power
+                        + ") = " + finalNum + ". Then, to find the uncertainty you add both percent uncertainties: "
+                        + error1 + " * " + power + " = " + finalError + "%.");
+                break;
+        }
+    }
+
+    @Override
+    public void printInfo() {
+        JOptionPane.showMessageDialog(AppConstants.frame,
+                "Solve the given uncertainties problem.\nEnsure that your answer has '+-' with spaces separating the numbers.",
+                "Scenario Instructions", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /**
+     * Randomizes the given set of measurements.
+     * 
+     * @return ArrayList of measurements
+     */
+    private ArrayList<BigDecimal> randomizeMeasurements() {
+        ArrayList<BigDecimal> output = new ArrayList<BigDecimal>();
+        double x = ScenarioConstants.rng.nextInt(12) + 1;
+        for (int i = 0; i < ScenarioConstants.rng.nextInt(6) + 2; i++) {
+            output.add(new BigDecimal(x + Math.random(), round));
+        }
+        return output;
+    }
+
+    private ArrayList<String> randomizeUncertainties() {
+        return new ArrayList<String>() {
+            {
+                add(getUncertainty(randomizeMeasurements()));
+                add(getUncertainty(randomizeMeasurements()));
+            }
+        };
+    }
+
+    /**
+     * Parses the number from uncertainties (<number> +- <error>).
+     * 
+     * @param input
+     * @return
+     */
+    private BigDecimal parseNumberUncertainty(String input) {
+        String stringedNum = "";
+        for (Character i : input.toCharArray()) {
+            if (!i.equals(' ')) { // we never need to go to the other side, so if it is then we break.
+                stringedNum = stringedNum + i;
+            } else {
+                break;
+            }
+        }
+        return new BigDecimal(Double.valueOf(stringedNum), round);
+    }
+
+    /**
+     * Parses the error from uncertainties (<number> +- <error>).
+     * 
+     * @param input
+     * @return
+     */
+    private BigDecimal parseErrorUncertainty(String input) {
+        String stringedNum = "";
+        boolean isError = false;
+        for (Character i : input.toCharArray()) {
+            if (i.equals('+')) {
+                isError = true;
+            } else if (isError && (Character.isDigit(i) || i.equals('.'))) {
+                stringedNum += i;
+            }
+        }
+        return new BigDecimal(Double.valueOf(stringedNum), round);
+    }
+
+    /**
+     * Gets the uncertainty from the range of data.
+     * 
+     * @param arrayInput
+     * @return
+     */
     private String getUncertainty(ArrayList<BigDecimal> arrayInput) {
         BigDecimal total = new BigDecimal(0);
         BigDecimal error;
 
-        double max = 0;
-        double min = 0;
+        max = 0;
+        min = 0;
+
         for (int i = 0; i < arrayInput.size(); i++) {
             double index = arrayInput.get(i).doubleValue();
             if (max < index) {
@@ -356,6 +375,10 @@ public class Uncertainties extends ScenarioUI implements ActionListener {
 
         total = new BigDecimal(total.doubleValue() / arrayInput.size(), round);
         error = new BigDecimal((max - min) / 2, round);
+
+        finalNum = total.toString();
+        finalError = error.toString();
+
         switch (problemType) {
             case ABS_UNCERTAINTY:
                 return total.doubleValue() + " +- " + error.doubleValue();

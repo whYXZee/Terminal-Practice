@@ -25,9 +25,10 @@ public class ScenarioConstants {
     static final ArrayList<String> algebraScenarios = new ArrayList<String>() {
         {
             add("algebraic memory");
-            add("solve for x (linear)");
+            add("solve for x (linear)"); // needs to update to new scenario structure and
+            // add equation side
             add("factoring");
-            // add("quadratic factors");
+            // add("quadratic factors"); // need to actually finish it lmao
         }
     };
 
@@ -39,7 +40,8 @@ public class ScenarioConstants {
 
     static final ArrayList<String> geometryScenarios = new ArrayList<String>() {
         {
-            add("right triangle trigonometry");
+            add("right triangle trigonometry"); // needs howToLabels
+            // structure
         }
     };
 
@@ -53,17 +55,17 @@ public class ScenarioConstants {
 
     static final ArrayList<String> physicsScenarios = new ArrayList<String>() {
         {
-            add("projectile motion");
+            // add("projectile motion"); // needs "howToLabels"
             add("uncertainties");
         }
     };
 
     public static final HashMap<String, ArrayList<String>> scenarioHashMap = new HashMap<String, ArrayList<String>>() {
         {
-            put("algebra", algebraScenarios);
+            put("algebra", algebraScenarios); // needs scenario structure
             put("physics", physicsScenarios);
-            put("number sense", numberSenseScenarios);
-            // put("discrete mathematics", discreteMathScenarios);
+            put("number sense", numberSenseScenarios); // needs new structure
+            // put("discrete mathematics", discreteMathScenarios); // needs new structure
             put("geometry", geometryScenarios);
         }
     };
@@ -78,45 +80,47 @@ public class ScenarioConstants {
         grid.anchor = GridBagConstraints.CENTER;
         grid.gridx = 0;
         grid.gridy = 0;
+
         switch (AppConstants.set) {
             // Algebra
             case "algebraic memory":
-                new AlgebraMemory().display();
+                new AlgebraMemory();
                 break;
             case "solve for x (linear)":
-                new SolveForXLinear().display();
+                new SolveForXLinear();
                 break;
             case "factoring":
-                new Factoring().display();
+                new Factoring();
                 break;
 
             // Discrete Mathematics
             case "combinatorics":
-                new Combinatorics().display();
+                new Combinatorics();
+                // new ScenarioUI();
                 break;
 
             // Geometry
             case "right triangle trigonometry":
-                new RightTrig().display();
+                new RightTrig();
                 break;
 
             // Number Sense
             case "factorials":
-                new Factorial().display();
+                new Factorial();
                 break;
             case "simplify equations":
-                new SimplifyEquation().display();
+                new SimplifyEquation();
                 break;
             case "perfect squares":
-                new PerfectSquares().display();
+                new PerfectSquares();
                 break;
 
             // Physics
             case "projectile motion":
-                new ProjectileMotion().display();
+                new ProjectileMotion();
                 break;
             case "uncertainties":
-                new Uncertainties().display();
+                new Uncertainties();
                 break;
         }
     }

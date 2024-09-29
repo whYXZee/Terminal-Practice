@@ -5,30 +5,12 @@ import whyxzee.terminalpractice.resources.Equation;
 import whyxzee.terminalpractice.scenarios.ScenarioConstants;
 import whyxzee.terminalpractice.scenarios.ScenarioUI;
 
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JOptionPane;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Factoring extends ScenarioUI implements ActionListener {
-    //
-    // General variables
-    //
-    boolean shouldBreak = false;
-    int correct = 0;
-    public String response = "";
-    static JLabel[] questions;
-    JTextField textField;
-    JLabel correctIncorrect = new JLabel();
+import javax.swing.JOptionPane;
 
+public class Factoring extends ScenarioUI {
     //
     // Scenario-specific variables
     //
@@ -47,108 +29,10 @@ public class Factoring extends ScenarioUI implements ActionListener {
     }
 
     public Factoring() throws InterruptedException {
-        // Layout
-        this.setLayout(new GridBagLayout());
-        correctIncorrect.setFont(AppConstants.biggerFont);
-
-        for (int i = 0; i < AppConstants.goal; i++) {
-            // Question tracker
-            JLabel questionTracker = new JLabel("Question " + (i + 1) + "/" + AppConstants.goal);
-            questionTracker.setFont(AppConstants.biggerFont);
-            this.add(questionTracker, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
-
-            // Question
-            randomize();
-            printQuestion();
-
-            // Answer box
-            textField = new JTextField();
-            textField.addActionListener(this);
-            textField.setColumns(AppConstants.answerColumns);
-            textField.setFont(AppConstants.smallFont);
-            textField.setHorizontalAlignment(JTextField.CENTER);
-            this.add(textField, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
-
-            // End button
-            JButton backButton = new JButton("End practice");
-            backButton.addActionListener(this);
-            backButton.setActionCommand("end");
-            backButton.setMnemonic(KeyEvent.VK_E);
-            backButton.setPreferredSize(AppConstants.smallButtonDimension);
-            backButton.setFont(AppConstants.medFont);
-            backButton.setToolTipText("End the drill early.");
-            this.add(backButton, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
-
-            // Display
-            display();
-            textField.requestFocusInWindow();
-            ScenarioConstants.scenarioSemaphore.acquire();
-
-            // Checking the input
-            try {
-                if (solve().equals(response)) {
-                    correctIncorrect = new JLabel("Correct!");
-                    correctIncorrect.setFont(AppConstants.bigFont);
-                    this.add(correctIncorrect, ScenarioConstants.grid);
-                    correct++;
-
-                    display();
-                    Thread.sleep(2000);
-                } else if (shouldBreak) {
-                    break;
-                } else {
-                    correctIncorrect = new JLabel("Incorrect, the answer was: " + solve());
-                    correctIncorrect.setFont(AppConstants.bigFont);
-                    printHowTo();
-                    ScenarioConstants.scenarioSemaphore.acquire();
-                }
-            } catch (NumberFormatException error) {
-                if (shouldBreak) {
-                    break;
-                } else {
-                    correctIncorrect = new JLabel("Incorrect, the answer was: " + solve());
-                    correctIncorrect.setFont(AppConstants.bigFont);
-                    printHowTo();
-                    ScenarioConstants.scenarioSemaphore.acquire();
-                }
-            }
-            this.removeAll();
-        }
-        JOptionPane.showMessageDialog(AppConstants.frame, "You got " + correct + " correct!", "Scenario Completion",
-                JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("end")) {
-            shouldBreak = true;
-        } else if (e.getActionCommand().equals("move on")) {
-
-        } else {
-            this.response = textField.getText();
-        }
-        ScenarioConstants.scenarioSemaphore.release();
-    }
-
-    private void printQuestion() {
-        switch (problemType) {
-            case SFFT:
-                questions = AppConstants.divideLabel(
-                        "Given the equation: " + eq
-                                + ", what are the factors? [answer in the form of (x + #)(y + #) = #]");
-        }
-
-        for (JLabel j : questions) {
-            j.setFont(AppConstants.medFont);
-            this.add(j, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
-        }
-    }
-
-    private static void randomize() {
+    public void randomize() {
         // Resetting vars in between questions
         varsAndVals = new HashMap<Character, Integer>();
         // equationList = new ArrayList<String>();
@@ -197,10 +81,10 @@ public class Factoring extends ScenarioUI implements ActionListener {
                 });
                 break;
         }
-
     }
 
-    private static String solve() {
+    @Override
+    public String solve() {
         switch (problemType) {
             case SFFT:
                 // Var Declaration
@@ -211,12 +95,12 @@ public class Factoring extends ScenarioUI implements ActionListener {
                 if (varsAndVals.get('y') > 0) {
                     xTerm = "(x + " + varsAndVals.get('y') + ")";
                 } else {
-                    xTerm = "(x - " + varsAndVals.get('y') + ")";
+                    xTerm = "(x - " + Math.abs(varsAndVals.get('y')) + ")";
                 }
                 if (varsAndVals.get('x') > 0) {
                     yTerm = "(y + " + varsAndVals.get('x') + ")";
                 } else {
-                    yTerm = "(y + " + varsAndVals.get('x') + ")";
+                    yTerm = "(y - " + Math.abs(varsAndVals.get('x')) + ")";
                 }
                 return xTerm + yTerm + " = " + (varsAndVals.get('=') + (varsAndVals.get('x') * varsAndVals.get('y')));
             default:
@@ -224,47 +108,33 @@ public class Factoring extends ScenarioUI implements ActionListener {
         }
     }
 
-    private void printHowTo() {
-        // Resetting the frame:
-        this.removeAll();
-        ScenarioConstants.grid.gridx = 0;
-        ScenarioConstants.grid.gridy = 0;
-
-        // Adding everything
-        JLabel[] howToLabels = {};
-        this.add(correctIncorrect, ScenarioConstants.grid);
-        ScenarioConstants.grid.gridy++;
-
+    @Override
+    public void getQuestion() {
         switch (problemType) {
             case SFFT:
-                howToLabels = AppConstants.divideLabel("First, factor out the x: " + xTerm
+                questions = AppConstants.divideLabel(
+                        "Given the equation: " + eq
+                                + ", what are the factors? [answer in the form of (x + #)(y + #) = #]");
+        }
+    }
+
+    @Override
+    public void getHowTo() {
+        switch (problemType) {
+            case SFFT:
+                howToLabels = AppConstants.divideLabel("First, factor out the x: x" + yTerm
                         + ". Second, add the number that is the product of the x coefficient and the y coefficient to both sides: "
                         + varsAndVals.get('x') + " * " + varsAndVals.get('y') + " = "
                         + (varsAndVals.get('y') * varsAndVals.get('x')) + ". Finally, factor out the y term: " + yTerm
                         + ". The result should be: " + xTerm + yTerm + " = " + varsAndVals.get('=') + " + "
-                        + (varsAndVals
-                                .get('y') * varsAndVals.get('x')));
+                        + (varsAndVals.get('y') * varsAndVals.get('x')));
                 break;
         }
-
-        for (JLabel label : howToLabels) {
-            label.setFont(AppConstants.medFont);
-            this.add(label, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
-        }
-
-        // Button
-        JButton continueButton = new JButton("Continue");
-        continueButton.addActionListener(this);
-        continueButton.setActionCommand("move on");
-        continueButton.setMnemonic(KeyEvent.VK_C);
-        continueButton.setFont(AppConstants.smallFont);
-        continueButton.setPreferredSize(AppConstants.smallButtonDimension);
-        continueButton.setToolTipText("Continue to the next problem.");
-        this.add(continueButton, ScenarioConstants.grid);
-        ScenarioConstants.grid.gridy++;
-
-        display();
     }
 
+    @Override
+    public void printInfo() {
+        JOptionPane.showMessageDialog(AppConstants.frame, "Factor the given equation.",
+                "Scenario Instructions", JOptionPane.INFORMATION_MESSAGE);
+    }
 }

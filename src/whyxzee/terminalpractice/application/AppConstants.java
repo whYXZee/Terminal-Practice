@@ -5,6 +5,7 @@ import whyxzee.terminalpractice.scenarios.ScenarioConstants;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Toolkit;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -72,17 +73,19 @@ public class AppConstants {
         // Declaring variables
         boolean run = true;
         AppConstants.gameEnum = Game.NONE;
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         // Setting the frame
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        // frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setSize((int) (screenSize.width / 1.5), (int) (screenSize.height / 1.5));
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         frame.setResizable(true);
 
         // Setting the UI
         width = frame.getBounds().width;
         height = frame.getBounds().height;
-
         biggerFont = new Font("Arial", Font.PLAIN, width / 20); // standard
         bigFont = new Font("Arial", Font.PLAIN, width / 40);
         medFont = new Font("Arial", Font.PLAIN, width / 60);
@@ -212,7 +215,9 @@ public class AppConstants {
     }
 
     private static String getRandomSplash() {
-        switch (new Random().nextInt(10) + 1) {
+        switch (new Random().nextInt(13)) {
+            case 0:
+                return "case 0";
             case 1:
                 return "0 != 1, and 0! = 1"; // factorial & boolean algebra joke
             case 2:
@@ -233,6 +238,10 @@ public class AppConstants {
                 return "SOH CAH TOA";
             case 10:
                 return "ihatebeans"; // reference to the json used to test a lot of things
+            case 11:
+                return "7 + 1 = 10"; // octal joke
+            case 12:
+                return "Can now turn two negatives into a positive!";
             default:
                 return "";
         }
@@ -273,8 +282,15 @@ class FrameDaemon extends Thread {
         while (true) {
             AppConstants.width = AppConstants.frame.getBounds().width;
             AppConstants.height = AppConstants.frame.getBounds().height;
+
             AppConstants.resize();
-            JSONTools.resize();
+
+            try {
+                // System.out.println("width: " + AppConstants.width + " height: " +
+                // AppConstants.height);
+                Thread.sleep(250);
+            } catch (InterruptedException e) {
+            }
         }
     }
 }

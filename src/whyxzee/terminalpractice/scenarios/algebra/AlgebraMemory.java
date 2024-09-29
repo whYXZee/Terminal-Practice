@@ -5,110 +5,47 @@ import whyxzee.terminalpractice.resources.Equation;
 import whyxzee.terminalpractice.scenarios.ScenarioConstants;
 import whyxzee.terminalpractice.scenarios.ScenarioUI;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-
-import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
 import javax.swing.JOptionPane;
 
 import java.util.ArrayList;
 
-public class AlgebraMemory extends ScenarioUI implements ActionListener {
+// add daemon
+public class AlgebraMemory extends ScenarioUI {
     //
-    // General variables
+    // Scenario-specific variables
     //
-    boolean shouldBreak = false;
-    public int correct = 0;
-    public String response = "";
-    JTextField textField;
-    public JLabel correctIncorrect = new JLabel();
+    private static Equation eq;
 
     public AlgebraMemory() throws InterruptedException {
-        // Layout
-        this.setLayout(new GridBagLayout());
-        GridBagConstraints grid = new GridBagConstraints();
-        grid.gridx = 0;
-        grid.gridy = 0;
-        grid.insets = new Insets(8, 8, 8, 8);
-        grid.anchor = GridBagConstraints.CENTER;
-
-        for (int i = 0; i < AppConstants.goal; i++) {
-            // Showing the equation
-            Equation eq = randomize();
-            JLabel questionTracker = new JLabel("Question " + (i + 1) + "/" + AppConstants.goal);
-            JLabel question = new JLabel("Remember: " + eq);
-            questionTracker.setFont(AppConstants.biggerFont);
-            question.setFont(AppConstants.medFont);
-            this.add(questionTracker, grid);
-            grid.gridy++;
-            this.add(question, grid);
-            display();
-            Thread.sleep(1500);
-
-            // Ask question
-            this.remove(question);
-            textField = new JTextField();
-            textField.setColumns(AppConstants.answerColumns);
-            textField.setHorizontalAlignment(JTextField.CENTER);
-            textField.setFont(AppConstants.smallFont);
-            textField.addActionListener(this);
-            this.add(textField, grid);
-            grid.gridy++;
-
-            JButton backButton = new JButton("End practice");
-            backButton.addActionListener(this);
-            backButton.setActionCommand("end");
-            backButton.setMnemonic(KeyEvent.VK_E);
-            backButton.setPreferredSize(AppConstants.smallButtonDimension);
-            backButton.setFont(AppConstants.medFont);
-            backButton.setToolTipText("End the drill early.");
-            this.add(backButton, grid);
-            grid.gridy++;
-
-            // Display
-            display();
-            textField.requestFocusInWindow();
-            ScenarioConstants.scenarioSemaphore.acquire();
-
-            // Checking the input
-            if (eq.toString().equals(response)) {
-                correctIncorrect = new JLabel("Correct!");
-                correctIncorrect.setFont(AppConstants.bigFont);
-                correct++;
-            } else if (shouldBreak) {
-                break;
-            } else {
-                correctIncorrect = new JLabel("Incorrect, the answer was: " + eq.toString());
-                correctIncorrect.setFont(AppConstants.bigFont);
-            }
-            this.add(correctIncorrect, grid);
-            display();
-            Thread.sleep(2000);
-            this.removeAll();
-        }
-        JOptionPane.showMessageDialog(AppConstants.frame, "You got " + correct + " correct!", "Scenario Completion",
-                JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("timer")) {
-            this.response = textField.getText();
-        } else if (e.getActionCommand().equals("end")) {
-            shouldBreak = true;
-        } else {
-            this.response = textField.getText();
+    public void runProblem(int questionNum) throws InterruptedException {
+        resetGrid();
+        questionTracker(questionNum);
+
+        randomize();
+        printQuestion();
+
+        // Displaying question then removing it
+        display();
+        textField.setEnabled(false);
+        Thread.sleep(1500);
+        for (JLabel label : questions) {
+            this.remove(label);
         }
-        ScenarioConstants.scenarioSemaphore.release();
+        // this.remove(question);
+
+        textField();
+        backButton();
+
+        display();
+        ScenarioConstants.scenarioSemaphore.acquire();
     }
 
-    private Equation randomize() {
+    @Override
+    public void randomize() {
         int termNumber = 2;
         if (Math.random() > .6) {
             termNumber = 3;
@@ -127,6 +64,23 @@ public class AlgebraMemory extends ScenarioUI implements ActionListener {
             }
             output.add(term);
         }
-        return new Equation(output);
+        eq = new Equation(output);
+    }
+
+    @Override
+    public String solve() {
+        return eq.toString();
+    }
+
+    @Override
+    public void getQuestion() {
+        questions = new JLabel[] { new JLabel("Remember: " + eq) };
+    }
+
+    @Override
+    public void printInfo() {
+        JOptionPane.showMessageDialog(AppConstants.frame,
+                "A random equation will appear, then disappear after some time.\nRemember the equation and answer it as you see it.\n(add space in between signs)",
+                "Scenario Instructions", JOptionPane.INFORMATION_MESSAGE);
     }
 }

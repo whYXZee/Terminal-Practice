@@ -28,7 +28,7 @@ import java.util.concurrent.Semaphore;
 import whyxzee.terminalpractice.application.AppConstants;
 
 public class JSONCreator extends JPanel implements ActionListener {
-    JSONCreatorDaemon daemon;
+    // JSONCreatorDaemon daemon;
     Semaphore semaphore = new Semaphore(0);
 
     // Variables
@@ -287,9 +287,9 @@ public class JSONCreator extends JPanel implements ActionListener {
         AppConstants.frame.setContentPane(this);
         AppConstants.frame.setVisible(true);
 
-        daemon = new JSONCreatorDaemon(this);
-        daemon.setDaemon(true);
-        daemon.start();
+        // daemon = new JSONCreatorDaemon(this);
+        // daemon.setDaemon(true);
+        // daemon.start();
     }
 
     private boolean checkIfDone() {

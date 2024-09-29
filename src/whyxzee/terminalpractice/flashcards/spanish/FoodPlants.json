@@ -1,0 +1,38 @@
+{
+  "setName": "food (plants)",
+  "restrictLetters": true,
+  "beginningCharIndex": 3,
+  "termList": {
+    "What is \"the fruit\" in Spanish?": "la fruta",
+    "What is \"the vegetable\" in Spanish?": "el vegetal,la verdura",
+    "What is \"the nut\" in Spanish?": "la nuez",
+    "What is \"the berry\" in Spanish?": "la baya",
+
+    "What is \"the apple\" in Spanish?": "la manzana",
+    "What is \"the peach\" in Spanish?": "el melocotón",
+    "What is \"the melon\" and/or \"the cantaloupe\" in Spanish?": "el melón",
+    "What is \"the kiwi\" in Spanish?": "el kiwi",
+    "What is \"the watermelon\" in Spanish?": "la sandía,la patilla",
+    "What is \"the banana\" in Spanish?": "el plátano",
+    "What is \"the coconut\" in Spanish?": "el coco",
+    "What is \"the grape\" in Spanish?": "la uva",
+    "What is \"the pumpkin\" in Spanish?": "la calabaza",
+
+    "What is \"the carrot\" in Spanish?": "la zanahoria",
+    "What is \"the pea\" in Spanish?": "el chícharo",
+    "What is \"the tomato\" in Spanish?": "el tomate",
+    "What is \"the cauliflower\" in Spanish?": "la coliflor",
+    "What is \"the potato\" in Spanish?": "la patata,la papa",
+    "What is \"the mushroom\" in Spanish?": "",
+
+    "What is \"the almond\" in Spanish?": "la almendra",
+    "What is \"the pecan\" in Spanish?": "la pecana,la pacana,la nuez",
+    "What is \"the pistachio\" in Spanish?": "el pistacho",
+
+    "What is \"the raspberry\" in Spanish?": "la frambuesa",
+    "What is \"the blackberry\" in Spanish?": "la zarzamora,la mora",
+    "What is \"the elderberry\" in Spanish?": "la baya del saúco",
+    "What is \"the blueberry\" in Spanish": "el arándano azul,la mora azul"
+  },
+  "subject": "spanish"
+}

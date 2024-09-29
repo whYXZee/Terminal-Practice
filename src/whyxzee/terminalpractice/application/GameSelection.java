@@ -48,6 +48,10 @@ public class GameSelection extends JPanel implements ActionListener {
     public GameSelection(boolean isCustomAvailable) {
         this.isCustomAvailable = isCustomAvailable;
 
+        daemon = new GameDaemon(this);
+        daemon.setDaemon(true);
+        daemon.start();
+
         // Layout
         this.setLayout(new GridBagLayout());
 
@@ -146,7 +150,6 @@ public class GameSelection extends JPanel implements ActionListener {
         this.add(splashText, grid);
         grid.gridy++;
         this.add(buttonPanel, grid);
-
     }
 
     @Override
@@ -191,10 +194,6 @@ public class GameSelection extends JPanel implements ActionListener {
     public void display() {
         AppConstants.frame.setContentPane(this);
         AppConstants.frame.setVisible(true);
-
-        daemon = new GameDaemon(this);
-        daemon.setDaemon(true);
-        daemon.start();
     }
 
     public void resize() {

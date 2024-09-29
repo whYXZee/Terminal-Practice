@@ -5,32 +5,13 @@ import whyxzee.terminalpractice.resources.Trigonometry;
 import whyxzee.terminalpractice.scenarios.ScenarioConstants;
 import whyxzee.terminalpractice.scenarios.ScenarioUI;
 
-import java.awt.Dimension;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-
 import java.math.BigDecimal;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 
 import java.util.ArrayList;
 
-public class RightTrig extends ScenarioUI implements ActionListener {
-    //
-    // General variables
-    //
-    boolean shouldBreak = false;
-    int correct = 0;
-    public String response = "";
-    static JLabel[] questions;
-    JTextField textField;
-    JLabel correctIncorrect = new JLabel();
-
+public class RightTrig extends ScenarioUI {
     //
     // Scenario-specific variables
     //
@@ -45,12 +26,13 @@ public class RightTrig extends ScenarioUI implements ActionListener {
             add(null);
         }
     };
+    private static ArrayList<Integer> givenSides = new ArrayList<Integer>();
 
     // enums to determine problem type
     private static ProblemType problemType = ProblemType.HYPOTENUSE;
     private static GivenVal givenVal = GivenVal.SIDES;
 
-    // What part of the motion needs to be found?
+    // What part of the triangle needs to be found?
     private enum ProblemType {
         HYPOTENUSE,
         X_SIDE,
@@ -59,109 +41,18 @@ public class RightTrig extends ScenarioUI implements ActionListener {
         THETA_Y
     }
 
-    // What values from the motion are given?
+    // What values from the triangle are given?
     private enum GivenVal {
-        SIDES, // two sides from initial triangle
-        THETA_Y, // angle of initial triangle + random side
+        SIDES,
+        THETA_Y,
         THETA_X
     }
 
     public RightTrig() throws InterruptedException {
-        // Layout
-        this.setLayout(new GridBagLayout());
-        correctIncorrect.setFont(AppConstants.biggerFont);
-
-        for (int i = 0; i < AppConstants.goal; i++) {
-            // Question tracker
-            JLabel questionTracker = new JLabel("Question " + (i + 1) + "/" + AppConstants.goal);
-            questionTracker.setFont(AppConstants.biggerFont);
-            this.add(questionTracker, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
-
-            // Question
-            randomize();
-            JLabel triangleLabel = new JLabel(triangle.toString());
-            triangleLabel.setFont(AppConstants.medFont);
-            this.add(triangleLabel, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
-
-            printQuestion();
-
-            // Answer box
-            textField = new JTextField();
-            textField.addActionListener(this);
-            textField.setColumns(AppConstants.answerColumns);
-            textField.setFont(AppConstants.smallFont);
-            textField.setHorizontalAlignment(JTextField.CENTER);
-            this.add(textField, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
-
-            // End button
-            JButton backButton = new JButton("End practice");
-            backButton.addActionListener(this);
-            backButton.setActionCommand("end");
-            backButton.setMnemonic(KeyEvent.VK_E);
-            backButton.setPreferredSize(AppConstants.smallButtonDimension);
-            backButton.setFont(AppConstants.medFont);
-            backButton.setToolTipText("End the drill early.");
-            this.add(backButton, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
-
-            // Display
-            display();
-            textField.requestFocusInWindow();
-            ScenarioConstants.scenarioSemaphore.acquire();
-
-            // Checking the input
-            try {
-                if (solve().toString().equals(response)) {
-                    correctIncorrect = new JLabel("Correct!");
-                    correctIncorrect.setFont(AppConstants.bigFont);
-                    this.add(correctIncorrect, ScenarioConstants.grid);
-                    correct++;
-
-                    display();
-                    Thread.sleep(2000);
-                } else if (shouldBreak) {
-                    break;
-                } else {
-                    correctIncorrect = new JLabel("Incorrect, the answer was: " + solve());
-                    correctIncorrect.setFont(AppConstants.bigFont);
-                    printHowTo();
-                    ScenarioConstants.scenarioSemaphore.acquire();
-                }
-            } catch (NumberFormatException error) {
-                if (shouldBreak) {
-                    break;
-                } else {
-                    correctIncorrect = new JLabel("Incorrect, the answer was: " + solve());
-                    correctIncorrect.setFont(AppConstants.bigFont);
-                    printHowTo();
-                    ScenarioConstants.scenarioSemaphore.acquire();
-                }
-            }
-            this.removeAll();
-        }
-        JOptionPane.showMessageDialog(AppConstants.frame, "You got " + correct + " correct!", "Scenario Completion",
-                JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("end")) {
-            shouldBreak = true;
-        } else if (e.getActionCommand().equals("move on")) {
-
-        } else {
-            this.response = textField.getText();
-        }
-        ScenarioConstants.scenarioSemaphore.release();
-    }
-
-    /**
-     * Randomizes the right triangle trigonometry problem.
-     */
-    private static void randomize() {
+    public void randomize() {
         // Randomiozes what is given
         switch (ScenarioConstants.rng.nextInt(3)) {
             case 0:
@@ -180,6 +71,7 @@ public class RightTrig extends ScenarioUI implements ActionListener {
         do {
             // Resetting the equation
             triangle.updateFromList(nullList);
+            givenSides.removeAll(givenSides);
 
             switch (givenVal) {
                 case THETA_Y:
@@ -191,10 +83,10 @@ public class RightTrig extends ScenarioUI implements ActionListener {
                     rngSides(ScenarioConstants.rng.nextInt(3) + 1);
                     break;
                 case SIDES:
-                    rngSides(ScenarioConstants.rng.nextInt(3) + 1);
-                    randomSide = ScenarioConstants.rng.nextInt(3) + 1;
+                    rngSides(ScenarioConstants.rng.nextInt(3));
+                    randomSide = ScenarioConstants.rng.nextInt(3);
                     while (triangle.sidePresent(randomSide)) {
-                        randomSide = ScenarioConstants.rng.nextInt(3) + 1;
+                        randomSide = ScenarioConstants.rng.nextInt(3);
                     }
                     rngSides(randomSide);
                     triangle.rearrange();
@@ -225,86 +117,58 @@ public class RightTrig extends ScenarioUI implements ActionListener {
         } while (questionOverlap());
     }
 
-    /**
-     * Solves the right triangle trigonometry problem.
-     */
-    private static BigDecimal solve() {
+    @Override
+    public String solve() {
         triangle.solve90DegTrig();
         switch (problemType) {
             case HYPOTENUSE:
-                return new BigDecimal(triangle.hypotenuse, Trigonometry.trigRound);
+                return new BigDecimal(triangle.hypotenuse, Trigonometry.trigRound).toString();
             case X_SIDE:
-                return new BigDecimal(triangle.x, Trigonometry.trigRound);
+                return new BigDecimal(triangle.x, Trigonometry.trigRound).toString();
             case Y_SIDE:
-                return new BigDecimal(triangle.y, Trigonometry.trigRound);
+                return new BigDecimal(triangle.y, Trigonometry.trigRound).toString();
             case THETA_X:
-                return new BigDecimal(triangle.thetaX, Trigonometry.trigRound);
+                return new BigDecimal(triangle.thetaX, Trigonometry.trigRound).toString();
             case THETA_Y:
-                return new BigDecimal(triangle.thetaY, Trigonometry.trigRound);
+                return new BigDecimal(triangle.thetaY, Trigonometry.trigRound).toString();
             default:
-                return new BigDecimal(0);
+                return "0";
         }
 
     }
 
-    /**
-     * Prints the right triangle trigonometric question.
-     */
-    private void printQuestion() {
+    @Override
+    public void getQuestion() {
         switch (problemType) {
             case HYPOTENUSE:
-                questions = AppConstants.divideLabel("What is the hypotenuse of the triangle, given the values?");
+                questions = AppConstants
+                        .divideLabel(triangle + " What is the hypotenuse of the triangle, given the values?");
                 break;
             case X_SIDE:
-                questions = AppConstants.divideLabel("What is the base of the triangle, given the values?");
+                questions = AppConstants.divideLabel(triangle + "What is the base of the triangle, given the values?");
                 break;
             case Y_SIDE:
-                questions = AppConstants.divideLabel("What is the height of the triangle, given the values?");
+                questions = AppConstants.divideLabel(
+                        triangle + "What is the height of the triangle, given the values?");
                 break;
             case THETA_X:
-                questions = AppConstants.divideLabel("What is the measure of the base angle? [in degrees]");
+                questions = AppConstants.divideLabel(triangle + "What is the measure of the base angle? [in degrees]");
                 break;
             case THETA_Y:
-                questions = AppConstants.divideLabel("What is the measure of the height angle? [in degrees]");
-        }
-        for (JLabel j : questions) {
-            j.setFont(AppConstants.medFont);
-            this.add(j, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
+                questions = AppConstants.divideLabel(
+                        triangle + "What is the measure of the height angle? [in degrees]");
         }
     }
 
-    /**
-     * Prints how to solve the right triangle trinonometry problem.
-     */
-    private void printHowTo() {
-        // Resetting the frame:
-        this.removeAll();
-        ScenarioConstants.grid.gridx = 0;
-        ScenarioConstants.grid.gridy = 0;
+    // @Override
+    // public void getHowTo() {
+    // }
 
-        // Adding everything
-        JLabel[] howToLabels = {};
-        this.add(correctIncorrect, ScenarioConstants.grid);
-        ScenarioConstants.grid.gridy++;
-
-        for (JLabel label : howToLabels) {
-            label.setFont(AppConstants.medFont);
-            this.add(label, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
-        }
-
-        // Button
-        JButton continueButton = new JButton("Continue");
-        continueButton.setActionCommand("move on");
-        continueButton.setPreferredSize(new Dimension(150, 25));
-        continueButton.setToolTipText("Continue to the next problem.");
-        continueButton.setMnemonic(KeyEvent.VK_C);
-        continueButton.addActionListener(this);
-        this.add(continueButton, ScenarioConstants.grid);
-        ScenarioConstants.grid.gridy++;
-
-        display();
+    @Override
+    public void printInfo() {
+        JOptionPane.showMessageDialog(AppConstants.frame,
+                "Solve the right triangle given the values.\n- X is the base of the triangle\nY is the height of the triangle",
+                "Scenario Instructions", JOptionPane.INFORMATION_MESSAGE);
     }
 
     /**
@@ -392,14 +256,15 @@ public class RightTrig extends ScenarioUI implements ActionListener {
      * 
      * @param side number of the side, with the following key:
      *             <ul>
-     *             <li>1: side X
-     *             <li>2: side Y
-     *             <li>3: Hypotenuse
+     *             <li>0: side X
+     *             <li>1: side Y
+     *             <li>2: Hypotenuse
      */
     private static void rngSides(int side) {
-        if (side == 1) {
+        givenSides.add(side);
+        if (side == 0) {
             triangle.x = (float) (ScenarioConstants.rng.nextInt(50) + 1);
-        } else if (side == 2) {
+        } else if (side == 1) {
             triangle.y = (float) (ScenarioConstants.rng.nextInt(50) + 1);
         } else {
             triangle.hypotenuse = (float) (ScenarioConstants.rng.nextInt(50) + 1);
