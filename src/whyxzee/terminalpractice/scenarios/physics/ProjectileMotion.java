@@ -1,37 +1,28 @@
 package whyxzee.terminalpractice.scenarios.physics;
 
-import whyxzee.terminalpractice.application.RunApplication;
+import whyxzee.terminalpractice.application.AppConstants;
 import whyxzee.terminalpractice.resources.Trigonometry;
 import whyxzee.terminalpractice.scenarios.ScenarioConstants;
 import whyxzee.terminalpractice.scenarios.ScenarioUI;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-
 import java.math.BigDecimal;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
+
+import javax.swing.JOptionPane;
 
 import java.util.ArrayList;
-import java.util.concurrent.Semaphore;
 
-public class ProjectileMotion extends ScenarioUI implements ActionListener {
+public class ProjectileMotion extends ScenarioUI {
+    //
+    // Scenario-specific variables
+    //
+
     // enums to determine problem type
-    private static ProblemType problemType = ProblemType.NONE;
-    private static GivenVal givenVal = GivenVal.NONE;
+    private static ProblemType problemType = ProblemType.INIT_VH;
+    private static GivenVal givenVal = GivenVal.INIT_SIDES;
+    private static ArrayList<Integer> givenSides = new ArrayList<Integer>();
 
-    /**
-     * What part of the motion needs to be found?
-     */
+    // What part of the motion needs to be found?
     private enum ProblemType {
-        NONE,
         INIT_VH, // initial velocity of hypotenuse
         INIT_VX, // initial velocity of X position
         INIT_VY, // initial velocity of Y position
@@ -47,15 +38,12 @@ public class ProjectileMotion extends ScenarioUI implements ActionListener {
         TOTAL_X, // total x displacement
     }
 
-    /**
-     * What values from the motion are given?
-     */
+    // What values from the motion are given?
     private enum GivenVal {
-        NONE,
         INIT_SIDES, // two sides from initial triangle
         INIT_THETAY, // angle of initial triangle + random side
-        F_SIDES, // two sides from final triangle
-        F_THETA // angle of final triangle + random side
+        // F_SIDES, // two sides from final triangle
+        // F_THETA // angle of final triangle + random side
     }
 
     // To track between problems
@@ -71,102 +59,13 @@ public class ProjectileMotion extends ScenarioUI implements ActionListener {
         }
     };
 
-    boolean shouldBreak = false;
-    public int correct = 0;
-    public String response = "";
-    Semaphore internalSemaphore = new Semaphore(0);
-    public Semaphore externalSemaphore = new Semaphore(0);
-    JTextField textField;
-    public JLabel correctIncorrect = new JLabel();
-    static JLabel lookingFor = new JLabel();
-
     public ProjectileMotion() throws InterruptedException {
-        // Layout
-        this.setLayout(new GridBagLayout());
-        GridBagConstraints grid = new GridBagConstraints();
-        grid.gridx = 0;
-        grid.gridy = 0;
-        grid.insets = new Insets(8, 8, 8, 8);
-        grid.anchor = GridBagConstraints.CENTER;
 
-        for (int i = 0; i < RunApplication.goal; i++) {
-            RunApplication.getFontSize();
-            // Resetting the equation
-            triangle.updateFromList(nullList);
-
-            // Showing the equation
-            randomize();
-            printQuestion();
-            JLabel questionTracker = new JLabel("Question " + (i + 1) + "/" + RunApplication.goal);
-            JLabel question = new JLabel(triangle.toString());
-
-            questionTracker.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 2));
-            question.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 3));
-            lookingFor.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 3));
-
-            this.add(questionTracker, grid);
-            grid.gridy++;
-            this.add(question, grid);
-            grid.gridy++;
-            this.add(lookingFor, grid);
-            grid.gridy++;
-
-            textField = new JTextField();
-            textField.setColumns(RunApplication.getColumns());
-            textField.setHorizontalAlignment(JTextField.CENTER);
-            textField.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 4));
-            textField.addActionListener(this);
-            this.add(textField, grid);
-            grid.gridy++;
-
-            JButton backButton = new JButton("End practice");
-            backButton.setActionCommand("end");
-            backButton.setPreferredSize(new Dimension(150, 25));
-            backButton.setToolTipText("End the drill early.");
-            backButton.setMnemonic(KeyEvent.VK_E);
-            backButton.addActionListener(this);
-            this.add(backButton, grid);
-            grid.gridy++;
-
-            display();
-            textField.requestFocusInWindow();
-
-            internalSemaphore.acquire();
-
-            // Answering the question
-            if (solve().toString().equals(response)) {
-                correctIncorrect = new JLabel("Correct!");
-                correct++;
-            } else if (shouldBreak) {
-                break;
-            } else {
-                correctIncorrect = new JLabel("Incorrect, the answer was: " + solve());
-            }
-            this.add(correctIncorrect, grid);
-            display();
-            Thread.sleep(2000);
-            this.removeAll();
-        }
-        correctIncorrect = new JLabel("Congratuations, you got " + correct + " correct!");
-        display();
-        Thread.sleep(2000);
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("end")) {
-            shouldBreak = true;
-        } else {
-            this.response = textField.getText();
-        }
-        internalSemaphore.release();
-    }
-
-    /**
-     * Randomizes the projectile motion problem.
-     */
-    private static void randomize() {
-        // Randomiozes what is given
+    public void randomize() {
+        // Randomizes what is given
         switch (ScenarioConstants.rng.nextInt(2)) {
             case 0:
                 givenVal = GivenVal.INIT_THETAY;
@@ -178,23 +77,34 @@ public class ProjectileMotion extends ScenarioUI implements ActionListener {
 
         // Randomizes the values based on the problem
         int randomSide;
-        switch (givenVal) {
-            case INIT_THETAY:
-                triangle.thetaY = (float) (ScenarioConstants.rng.nextInt(80) + 1);
-                rngSides(ScenarioConstants.rng.nextInt(3) + 1);
-                break;
-            case INIT_SIDES:
-                rngSides(ScenarioConstants.rng.nextInt(3) + 1);
-                randomSide = ScenarioConstants.rng.nextInt(3) + 1;
-                while (triangle.sidePresent(randomSide)) {
-                    randomSide = ScenarioConstants.rng.nextInt(3) + 1;
-                }
-                rngSides(randomSide);
-                triangle.rearrange();
-                break;
-            default:
-                break;
-        }
+        do {
+            // Resetting the equation
+            triangle.updateFromList(nullList);
+            givenSides.removeAll(givenSides);
+
+            switch (givenVal) {
+                case INIT_THETAY:
+                    triangle.thetaY = (float) (ScenarioConstants.rng.nextInt(80) + 1);
+                    rngSides(ScenarioConstants.rng.nextInt(3));
+                    break;
+                case INIT_SIDES:
+                    rngSides(ScenarioConstants.rng.nextInt(3));
+
+                    // Avoid randomizing the same side
+                    randomSide = ScenarioConstants.rng.nextInt(3);
+                    while (triangle.sidePresent(randomSide)) {
+                        randomSide = ScenarioConstants.rng.nextInt(3);
+                    }
+                    rngSides(randomSide);
+
+                    // Rearrange the triangle to follow legal triangle rules
+                    triangle.rearrange();
+                    break;
+                default:
+                    break;
+            }
+            triangle.updateLists();
+        } while (!triangle.isLegal90Deg());
 
         // What the problem wants you to find
         do {
@@ -227,36 +137,166 @@ public class ProjectileMotion extends ScenarioUI implements ActionListener {
         } while (questionOverlap());
     }
 
-    private static BigDecimal solve() {
+    @Override
+    public String solve() {
         triangle.solve90DegTrig();
+
         switch (problemType) {
             case INIT_THETA_Y:
-                return new BigDecimal(triangle.thetaY, Trigonometry.trigRound);
+                return new BigDecimal(triangle.thetaY, Trigonometry.trigRound).toString();
             case INIT_VH:
-                return new BigDecimal(triangle.hypotenuse, Trigonometry.trigRound);
+                return new BigDecimal(triangle.hypotenuse, Trigonometry.trigRound).toString();
             case INIT_VX:
-                return new BigDecimal(triangle.x, Trigonometry.trigRound);
+                return new BigDecimal(triangle.x, Trigonometry.trigRound).toString();
             case INIT_VY:
-                return new BigDecimal(triangle.y, Trigonometry.trigRound);
+                return new BigDecimal(triangle.y, Trigonometry.trigRound).toString();
             case F_THETA:
-                return new BigDecimal(triangle.thetaY, Trigonometry.trigRound);
+                return new BigDecimal(triangle.thetaY, Trigonometry.trigRound).toString();
             case F_VH:
-                return new BigDecimal(triangle.hypotenuse, Trigonometry.trigRound);
+                return new BigDecimal(triangle.hypotenuse, Trigonometry.trigRound).toString();
             case F_VX:
-                return new BigDecimal(triangle.x, Trigonometry.trigRound);
+                return new BigDecimal(triangle.x, Trigonometry.trigRound).toString();
             case F_VY:
-                return new BigDecimal(-triangle.y, Trigonometry.trigRound);
+                return new BigDecimal(-triangle.y, Trigonometry.trigRound).toString();
             case MAX_HEIGHT: // derived from suvat equation v^2 = u^2 + 2as
-                return new BigDecimal((Math.pow(triangle.y, 2) / 19.6), Trigonometry.trigRound);
+                return new BigDecimal((Math.pow(triangle.y, 2) / 19.6), Trigonometry.trigRound).toString();
             case TIME_MAX_HEIGHT:
-                return new BigDecimal((triangle.y / 9.8), Trigonometry.trigRound);
+                return new BigDecimal((triangle.y / 9.8), Trigonometry.trigRound).toString();
             case TOTAL_TIME:
-                return new BigDecimal(((2 * triangle.y) / 9.8), Trigonometry.trigRound);
+                return new BigDecimal(((2 * triangle.y) / 9.8), Trigonometry.trigRound).toString();
             case TOTAL_X:
-                return new BigDecimal((triangle.x * ((2 * triangle.y) / 9.8)), Trigonometry.trigRound);
+                return new BigDecimal((triangle.x * ((2 * triangle.y) / 9.8)), Trigonometry.trigRound).toString();
             default:
-                return new BigDecimal(0);
+                return "0";
         }
+    }
+
+    /**
+     * Gets the projectile motion question.
+     */
+    @Override
+    public void getQuestion() {
+        switch (problemType) {
+            case INIT_THETA_Y:
+                questions = AppConstants.divideLabel(triangle + "; What is the initial theta?");
+                break;
+            case INIT_VH:
+                questions = AppConstants.divideLabel(triangle + "; What is the initial velocity?");
+                break;
+            case INIT_VX:
+                questions = AppConstants.divideLabel(triangle + "; What is the initial velocity of the X position?");
+                break;
+            case INIT_VY:
+                questions = AppConstants.divideLabel(triangle + "; What is the initial velocity of the Y position?");
+                break;
+            case F_THETA:
+                questions = AppConstants.divideLabel(triangle + "; What is the final theta?");
+                break;
+            case F_VH:
+                questions = AppConstants.divideLabel(triangle + "; What is the final velocity?");
+                break;
+            case F_VX:
+                questions = AppConstants.divideLabel(triangle + "; What is the final velocity of the X position?");
+                break;
+            case F_VY:
+                questions = AppConstants.divideLabel(triangle + "; What is the final velocity of the Y position?");
+                break;
+            case MAX_HEIGHT:
+                questions = AppConstants.divideLabel(triangle + "; What is the max height of the projectile?");
+                break;
+            case TIME_MAX_HEIGHT:
+                questions = AppConstants
+                        .divideLabel(triangle + "; What is the time that the projectile is at its max height?");
+                break;
+            case TOTAL_TIME:
+                questions = AppConstants.divideLabel(triangle + "; What time does the projectile land?");
+                break;
+            case TOTAL_X:
+                questions = AppConstants.divideLabel(triangle + "; What is the total X displacement?");
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void getHowTo() {
+        switch (problemType) {
+            case INIT_THETA_Y:
+                switch (givenVal) {
+                    case INIT_SIDES:
+                        if (!givenSides.contains(0)) {
+                            howToLabels = AppConstants
+                                    .divideLabel("The initial theta can be found using right triangle trigonometry " +
+                                            "(SOH CAH TOA). In this case, we would use SOH (sine = opposite/hypotenuse) as "
+                                            +
+                                            "the x-side is missing: sin(\u03b8) = (" + triangle.y + "/"
+                                            + triangle.hypotenuse +
+                                            "). Then, solve for theta by taking the inverse of sine: \u03b8 = "
+                                            + "sine "
+                                            + "inverse (" + triangle.y + "/" + triangle.hypotenuse + ").");
+                        } else if (!givenSides.contains(1)) {
+                            howToLabels = AppConstants
+                                    .divideLabel("The initial theta can be found using right triangle trigonometry " +
+                                            "(SOH CAH TOA). In this case, we would use CAH (cosine = adjacent/hypotenuse) as "
+                                            +
+                                            "the y-side is missing: cos(\u03b8) = (" + triangle.x + "/"
+                                            + triangle.hypotenuse +
+                                            "). Then, solve for theta by taking the inverse of cosine: \u03b8 = "
+                                            + "cosine "
+                                            + "inverse (" + triangle.x + "/" + triangle.hypotenuse + ").");
+                        } else {
+                            howToLabels = AppConstants
+                                    .divideLabel("The initial theta can be found using right triangle trigonometry " +
+                                            "(SOH CAH TOA). In this case, we would use TOA (tangent = opposite/adjacent) as "
+                                            +
+                                            "the hypotenuse is missing: tan(\u03b8) = (" + triangle.x + "/" + triangle.y
+                                            +
+                                            "). Then, solve for theta by taking the inverse of tangent: \u03b8 = "
+                                            + "tangent "
+                                            + "inverse (" + triangle.x + "/" + triangle.y + ").");
+                        }
+                    default:
+                        break;
+                }
+                break;
+            case INIT_VH:
+                switch (givenVal) {
+                    case INIT_SIDES:
+                        howToLabels = AppConstants.divideLabel("The initial velocity of a projectile is the hypotenuse "
+                                +
+                                "of the initial triangle. In this case, we would use pythagorean theorem [a^(2) + b^(2) = c^(2)] "
+                                + "to find the hypotenuse. " + triangle.x + "^(2) + " + triangle.y + "^(2) = "
+                                + triangle.hypotenuse + "^(2).");
+                        break;
+                    case INIT_THETAY:
+                        if (!givenSides.contains(0)) {
+                            howToLabels = AppConstants.divideLabel("The initial velocity of a projectile is " +
+                                    "the hypotenuse of the initial triangle. Due to the given values, we "
+                                    + "would use right triangle trigonometry (SOH CAH TOA) to find the "
+                                    + "hypotenuse. In this case, we would use SOH (sine = opposite/"
+                                    + "hypotenuse) as the y-side is present: sin(" + triangle.thetaY +
+                                    ") = (" + triangle.y + "/ hypotenuse). Then, solve for the "
+                                    + "missing side: hypotenuse = " + triangle.y + "/sin(" + triangle.thetaY + ")");
+                        } else {
+                            howToLabels = AppConstants.divideLabel("The initial velocity of a projectile is " +
+                                    "the hypotenuse of the initial triangle. Due to the given values, we "
+                                    + "would use right triangle trigonometry (SOH CAH TOA) to find the "
+                                    + "hypotenuse. In this case, we would use CAH (cosine = opposite/"
+                                    + "hypotenuse) as the y-side is present: cos(" + triangle.thetaY +
+                                    ") = (" + triangle.x + "/ hypotenuse). Then, solve for the "
+                                    + "missing side: hypotenuse = " + triangle.x + "/cos(" + triangle.thetaY + ")");
+                        }
+                        break;
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void printInfo() {
+        JOptionPane.showMessageDialog(AppConstants.frame, "Solve the given projectile motion problem.",
+                "Scenario Instructions", JOptionPane.INFORMATION_MESSAGE);
     }
 
     /**
@@ -319,60 +359,18 @@ public class ProjectileMotion extends ScenarioUI implements ActionListener {
      * 
      * @param side number of the side, with the following key:
      *             <ul>
-     *             <li>1: side X
-     *             <li>2: side Y
-     *             <li>3: Hypotenuse
+     *             <li>0: side X
+     *             <li>1: side Y
+     *             <li>2: Hypotenuse
      */
     private static void rngSides(int side) {
-        if (side == 1) {
+        givenSides.add(side);
+        if (side == 0) {
             triangle.x = (float) (ScenarioConstants.rng.nextInt(50) + 1);
-        } else if (side == 2) {
+        } else if (side == 1) {
             triangle.y = (float) (ScenarioConstants.rng.nextInt(50) + 1);
         } else {
             triangle.hypotenuse = (float) (ScenarioConstants.rng.nextInt(50) + 1);
-        }
-    }
-
-    private static void printQuestion() {
-        switch (problemType) {
-            case INIT_THETA_Y:
-                lookingFor = new JLabel("What is the initial theta?");
-                break;
-            case INIT_VH:
-                lookingFor = new JLabel("What is the initial velocity?");
-                break;
-            case INIT_VX:
-                lookingFor = new JLabel("What is the initial velocity of the X position?");
-                break;
-            case INIT_VY:
-                lookingFor = new JLabel("What is the initial velocity of the Y position?");
-                break;
-            case F_THETA:
-                lookingFor = new JLabel("What is the final theta?");
-                break;
-            case F_VH:
-                lookingFor = new JLabel("What is the final velocity?");
-                break;
-            case F_VX:
-                lookingFor = new JLabel("What is the final velocity of the X position?");
-                break;
-            case F_VY:
-                lookingFor = new JLabel("What is the final velocity of the Y position?");
-                break;
-            case MAX_HEIGHT:
-                lookingFor = new JLabel("What is the max height of the projectile?");
-                break;
-            case TIME_MAX_HEIGHT:
-                lookingFor = new JLabel("What is the time that the projectile is at its max height?");
-                break;
-            case TOTAL_TIME:
-                lookingFor = new JLabel("What time does the projectile land?");
-                break;
-            case TOTAL_X:
-                lookingFor = new JLabel("What is the total X displacement?");
-                break;
-            default:
-                break;
         }
     }
 }

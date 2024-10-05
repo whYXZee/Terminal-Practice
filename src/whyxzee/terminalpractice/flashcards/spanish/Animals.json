@@ -3,6 +3,10 @@
   "restrictLetters": true,
   "beginningCharIndex": 3,
   "termList": {
+    "What is \"the beast\" in Spanish?": "la bestia,el monstruo",
+    "What is \"the animal\" in Spanish?": "el animal",
+    "What is \"the pet\" in Spanish?": "la mascota",
+
     "What is \"the dog\" in Spanish?": "el perro,la perra",
     "What is \"the duck\" in Spanish?": "el pato,la pata",
     "What is \"the cat\" in Spanish?": "el gato,la gata",
@@ -10,15 +14,23 @@
     "What is \"the rabbit\" in Spanish?": "el conejo",
     "What is \"the bird\" in Spanish?": "el pájaro,el ave",
     "What is \"the horse\" in Spanish?": "el caballo",
+    "What is \"the sheep\" in Spanish?": "la oveja",
+    "What is \"the boar\" in Spanish?": "el jabalí",
+    "What is \"the pig\" in Spanish?": "el cerdo,la cerda,el puerco,la puerca",
+    "What is \"the cow\" in Spanish?": "la vaca",
+    "What is \"the chicken\" in Spanish?": "el pollo",
+    "What is \"the rooster\" in Spanish?": "el gallo",
 
     "What is \"the monkey\" in Spanish?": "el mono,el chango",
     "What is \"the jaguar\" in Spanish?": "el jaguar",
+    "What is \"the sloth\" in spanish?": "el perezoso,la pereza",
 
     "What is \"the zebra\" in Spanish?": "la cebra",
     "What is \"the giraffe\" in Spanish?": "la jirafa",
     "What is \"the rhinoceros\" in Spanish?": "el rinoceronte",
     "What is \"the tiger\" in Spanish?": "el tigre",
     "What is \"the lion\" in Spanish?": "el león,la leona",
+    "What is \"the cheetah\" in spanish?": "el guepardo,la chita",
 
     "What is \"the fox\" in Spanish?": "el zorro",
     "What is \"the wolf\" in Spanish?": "el lobo",
@@ -34,7 +46,33 @@
     "What is \"the shark\" in Spanish?": "el tiburón",
     "What is \"the whale\" in Spanish?": "la ballena",
     "What is \"the elephant \" in Spanish?": "el elefante,la elefanta",
-    "What is \"the crab\" in Spanish?": "el cangrejo"
+    "What is \"the crab\" in Spanish?": "el cangrejo",
+    "What is \"the catfish\" in spanish?": "el bagre,el siluro",
+    "What is \"the bass\" in spanish?": "el robalo,el róbalo,la lubina,la cherna",
+
+    "What is \"the snake\" in Spanish?": "la serpiente,la víbora,la culebra",
+    "What is \"the rat\" in Spanish?": "la rata",
+    "What is \"the mouse\" in Spanish?": "el ratón,la ratona",
+    "What is \"the scorpion\" in Spanish?": "el escorpión,el alacrán",
+    "What is \"the bat\" in Spanish?": "el murciélago",
+    "What is \"the lizard\" in Spanish?": "el lagarto,la lagartija",
+
+    "What is \"the bug\" in Spanish?": "el insecto,el bicho",
+    "What is \"the ant\" in Spanish?": "la hormiga",
+    "What is \"the bee\" in Spanish?": "la abeja",
+    "What is \"the wasp\" in Spanish?": "la avispa",
+    "What is \"the lightning bug\" or \"the firefly\" in Spanish?": "la luciérnaga,el lampírido",
+    "What is \"the scarab\" in Spanish?": "el escarabajo",
+    "What is \"the spider\" in Spanish?": "la araña",
+    "What is \"the tarantula\" in Spanish?": "la tarántula",
+    "What is \"the dragonfly\" in spanish?": "la libélula",
+
+    "What is \"the eagle\" in Spanish?": "la águila",
+    "What is \"the vulture\" in Spanish?": "el buitre",
+    "What is \"the raven\" in Spanish?": "el cuervo",
+    "What is \"the kiwi\" in Spanish?": "el kiwi",
+    "What is \"the albatross\" in spanish?": "el albatros",
+    "What is \"the hawk\" in spanish?": "el halcón"
   },
   "subject": "spanish"
 }

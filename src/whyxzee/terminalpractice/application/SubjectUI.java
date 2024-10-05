@@ -2,25 +2,36 @@ package whyxzee.terminalpractice.application;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-// import java.awt.event.KeyEvent;
-import javax.swing.AbstractButton;
+
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import whyxzee.terminalpractice.flashcards.FlashcardConstants;
+import whyxzee.terminalpractice.flashcards.JSONTools;
+import whyxzee.terminalpractice.scenarios.ScenarioConstants;
 
 import java.util.ArrayList;
 import java.util.Collections;
-// import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Dimension;
 
 public class SubjectUI extends JPanel implements ActionListener {
-    List<JButton> buttonList = new ArrayList<JButton>();
-    // int maxButtonWidth = 150;
+    private static SubjectDaemon daemon;
+
+    // Vars
+    List<JButton> buttonList = new ArrayList<JButton>(); // never make this private static, idk why
+    public static boolean activeScreen = false;
+
+    // UI Components
+    JLabel subjectLabel = new JLabel("Choose a subject:");
+    JButton backButton = new JButton("Go Back");
 
     public SubjectUI(Set<String> inputSet) {
         // Layout
@@ -37,38 +48,111 @@ public class SubjectUI extends JPanel implements ActionListener {
 
         // Creating buttons from hashmap
         for (String i : list) {
-            buttonList.add(new JButton(RunApplication.capitalize(i)));
+            buttonList.add(new JButton(AppConstants.capitalize(i)));
         }
+
+        subjectLabel.setFont(AppConstants.bigFont);
+        this.add(subjectLabel, grid);
+        grid.gridy++;
 
         // adding data for every button
         for (JButton i : buttonList) {
-            i.setVerticalTextPosition(AbstractButton.CENTER);
             i.setActionCommand(i.getText().toLowerCase());
             i.addActionListener(this); // Makes the buttons work
+            i.setFont(AppConstants.medFont);
+            i.setPreferredSize(AppConstants.wideButtonDimension);
+
             this.add(i, grid); // adds the button to the panel
             grid.gridy++;
-            // System.out.println(i.getPreferredSize().width);
-            // if (i.getPreferredSize().width > maxButtonWidth) {
-            // maxButtonWidth = i.getPreferredSize().width;
-            // }
         }
-        for (JButton i : buttonList) {
-            i.setPreferredSize(new Dimension(200, 25));
-        }
+
+        // Back button
+        backButton.addActionListener(this);
+        backButton.setActionCommand("back");
+        backButton.setFont(AppConstants.smallFont);
+        this.add(backButton, grid);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        for (JButton i : buttonList) {
-            if (e.getActionCommand().equals(i.getText().toLowerCase())) {
-                RunApplication.subject = i.getText().toLowerCase();
+        activeScreen = false;
+        if (e.getActionCommand().equals("back")) {
+            new GameSelection(AppConstants.checkCustom()).display();
+        } else {
+            for (JButton i : buttonList) {
+                if (e.getActionCommand().equals(i.getText().toLowerCase())) {
+                    AppConstants.subject = i.getText().toLowerCase();
+                }
+            }
+            switch (AppConstants.gameEnum) {
+                case FLASHCARDS:
+                    new SetScenarioUI(FlashcardConstants.flashcardHashMap.get(AppConstants.subject).keySet()).display();
+                    break;
+                case DRILLS:
+                    new SetScenarioUI(FlashcardConstants.flashcardHashMap.get(AppConstants.subject).keySet())
+                            .display();
+                    break;
+                case SCENARIOS:
+                    new SetScenarioUI(
+                            new HashSet<String>(ScenarioConstants.scenarioHashMap.get(AppConstants.subject)))
+                            .display();
+                    break;
+                case JSON_EDITOR:
+                    new SetScenarioUI(new HashSet<String>(JSONTools.getCustomSets(AppConstants.subject))).display();
+                    break;
+
+                case CUSTOM_FLASHCARDS:
+                    new SetScenarioUI(new HashSet<String>(JSONTools.getCustomSets(AppConstants.subject))).display();
+                    break;
+                case CUSTOM_DRILLS:
+                    new SetScenarioUI(new HashSet<String>(JSONTools.getCustomSets(AppConstants.subject))).display();
+                    break;
+                default:
+                    break;
             }
         }
-        RunApplication.semaphore.release();
     }
 
     public void display() {
-        RunApplication.frame.setContentPane(this);
-        RunApplication.frame.setVisible(true);
+        activeScreen = true;
+        AppConstants.frame.setContentPane(new JScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
+        AppConstants.frame.setVisible(true);
+
+        daemon = new SubjectDaemon(this);
+        daemon.setDaemon(true);
+        daemon.start();
+    }
+
+    /**
+     * Resizes the components in a SubjectUI.
+     */
+    public void resize() {
+        subjectLabel.setFont(AppConstants.bigFont);
+
+        try {
+            for (JButton i : buttonList) {
+                i.setFont(AppConstants.medFont);
+                i.setPreferredSize(AppConstants.wideButtonDimension);
+            }
+        } catch (java.util.ConcurrentModificationException e) {
+
+        }
+        backButton.setFont(AppConstants.smallFont);
+    }
+}
+
+class SubjectDaemon extends Thread {
+    SubjectUI ui;
+
+    public SubjectDaemon(SubjectUI ui) {
+        super("SubjectDaemon");
+        this.ui = ui;
+    }
+
+    public void run() {
+        while (SubjectUI.activeScreen) {
+            ui.resize();
+        }
     }
 }

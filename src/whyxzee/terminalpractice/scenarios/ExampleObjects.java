@@ -10,7 +10,7 @@ public class ExampleObjects {
 
     }
 
-    public void randomizeObject() {
+    public void rngObjectCombinatoric() {
         corresponding = "positions";
         correspondingSingle = "position";
         switch (ScenarioConstants.rng.nextInt(3)) {
@@ -34,6 +34,24 @@ public class ExampleObjects {
                 plural = "letters";
                 singular = "letter";
                 break;
+        }
+    }
+
+    public void rngObjectForce() {
+        corresponding = "";
+        correspondingSingle = "";
+        switch (ScenarioConstants.rng.nextInt(3)) {
+            case 0:
+                plural = "dice";
+                singular = " die";
+                break;
+            case 1:
+                plural = "boxes";
+                singular = " box";
+                break;
+            case 2:
+                plural = "oranges";
+                singular = "n orange";
         }
     }
 }

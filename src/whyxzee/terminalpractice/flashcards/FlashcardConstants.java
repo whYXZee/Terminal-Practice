@@ -9,10 +9,9 @@ public class FlashcardConstants {
         {
             put("animals", new File("./src/whyxzee/terminalpractice/flashcards/spanish/Animals.json"));
             put("plants", new File("./src/whyxzee/terminalpractice/flashcards/spanish/Plants.json"));
-            put("nationalities and ethnicities",
+            put("nationalities, ethnicities, & religions",
                     new File("./src/whyxzee/terminalpractice/flashcards/spanish/NationsEthnicities.json"));
-            // put("spanish phonetics", new
-            // File("./src/whyxzee/terminalpractice/flashcards/spanish/EsPhonetics.json"));
+            put("food (plants)", new File("./rc/whyxzee/terminalpractice/flashcards/spanish/FoodPlants.json"));
         }
     };
 
@@ -25,7 +24,9 @@ public class FlashcardConstants {
 
     static final HashMap<String, File> englishFlashcards = new HashMap<String, File>() {
         {
-            put("roots", new File("./src/whyxzee/terminalpractice/flashcards/english/Roots.json"));
+            put("greek roots", new File("./src/whyxzee/terminalpractice/flashcards/english/GreekRoots.json"));
+            put("latin roots", new File("./src/whyxzee/terminalpractice/flashcards/english/LatinRoots.json"));
+            put("moods and tones", new File("./src/whyxzee/terminalpractice/flashcards/english/MoodTones.json"));
         }
     };
 

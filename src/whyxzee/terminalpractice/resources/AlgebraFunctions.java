@@ -15,13 +15,18 @@ import java.util.ArrayList;
  * <li>{d[var]/d<[var]}: denotes that the variable is a derivative with respect
  * to the bottom derivative.
  * <li>^: denotes the power/exponent
- * <li>-: denotes a negative
+ * <li>-: denotes a negative and marks the left/right sides of a subtraction
+ * problem
  * <li>+: marks the left/right sides of an addition problem
  * <li>*: marks the left/right sides of a multiplication problem
  * <li>/: marks the left/right sides of a division problem
  * <li>|: marks the numerator/denominator of a fraction
  */
 public class AlgebraFunctions {
+    //
+    //
+    //
+
     /**
      * Gets the coefficient of the input.
      * 
@@ -87,7 +92,8 @@ public class AlgebraFunctions {
     }
 
     /**
-     * Removes double negatives from strings to avoid number parsing errors.
+     * Removes double negatives from individual values as Strings to avoid number
+     * parsing errors.
      * 
      * @param input
      * @return
@@ -100,15 +106,61 @@ public class AlgebraFunctions {
         // Term construction loop
         for (int i = 0; i < input.toCharArray().length; i++) {
             char character = input.toCharArray()[i];
-            if (skip) { // would only skip one char, that being the 2nd '-'.
+
+            if (skip) {
+                // would only skip one char, that being the 2nd '-'.
+
                 skip = false;
             } else if (character != '-' && !skip) {
-                output = output + character;
+                // Term construction
+
+                output += character;
             } else if (i != input.toCharArray().length && character == '-' && input.toCharArray()[i + 1] == '-') {
                 // if the current char and the next char is a '-'
+
                 skip = true;
             } else { // why would i do this???
-                output = output + "-";
+                output += "-";
+            }
+        }
+        return output;
+    }
+
+    //
+    // String equations
+    //
+
+    /**
+     * Removes double negatives from equations as Strings to avoid number
+     * parsing errors.
+     * 
+     * @param input
+     * @return
+     */
+    public static String parseDoubleNegativeEQ(String input) {
+        // Settings vars
+        boolean skip = false;
+        String output = "";
+
+        // Term construction loop
+        for (int i = 0; i < input.toCharArray().length; i++) {
+            char character = input.toCharArray()[i];
+
+            if (skip) {
+                // would only skip one char, that being the 2nd '-'.
+
+                skip = false;
+                output += "+";
+            } else if (character != '-' && !skip) {
+                // Term construction
+
+                output += character;
+            } else if (i != input.toCharArray().length && character == '-' && input.toCharArray()[i + 1] == '-') {
+                // if the current char and the next char is a '-'
+
+                skip = true;
+            } else { // why would i do this???
+                output += "-";
             }
         }
         return output;
@@ -155,6 +207,12 @@ public class AlgebraFunctions {
         }
     }
 
+    /**
+     * Does String arithmetics for subtraction.
+     * 
+     * @param input as {@code <term>-<term>}
+     * @return
+     */
     public static String subtraction(String input) {
         boolean rightSide, power;
         rightSide = power = false;
@@ -163,25 +221,31 @@ public class AlgebraFunctions {
         output = "error";
         lSide = lVar = rSide = rVar = "";
 
-        for (Character i : input.toCharArray()) {
-            if (i == '_') {
+        for (int i = 0; i < input.toCharArray().length; i++) {
+            char index = input.toCharArray()[i];
+
+            if (index == '-' && !power && i != 0) {
                 rightSide = true;
-                power = false;
-            } else if (i == '^' || Character.isLetter(i) || power) {
+            } else if (index == '^' || Character.isLetter(index) || power) {
                 power = true;
                 if (!rightSide) {
-                    lVar = lVar + i;
+                    lVar = lVar + index;
                 } else {
-                    rVar = rVar + i;
+                    rVar = rVar + index;
+                }
+
+                if (index == ')') {
+                    power = false;
                 }
             } else {
                 if (!rightSide) {
-                    lSide = lSide + i;
+                    lSide = lSide + index;
                 } else {
-                    rSide = rSide + i;
+                    rSide = rSide + index;
                 }
             }
         }
+        System.out.println("lSide: " + lSide + " rSide: " + rSide);
 
         if (lVar.equals(rVar)) {
             return Integer.toString(Integer.valueOf(lSide) - Integer.valueOf(rSide)) + lVar;
@@ -190,6 +254,12 @@ public class AlgebraFunctions {
         }
     }
 
+    /**
+     * Does String arithmetics for multiplication
+     * 
+     * @param input as {@code <term>*<term>}
+     * @return
+     */
     public static String multiplication(String input) {
         // Declaring variables
         boolean rightSide, isVar, isImplicit;
@@ -227,6 +297,12 @@ public class AlgebraFunctions {
         return Integer.toString(Integer.valueOf(lSide) * Integer.valueOf(rSide)) + vars + implicitVar;
     }
 
+    /**
+     * Does the arithmetics for division through a string.
+     * 
+     * @param input as {@code <term>/<term>}
+     * @return
+     */
     public static String division(String input) {
         boolean rightSide, power;
         String lSide, rSide, vars;
@@ -257,6 +333,10 @@ public class AlgebraFunctions {
             return new Fraction(lSide + vars, rSide).toString();
         }
     }
+
+    //
+    // Divisors
+    //
 
     /**
      * Finds the divisors given a number and a divisor.
@@ -401,6 +481,10 @@ public class AlgebraFunctions {
         }
         return output;
     }
+
+    //
+    // Conditionals
+    //
 
     /**
      * Checks if the first character is a '-'.

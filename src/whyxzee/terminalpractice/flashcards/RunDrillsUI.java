@@ -1,7 +1,5 @@
 package whyxzee.terminalpractice.flashcards;
 
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -17,25 +15,29 @@ import java.util.concurrent.Semaphore;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import whyxzee.terminalpractice.application.RunApplication;
+import whyxzee.terminalpractice.application.AppConstants;
 
 public class RunDrillsUI extends JPanel implements ActionListener {
+    DrillsDaemon daemon;
+
     // UI constants
     int correct = 0;
     int termsCompleted = 0;
     AnswerSet answers;
     String response;
-
     Semaphore drillSemaphore = new Semaphore(0);
-    JLabel questionTracker;
-    JLabel[] questions;
+    boolean shouldBreak = false;
+
+    // UI components
+    JLabel questionTracker = new JLabel("");
+    JLabel[] questions = {};
+    JButton endButton = new JButton("End practice");
     JTextField textField = new JTextField();
     public JLabel correctIncorrect = new JLabel();
     GridBagConstraints grid = new GridBagConstraints();
-    boolean shouldBreak = false;
-    boolean buffer = false;
 
     public RunDrillsUI(HashMap<String, String> terms, ArrayList<String> bannedLetters, long beginCharIndex)
             throws InterruptedException {
@@ -54,51 +56,60 @@ public class RunDrillsUI extends JPanel implements ActionListener {
         };
         Collections.shuffle(shuffled);
         int totalAnswers = AnswerSet.totalAnswers(terms, bannedLetters, (int) beginCharIndex);
-        if (RunApplication.goal > totalAnswers) {
-            RunApplication.goal = totalAnswers;
+        if (AppConstants.goal > totalAnswers) {
+            AppConstants.goal = totalAnswers;
         }
+
+        daemon = new DrillsDaemon(this);
+        daemon.setDaemon(true);
+        daemon.start();
+
+        //
+        // Setting component data
+        //
+        questionTracker.setFont(AppConstants.biggerFont);
+
+        textField.addActionListener(this);
+        textField.setHorizontalAlignment(JTextField.CENTER);
+        textField.setColumns(AppConstants.answerColumns);
+        textField.setFont(AppConstants.bigFont);
+
+        endButton.addActionListener(this);
+        endButton.setActionCommand("end");
+        endButton.setPreferredSize(AppConstants.smallButtonDimension);
+        endButton.setFont(AppConstants.medFont);
+        endButton.setToolTipText("End the drill early.");
+        endButton.setMnemonic(KeyEvent.VK_E);
+
         for (String i : shuffled) {
-            RunApplication.getFontSize();
             this.answers = new AnswerSet(terms.get(i));
             if (answers.answerIsAllowed(bannedLetters, (int) beginCharIndex)) {
-                questionTracker = new JLabel("Question " + (termsCompleted + 1) + "/" + RunApplication.goal + ":");
-                questions = RunApplication.divideLabel(i);
+                // Question tracker
+                questionTracker.setText("Question " + (termsCompleted + 1) + "/" + AppConstants.goal + ":");
 
-                // Changing size of the labels
-                questionTracker.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize));
+                // Questions
+                questions = AppConstants.divideLabel(i);
 
-                textField = new JTextField();
-                textField.addActionListener(this);
-                textField.setColumns(RunApplication.getColumns());
-                textField.setHorizontalAlignment(JTextField.CENTER);
-                textField.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 2));
-
-                JButton backButton = new JButton("End practice");
-                backButton.addActionListener(this);
-                backButton.setActionCommand("end");
-                backButton.setPreferredSize(new Dimension(150, 25));
-                backButton.setToolTipText("End the drill early.");
-                backButton.setMnemonic(KeyEvent.VK_E);
+                textField.setText("");
 
                 // Adding the components
                 this.add(questionTracker, grid);
                 grid.gridy++;
                 for (JLabel label : questions) {
-                    label.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 2));
+                    label.setFont(AppConstants.bigFont);
                     this.add(label, grid);
                     grid.gridy++;
                 }
                 grid.gridy++;
                 this.add(textField, grid);
                 grid.gridy++;
-                this.add(backButton, grid);
+                this.add(endButton, grid);
                 grid.gridy++;
 
                 display();
-                buffer = false;
                 drillSemaphore.acquire();
-                buffer = true;
                 if (shouldBreak) {
+                    termsCompleted++;
                     break;
                 }
 
@@ -106,20 +117,25 @@ public class RunDrillsUI extends JPanel implements ActionListener {
                     if (answers.inSet(response)) {
                         if (answers.sizeAnswers() == 0) {
                             correctIncorrect = new JLabel("Correct!");
+                            correctIncorrect.setFont(AppConstants.medFont);
+                            this.add(correctIncorrect, grid);
+                            display();
+                            Thread.sleep(2000);
                         } else {
-                            correctIncorrect = new JLabel("Correct! Other answers include: \"" + answers + "\".");
+                            JOptionPane.showMessageDialog(AppConstants.frame,
+                                    "Other answers include: \"" + answers + " \".",
+                                    "Correct!",
+                                    JOptionPane.INFORMATION_MESSAGE);
                         }
                         correct++;
                     } else {
-                        correctIncorrect = new JLabel("Incorrect, answers include: \"" + answers + "\".");
+                        JOptionPane.showMessageDialog(AppConstants.frame, "Answers include: \"" + answers + "\".",
+                                "Incorrect",
+                                JOptionPane.ERROR_MESSAGE);
                     }
                     termsCompleted++;
-                    correctIncorrect.setFont(new Font("Arial", Font.PLAIN, RunApplication.fontSize / 4));
-                    this.add(correctIncorrect, grid);
-                    display();
-                    Thread.sleep(2000);
-                    if (termsCompleted == RunApplication.goal) {
-                        this.remove(correctIncorrect);
+
+                    if (termsCompleted == AppConstants.goal) {
                         break;
                     }
                 } catch (InterruptedException f) {
@@ -128,16 +144,17 @@ public class RunDrillsUI extends JPanel implements ActionListener {
                 this.removeAll();
             }
         }
-        correctIncorrect = new JLabel("Congratulations, you got " + correct + " correct!");
-        this.add(correctIncorrect, grid);
-        display();
-        Thread.sleep(3000);
-        if (termsCompleted == 0 || shouldBreak || termsCompleted != shuffled.size()
-                || termsCompleted == RunApplication.goal) {
-            // to release the semaphore in case all words were restricted, but not when its
-            // already released.
-            RunApplication.semaphore.release();
+
+        if (termsCompleted == 0) {
+            JOptionPane.showMessageDialog(AppConstants.frame, "No available terms, due to restriction issues.",
+                    "Drill Completion",
+                    JOptionPane.ERROR_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(AppConstants.frame, "You got " + correct + " correct!", "Drill Completion",
+                    JOptionPane.INFORMATION_MESSAGE);
         }
+
+        AppConstants.semaphore.release();
     }
 
     @Override
@@ -145,7 +162,7 @@ public class RunDrillsUI extends JPanel implements ActionListener {
         if (e.getActionCommand().equals("end")) {
             shouldBreak = true;
             drillSemaphore.release();
-        } else if (!buffer) {
+        } else if (drillSemaphore.hasQueuedThreads()) {
             try {
                 this.response = textField.getText();
             } catch (NullPointerException error) {
@@ -156,8 +173,47 @@ public class RunDrillsUI extends JPanel implements ActionListener {
     }
 
     public void display() {
-        RunApplication.frame.setContentPane(this);
-        RunApplication.frame.setVisible(true);
+        AppConstants.frame.setContentPane(this);
+        AppConstants.frame.setVisible(true);
         textField.requestFocusInWindow();
+    }
+
+    public void resize() {
+        questionTracker.setFont(AppConstants.biggerFont);
+        for (JLabel label : questions) {
+            label.setFont(AppConstants.bigFont);
+        }
+
+        textField.setColumns(AppConstants.answerColumns);
+        textField.setFont(AppConstants.bigFont);
+
+        endButton.setPreferredSize(AppConstants.smallButtonDimension);
+        endButton.setFont(AppConstants.medFont);
+    }
+}
+
+class DrillsDaemon extends Thread {
+    private RunDrillsUI ui;
+
+    public DrillsDaemon(RunDrillsUI ui) {
+        super("DrillsFrameDaemon");
+        this.ui = ui;
+    }
+
+    public void run() {
+        boolean shouldRun = true;
+        while (shouldRun) {
+            switch (AppConstants.gameEnum) {
+                case DRILLS:
+                    ui.resize();
+                    break;
+                case CUSTOM_DRILLS:
+                    ui.resize();
+                    break;
+                default:
+                    shouldRun = false;
+                    break;
+            }
+        }
     }
 }

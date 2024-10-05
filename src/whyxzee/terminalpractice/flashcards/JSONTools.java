@@ -1,10 +1,14 @@
 package whyxzee.terminalpractice.flashcards;
 
+import java.awt.Dimension;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+
+// import javax.swing.
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,8 +19,16 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import whyxzee.terminalpractice.application.AppConstants;
+
 @SuppressWarnings("unchecked") // cuz I don't wanna deal w/ warnings
 public class JSONTools {
+    // Vars
+    public static Dimension jsonRestrictDimension = new Dimension(10, 10);
+    public static Dimension jsonDimension = new Dimension(10, 10);
+    public static int jsonColumns = 10;
+    public static int jsonRows = 10;
+
     /**
      * Creates a JSON of the flashcard set.
      * 
@@ -27,8 +39,8 @@ public class JSONTools {
         JSONObject jsonO = new JSONObject();
 
         // Adding needed paramaters
-        jsonO.put("subject", JSONCreator.subject);
-        jsonO.put("setName", JSONCreator.set);
+        jsonO.put("subject", JSONCreator.subject.toLowerCase());
+        jsonO.put("setName", JSONCreator.set.toLowerCase());
         jsonO.put("restrictLetters", JSONCreator.restrict);
         jsonO.put("beginningCharIndex", JSONCreator.beginningCharIndex);
 
@@ -37,11 +49,6 @@ public class JSONTools {
         ArrayList<String> answers = parseArrayList(JSONCreator.answers);
         Map<String, String> map = new HashMap<String, String>();
         int termSize = questions.size();
-        if (termSize < answers.size()) {
-            termSize = answers.size();
-        }
-        questions = equalizeTerms(questions, termSize);
-        answers = equalizeTerms(answers, termSize);
         for (int i = 0; i < termSize; i++) {
             map.put(questions.get(i), answers.get(i));
         }
@@ -111,7 +118,6 @@ public class JSONTools {
         ArrayList<String> output = new ArrayList<String>();
         if (directory != null) {
             for (File i : jsons) {
-                System.out.println(i.getPath());
                 try {
                     JSONObject jsonO = (JSONObject) new JSONParser().parse(new FileReader(i));
                     // removed conditional && !output.contains(jsonO.get("setName")
@@ -133,7 +139,7 @@ public class JSONTools {
      * 
      * @return
      */
-    private static ArrayList<String> parseArrayList(String input) {
+    public static ArrayList<String> parseArrayList(String input) {
         ArrayList<String> output = new ArrayList<String>();
         String stringedChar = "";
         for (Character i : input.toCharArray()) {
@@ -177,7 +183,6 @@ public class JSONTools {
                 } catch (NullPointerException e) {
                     System.out.println("subject: " + subject);
                     System.out.println("set: " + set);
-                    // System.out.println("path: " + path);
                 }
 
             }
@@ -254,14 +259,13 @@ public class JSONTools {
      * @param path path of the JSON file, starting with "./src/".
      */
     public static void editJSON(File path) {
-        System.out.println(path.getName());
         try {
             // Getting the file
             JSONObject jsonO = new JSONObject();
             PrintWriter pw = new PrintWriter(path);
 
-            jsonO.put("subject", JSONEditor.subject);
-            jsonO.put("setName", JSONEditor.set);
+            jsonO.put("subject", JSONEditor.subject.toLowerCase());
+            jsonO.put("setName", JSONEditor.set.toLowerCase());
             jsonO.put("restrictLetters", JSONEditor.restrict);
             jsonO.put("beginningCharIndex", JSONEditor.beginningCharIndex);
 
@@ -269,15 +273,12 @@ public class JSONTools {
             ArrayList<String> questions = parseArrayList(JSONEditor.questions);
             ArrayList<String> answers = parseArrayList(JSONEditor.answers);
             Map<String, String> map = new HashMap<String, String>();
-            // System.out.println(questions.size());
-            // System.out.println(answers.size());
             int termSize = questions.size();
-            if (termSize < answers.size()) {
-                termSize = answers.size();
-            }
-            // System.out.println(termSize);
-            questions = equalizeTerms(questions, termSize);
-            answers = equalizeTerms(answers, termSize);
+            // if (termSize < answers.size()) {
+            // termSize = answers.size();
+            // }
+            // questions = equalizeTerms(questions, termSize);
+            // answers = equalizeTerms(answers, termSize);
             for (int i = 0; i < termSize; i++) {
                 map.put(questions.get(i), answers.get(i));
             }
@@ -321,5 +322,12 @@ public class JSONTools {
             output = output + map.get(i) + ";\n";
         }
         return output;
+    }
+
+    public static void resize() {
+        jsonRestrictDimension = new Dimension(jsonColumns, AppConstants.height / 15);
+        jsonDimension = new Dimension((int) (AppConstants.width / 1.25), (int) (AppConstants.height / 1.4));
+        jsonColumns = AppConstants.width / 50;
+        jsonRows = AppConstants.height / 150;
     }
 }
