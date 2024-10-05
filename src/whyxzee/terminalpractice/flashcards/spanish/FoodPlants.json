@@ -7,6 +7,7 @@
     "What is \"the vegetable\" in Spanish?": "el vegetal,la verdura",
     "What is \"the nut\" in Spanish?": "la nuez",
     "What is \"the berry\" in Spanish?": "la baya",
+    "What is \"the grain\" in Spanish?": "el grano,el cereal",
 
     "What is \"the apple\" in Spanish?": "la manzana",
     "What is \"the peach\" in Spanish?": "el melocotón",
@@ -17,13 +18,15 @@
     "What is \"the coconut\" in Spanish?": "el coco",
     "What is \"the grape\" in Spanish?": "la uva",
     "What is \"the pumpkin\" in Spanish?": "la calabaza",
+    "What is \"the olive\" in Spanish?": "la aceituna,la oliva",
+    "What is \"the strawberry\" in Spanish?": "la fresa,la frutilla",
 
     "What is \"the carrot\" in Spanish?": "la zanahoria",
     "What is \"the pea\" in Spanish?": "el chícharo",
     "What is \"the tomato\" in Spanish?": "el tomate",
     "What is \"the cauliflower\" in Spanish?": "la coliflor",
     "What is \"the potato\" in Spanish?": "la patata,la papa",
-    "What is \"the mushroom\" in Spanish?": "",
+    "What is \"the mushroom\" in Spanish?": "la seta,el champiñón,el hongo",
 
     "What is \"the almond\" in Spanish?": "la almendra",
     "What is \"the pecan\" in Spanish?": "la pecana,la pacana,la nuez",
@@ -31,8 +34,12 @@
 
     "What is \"the raspberry\" in Spanish?": "la frambuesa",
     "What is \"the blackberry\" in Spanish?": "la zarzamora,la mora",
-    "What is \"the elderberry\" in Spanish?": "la baya del saúco",
-    "What is \"the blueberry\" in Spanish": "el arándano azul,la mora azul"
+    "What is \"the cashew\" in Spanish?": "el anacardo,el marañón",
+    "What is \"the chestnut\" in Spanish?": "la castaña",
+    "What is \"the blueberry\" in Spanish": "el arándano azul,la mora azul",
+
+    "What is \"the quinoa\" in Spanish?": "la quinua,la quinoa",
+    "What is \"the rice\" in Spanish?": "el arroz"
   },
   "subject": "spanish"
 }

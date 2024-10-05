@@ -1,9 +1,14 @@
 package whyxzee.terminalpractice.scenarios;
 
+import whyxzee.terminalpractice.application.AppConstants;
+
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+
+import java.math.MathContext;
+import java.math.RoundingMode;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -12,7 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-import whyxzee.terminalpractice.application.AppConstants;
+import java.util.Random;
 
 public class ScenarioUI extends JPanel implements ActionListener {
     protected ScenarioDaemon daemon;
@@ -26,11 +31,13 @@ public class ScenarioUI extends JPanel implements ActionListener {
     protected String response = "";
     protected String action = "";
 
+    protected Random rng = new Random();
+    protected MathContext round = new MathContext(4, RoundingMode.HALF_UP);
+
     protected JLabel questionTracker = new JLabel();
     protected JLabel[] questions = {};
     protected JTextField textField = new JTextField();
     protected JButton backButton = new JButton("End practice");
-    // protected JLabel correctIncorrect = new JLabel();
     protected JLabel[] correctIncorrect = {};
     protected JLabel[] howToLabels = {};
     protected JButton continueButton = new JButton("Continue");
@@ -78,6 +85,12 @@ public class ScenarioUI extends JPanel implements ActionListener {
         closingMessage();
     }
 
+    /**
+     * Displays the scenario, can be overwritten for custom scenarios.
+     * 
+     * @param questionNum the number of the question, starting at 0.
+     * @throws InterruptedException due to semaphore
+     */
     public void runProblem(int questionNum) throws InterruptedException {
         // System.out.println(i);
         resetGrid();

@@ -63,9 +63,6 @@ public class ProjectileMotion extends ScenarioUI {
 
     }
 
-    /**
-     * Randomizes the projectile motion problem.
-     */
     @Override
     public void randomize() {
         // Randomizes what is given
@@ -140,9 +137,6 @@ public class ProjectileMotion extends ScenarioUI {
         } while (questionOverlap());
     }
 
-    /**
-     * Solves the projectile motion problem.
-     */
     @Override
     public String solve() {
         triangle.solve90DegTrig();

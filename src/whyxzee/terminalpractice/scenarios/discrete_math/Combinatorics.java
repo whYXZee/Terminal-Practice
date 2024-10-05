@@ -14,6 +14,23 @@ import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 
+/**
+ * Scenarios of permutation and combinations problems. Available question types
+ * include:
+ * <ul>
+ * <li>Permutation allocation
+ * <li>Grouped permutations
+ * <li>Circular permutations (rotation does matter)
+ * <li>Rotation permutations (rotation doesn't matter)
+ * <li>Total generalized permutations
+ * 
+ * <li>Combination allocation
+ * <li>Total generalized combinations
+ * 
+ * <li>{@code Coming Soon:} partition allocation
+ * <li>{@code Coming Soon (?):} pidgeonhole principle
+ * 
+ */
 public class Combinatorics extends ScenarioUI {
     //
     // Scenario-specific variables
@@ -45,7 +62,7 @@ public class Combinatorics extends ScenarioUI {
 
     @Override
     public void randomize() {
-        object.randomizeObject();
+        object.rngObjectCombinatoric();
         switch (0) {
             case 0:
                 problemType = ProblemType.PERMUTATION_ALLOCATION;

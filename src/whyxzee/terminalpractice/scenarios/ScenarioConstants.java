@@ -57,6 +57,7 @@ public class ScenarioConstants {
         {
             // add("projectile motion"); // needs "howToLabels"
             add("uncertainties");
+            add("forces");
         }
     };
 
@@ -116,6 +117,8 @@ public class ScenarioConstants {
                 break;
 
             // Physics
+            case "forces":
+                new Forces();
             case "projectile motion":
                 new ProjectileMotion();
                 break;
