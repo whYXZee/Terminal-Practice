@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import whyxzee.terminalpractice.flashcards.FlashcardConstants;
+import whyxzee.terminalpractice.flashcards.JSONImport;
 import whyxzee.terminalpractice.flashcards.JSONTools;
 import whyxzee.terminalpractice.scenarios.ScenarioConstants;
 
@@ -115,18 +116,15 @@ public class GameSelection extends JPanel implements ActionListener {
             editorButton.setToolTipText("No custom sets detected.");
         }
 
-        // shareButton.setEnabled(isCustomAvailable);
-        // if (shareButton.isEnabled()) {
-        // shareButton.setToolTipText("Share custom sets.");
-        // } else {
-        // shareButton.setToolTipText("No custom sets detected.");
-        // }
-        shareButton.setEnabled(false);
-        shareButton.setToolTipText("Coming soon!");
+        shareButton.setEnabled(isCustomAvailable);
+        if (shareButton.isEnabled()) {
+            shareButton.setToolTipText("Share custom sets.");
+        } else {
+            shareButton.setToolTipText("No custom sets detected.");
+        }
 
-        // importButton.setToolTipText("Import custom sets to be used.");
-        importButton.setEnabled(false);
-        importButton.setToolTipText("Coming soon!");
+        importButton.setToolTipText("Import custom sets to be used.");
+        importButton.setMnemonic(KeyEvent.VK_I);
 
         // removeButton.setEnabled(isCustomAvailable);
         // if (shareButton.isEnabled()) {
@@ -186,6 +184,21 @@ public class GameSelection extends JPanel implements ActionListener {
 
         } else if (action.equals("Custom Flashcards")) {
             AppConstants.gameEnum = AppConstants.Game.CUSTOM_FLASHCARDS;
+            AppConstants.subjectSet = new HashSet<String>(JSONTools.getCustomSubjects());
+            new SubjectUI(AppConstants.subjectSet).display();
+
+        } else if (action.equals("Share Custom Sets")) {
+            AppConstants.gameEnum = AppConstants.Game.JSON_SHARING;
+            AppConstants.subjectSet = new HashSet<String>(JSONTools.getCustomSubjects());
+            new SubjectUI(AppConstants.subjectSet).display();
+
+        } else if (action.equals("Import Custom Sets")) {
+            AppConstants.gameEnum = AppConstants.Game.JSON_IMPORTING;
+            new JSONImport().display();
+            AppConstants.semaphore.release();
+
+        } else if (action.equals("Remove Custom Sets")) {
+            AppConstants.gameEnum = AppConstants.Game.JSON_DELETION;
             AppConstants.subjectSet = new HashSet<String>(JSONTools.getCustomSubjects());
             new SubjectUI(AppConstants.subjectSet).display();
         }

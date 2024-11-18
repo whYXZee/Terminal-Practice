@@ -20,6 +20,7 @@ import java.util.HashMap;
  * <li>*: marks the left/right sides of a multiplication problem
  * <li>/: marks the left/right sides of a division problem
  * <li>|: marks the numerator/denominator of a fraction
+ * <li>/u222b_{a}^{b}(): marks the integral with bounds a < b.
  */
 public class CalculusFunctions {
     /**

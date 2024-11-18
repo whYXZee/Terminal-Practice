@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -37,7 +38,7 @@ import java.util.concurrent.Semaphore;
 import whyxzee.terminalpractice.application.AppConstants;
 
 public class JSONEditor extends JPanel implements ActionListener {
-    // JSONEditorDaemon daemon;
+    JSONEditorDaemon daemon;
     Semaphore semaphore = new Semaphore(0);
 
     public static boolean restrict = false;
@@ -80,6 +81,8 @@ public class JSONEditor extends JPanel implements ActionListener {
     JPanel restrictionButtons = new JPanel();
     JPanel optionsPanel = new JPanel();
     JPanel buttonsPanel = new JPanel();
+    JScrollPane answerScrollPane = new JScrollPane();
+    JScrollPane questionScrollPane = new JScrollPane();
 
     GridBagConstraints grid = new GridBagConstraints();
     GridBagConstraints optionsGrid = new GridBagConstraints();
@@ -192,21 +195,25 @@ public class JSONEditor extends JPanel implements ActionListener {
             optionsGrid.gridy++;
             optionsGrid.gridx--;
 
-            JScrollPane questionScrollPane = new JScrollPane(questionBox, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+            questionScrollPane = new JScrollPane(questionBox, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                     JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             optionsPanel.add(questionScrollPane, optionsGrid);
             questionBox.setText(questions);
             questionBox.setFont(AppConstants.smallFont);
+            questionScrollPane.setPreferredSize(JSONTools.jsonTextBoxes);
             optionsGrid.gridx++;
-            JScrollPane answerScrollPane = new JScrollPane(answerBox, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+
+            answerScrollPane = new JScrollPane(answerBox, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                     JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             optionsPanel.add(answerScrollPane, optionsGrid);
             answerBox.setText(answers);
             answerBox.setFont(AppConstants.smallFont);
+            answerScrollPane.setPreferredSize(JSONTools.jsonTextBoxes);
             optionsGrid.gridy++;
             optionsGrid.gridx--;
 
-            this.add(optionsPanel, grid);
+            this.add(new JScrollPane(optionsPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                    JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), grid);
             grid.gridy++;
 
             optionsGrid.gridy = 0;
@@ -240,9 +247,9 @@ public class JSONEditor extends JPanel implements ActionListener {
 
             display();
 
-            // daemon = new JSONEditorDaemon(this);
-            // daemon.setDaemon(true);
-            // daemon.start();
+            daemon = new JSONEditorDaemon(this);
+            daemon.setDaemon(true);
+            daemon.start();
 
             while (loop) {
                 // From the charIndex
@@ -284,7 +291,8 @@ public class JSONEditor extends JPanel implements ActionListener {
     }
 
     public void display() {
-        AppConstants.frame.setContentPane(this);
+        AppConstants.frame.setContentPane(new JScrollPane(this,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
         AppConstants.frame.setVisible(true);
     }
 
@@ -336,6 +344,9 @@ public class JSONEditor extends JPanel implements ActionListener {
         }
 
         if (!returnFalse) {
+            questionBox.setText(JSONTools.reformatString(questions));
+            answerBox.setText(JSONTools.reformatString(answers));
+
             JOptionPane.showMessageDialog(AppConstants.frame,
                     "Error: " + missing + ".", "Missing arguments", JOptionPane.ERROR_MESSAGE);
         }
@@ -372,6 +383,9 @@ public class JSONEditor extends JPanel implements ActionListener {
         answerLabel.setFont(AppConstants.smallFont);
         questionBox.setFont(AppConstants.smallFont);
         answerBox.setFont(AppConstants.smallFont);
+
+        answerScrollPane.setPreferredSize(JSONTools.jsonTextBoxes);
+        questionScrollPane.setPreferredSize(JSONTools.jsonTextBoxes);
 
         doneButton.setPreferredSize(AppConstants.smallButtonDimension);
         doneButton.setFont(AppConstants.medFont);

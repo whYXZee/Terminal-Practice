@@ -267,8 +267,8 @@ public class Combinatorics extends ScenarioUI {
                                         + n_4 + " " + object.plural + ", how many ways can they be uniquely ordered?");
                     }
                 } else {
-                    questions = AppConstants
-                            .divideLabel("Given the word \"" + randomWord + "\", how many combinations can be made");
+                    questions = AppConstants.divideLabel("Given the word \"" + randomWord
+                            + "\", how many combinations can be made?");
                 }
                 break;
 

@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * <li>+: marks the left/right sides of an addition problem
  * <li>*: marks the left/right sides of a multiplication problem
  * <li>/: marks the left/right sides of a division problem
- * <li>|: marks the numerator/denominator of a fraction
+ * <li>[]\u2044[]: marks the numerator/denominator of a fraction
  */
 public class AlgebraFunctions {
     //
@@ -35,16 +35,17 @@ public class AlgebraFunctions {
      */
     public static String getCoefficient(String input) {
         // Setting the vars
-        boolean isPower = false;
+        boolean avoid = false;
         String output = "";
 
         // Number construction loop
         for (Character i : input.toCharArray()) {
-            if (i == '^' || i == '(') {
-                isPower = true;
-            } else if (i == ')') {
-                isPower = false;
-            } else if ((Character.isDigit(i) || i == '-' || i == '|') && !isPower) {
+            if (i == '^' || i == '(' || i == '[') {
+                // Don't want to parse exponent or terms
+                avoid = true;
+            } else if (i == ')' || i == ']') {
+                avoid = false;
+            } else if ((Character.isDigit(i) || i == '-' || i == '\u2044') && !avoid) {
                 output += i;
             }
         }
@@ -63,28 +64,28 @@ public class AlgebraFunctions {
      */
     public static String getVars(String input) {
         // Setting vars
-        boolean isPower = false;
+        boolean avoid = false;
         String output = "";
 
         // Var construction loop
         for (Character i : input.toCharArray()) {
-            // Toggling if it's a power to bypass the "char != digit" condition
-            if (i == '^' || i == '(') {
+            if (i == '^' || i == '(' || i == '[') {
+                // Don't want to parse exponents or terms
                 // So it doesn't check exponent bool on something w/o a var
                 if (!output.equals("")) {
-                    isPower = true;
+                    avoid = true;
                     output += i;
                 }
-            } else if (i == '|') {
+            } else if (i == '\u2044') {
                 if (!output.equals("")) {
                     output += i;
                 }
-            } else if (i == ')') {
+            } else if (i == ')' || i == ']') {
                 if (!output.equals("")) {
-                    isPower = false;
+                    avoid = false;
                     output += i;
                 }
-            } else if ((!Character.isDigit(i) && i != '-') || isPower) {
+            } else if ((!Character.isDigit(i) && i != '-') || avoid) {
                 output += i;
             }
         }

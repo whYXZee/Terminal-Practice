@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 
 public class Trigonometry {
+    // Sides & Angles
     public Float thetaY;
     public Float thetaX;
     public Float thetaHyp;
@@ -14,13 +15,34 @@ public class Trigonometry {
     private ArrayList<Float> sides;
     private ArrayList<Float> angles;
     private ArrayList<Float> everything;
+
+    // Cartesian-coordinate system (0 is x, 1 is y)
+    public Float[] xCoords;
+    public Float[] yCoords;
+    public Float[] hypCoords;
+    public Float[][] triangleCoords; // [0] is X, [1] is Y, [2] is Hypotenuse
+
+    public Float semiPerimeter;
+    public Float area;
+
     private String[] text = { "X value: ", "Y value: ", "Hypotenuse: ", "\u03b8X: ", "\u03b8Y: ",
             "\u03b8Hypotenuse: " };
+    public static Float[] nullArray = { null, null, null, null, null, null };
+    public static ArrayList<Float> nullArrayList = new ArrayList<Float>() {
+        {
+            add(null);
+            add(null);
+            add(null);
+            add(null);
+            add(null);
+            add(null);
+        }
+    };
 
     public static MathContext trigRound = new MathContext(3, RoundingMode.HALF_UP);
 
     //
-    // Creating the triangle
+    // Creating the triangle (sides and angles)
     //
 
     /**
@@ -41,6 +63,7 @@ public class Trigonometry {
         this.thetaX = input[3];
         this.thetaY = input[4];
         this.thetaHyp = input[5];
+
         updateLists();
     }
 
@@ -108,7 +131,7 @@ public class Trigonometry {
     }
 
     //
-    // Solving the triangle.
+    // 90-degree triangles
     //
 
     /**
@@ -187,6 +210,128 @@ public class Trigonometry {
     }
 
     //
+    // Non 90-degree triangles
+    //
+
+    /**
+     * Finds the area of a non 90-degree triangle using Heron's Theorem (SSS
+     * triangles).
+     * 
+     * @return float if all sides are given, {@code null} if not.
+     */
+    public Float heronsTheorem() {
+        if (x != null && y != null && hypotenuse != null) {
+            semiPerimeter = (x + y + hypotenuse) * .5f;
+            area = (float) Math.sqrt(semiPerimeter * (semiPerimeter - x) *
+                    (semiPerimeter - y) * (semiPerimeter - hypotenuse));
+
+            return area;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Uses the normal Law of Sines (a / sin(A) = b / sin(B) = c / sin(C))
+     * 
+     * @return
+     */
+    public Float sineLaw() {
+        if (x != null && thetaX != null) {
+            return x / (float) Math.sin(Math.toRadians(thetaX));
+        } else if (y != null && thetaY != null) {
+            return y / (float) Math.sin(Math.toRadians(thetaY));
+        } else if (hypotenuse != null && thetaHyp != null) {
+            return hypotenuse / (float) Math.sin(Math.toRadians(thetaHyp));
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Uses the reciprocal of the Law of Sines (sin(A) / a = sin(B) / b = sin(C) /
+     * c)
+     * 
+     * @return
+     */
+    public Float sineLawReciprocal() {
+        if (x != null && thetaX != null) {
+            return (float) Math.sin(Math.toRadians(thetaX)) / x;
+        } else if (y != null && thetaY != null) {
+            return (float) Math.sin(Math.toRadians(thetaY)) / y;
+        } else if (hypotenuse != null && thetaHyp != null) {
+            return (float) Math.sin(Math.toRadians(thetaHyp)) / hypotenuse;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Uses the Law of Cosines to find the missing side
+     * 
+     * @return
+     */
+    public Float cosineLawSides() {
+        if (x == null) {
+            System.out.println(Math.sqrt(Math.pow(y, 2) + Math.pow(hypotenuse, 2)
+                    - (2 * y * hypotenuse * Math.cos(Math.toRadians(thetaX)))));
+            return (float) Math.sqrt(Math.pow(y, 2) + Math.pow(hypotenuse, 2)
+                    - (2 * y * hypotenuse * Math.cos(Math.toRadians(thetaX))));
+        } else if (y == null) {
+            System.out.println(Math.sqrt(Math.pow(x, 2) + Math.pow(hypotenuse, 2)
+                    - (2 * x * hypotenuse * Math.cos(Math.toRadians(thetaY)))));
+            return (float) Math.sqrt(Math.pow(x, 2) + Math.pow(hypotenuse, 2)
+                    - (2 * x * hypotenuse * Math.cos(Math.toRadians(thetaY))));
+        } else if (hypotenuse == null) {
+            System.out.println((float) Math.sqrt(Math.pow(y, 2) + Math.pow(x, 2)
+                    - (2 * y * x * Math.cos(Math.toRadians(thetaHyp)))));
+            return (float) Math.sqrt(Math.pow(y, 2) + Math.pow(x, 2)
+                    - (2 * y * x * Math.cos(Math.toRadians(thetaHyp))));
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Uses the Law of Cosines to find the missing angle
+     * <ul>
+     * <li>[0]: theta X
+     * <li>[1]: theta Y
+     * <li>[2]: theta Hypotenuse
+     * 
+     * @return
+     */
+    public void cosineLawAngles(int angle) {
+        if (thetaX == null && angle == 0) {
+            try {
+                thetaX = (float) Math.toDegrees(
+                        Math.acos((Math.pow(x, 2) - Math.pow(y, 2) - Math.pow(hypotenuse, 2)) / (-2 * y * hypotenuse)));
+                updateLists();
+            } catch (NullPointerException e) {
+
+            }
+        }
+        if (thetaY == null && angle == 1) {
+            try {
+                thetaY = (float) Math.toDegrees(
+                        Math.acos((Math.pow(y, 2) - Math.pow(x, 2) - Math.pow(hypotenuse, 2)) / (-2 * x * hypotenuse)));
+                updateLists();
+            } catch (NullPointerException e) {
+
+            }
+        }
+        if (thetaHyp == null && angle == 2) {
+            try {
+                thetaHyp = (float) Math.toDegrees(
+                        Math.acos((Math.pow(hypotenuse, 2) - Math.pow(x, 2) - Math.pow(y, 2)) / (-2 * x * y)));
+                updateLists();
+            } catch (NullPointerException e) {
+
+            }
+        }
+    }
+
+    //
     // Side-based Conditionals
     //
 
@@ -253,7 +398,7 @@ public class Trigonometry {
     /**
      * Checks if the triangle has null values, to prevent arithmetics with null.
      */
-    public boolean isNull() {
+    public boolean hasNull() {
         // Saving and solving
         ArrayList<Float> save = everything;
         this.solve90DegTrig();
@@ -274,14 +419,39 @@ public class Trigonometry {
     //
 
     /**
-     * Checks if the Triangle Sum Theorem is followed or true.
+     * Checks if the Triangle Inequality Theorem is followed.
      * The theorem states that a hypotenuse must be larger than either side of the
      * triangle, but lesser than the sum of both sides.
      * 
      * @return
      */
-    public boolean isTriSum() {
-        if ((hypotenuse > x) && (hypotenuse > y) && (hypotenuse < x + y)) {
+    public boolean isTriInequal() {
+        if ((hypotenuse >= x) && (hypotenuse >= y) && (hypotenuse <= x + y)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the Triangle Angle Sum Theorem is followed.
+     * 
+     * @return
+     */
+    public boolean isAngleSum() {
+        if (180 == thetaHyp + thetaX + thetaY) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Makes sure that the hypotenuse is the largest side, with the largest angle.
+     * 
+     * @return
+     */
+    public boolean isHypotenuseLargest() {
+        if (Math.max(thetaHyp, Math.max(thetaX, thetaY)) == thetaHyp
+                && Math.max(hypotenuse, Math.max(x, y)) == hypotenuse) {
             return true;
         }
         return false;
@@ -302,7 +472,7 @@ public class Trigonometry {
         solve90DegTrig();
 
         try {
-            output = isTriSum();
+            output = isTriInequal();
         } catch (NullPointerException e) {
             output = false;
         }
@@ -310,6 +480,10 @@ public class Trigonometry {
         updateFromList(save);
         return output;
     }
+
+    //
+    // Printing the triangle
+    //
 
     @Override
     public String toString() {
@@ -331,6 +505,38 @@ public class Trigonometry {
         }
         if (thetaHyp != null) {
             output = output + text[5] + thetaHyp;
+        }
+        return output;
+    }
+
+    public String printSides() {
+        String output = "";
+        if (x != null) {
+            output += " " + text[0] + x;
+        }
+        if (y != null) {
+            output += " " + text[1] + y;
+        }
+        if (hypotenuse != null) {
+            output += " " + text[2] + hypotenuse;
+        }
+
+        return output;
+    }
+
+    /**
+     * Prints the Cartesian coordinate system of the triangle
+     */
+    public String printCartesianCoords() {
+        String output = "";
+        if (xCoords != null) {
+            output += "X: (" + xCoords[0] + "," + xCoords[1] + ") ";
+        }
+        if (yCoords != null) {
+            output += "Y: (" + yCoords[0] + "," + yCoords[1] + ") ";
+        }
+        if (hypCoords != null) {
+            output += "Hypotenuse: (" + hypCoords[0] + "," + hypCoords[1] + ") ";
         }
         return output;
     }

@@ -107,6 +107,14 @@ public class SubjectUI extends JPanel implements ActionListener {
                 case CUSTOM_DRILLS:
                     new SetScenarioUI(new HashSet<String>(JSONTools.getCustomSets(AppConstants.subject))).display();
                     break;
+
+                case JSON_SHARING:
+                    new SetScenarioUI(new HashSet<String>(JSONTools.getCustomSets(AppConstants.subject))).display();
+                    break;
+                case JSON_DELETION:
+                    new SetScenarioUI(new HashSet<String>(JSONTools.getCustomSets(AppConstants.subject))).display();
+                    break;
+
                 default:
                     break;
             }

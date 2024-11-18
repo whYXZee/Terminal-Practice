@@ -15,17 +15,7 @@ public class RightTrig extends ScenarioUI {
     //
     // Scenario-specific variables
     //
-    private static Trigonometry triangle = new Trigonometry(new Float[] { null, null, null, null, null, null });
-    private static ArrayList<Float> nullList = new ArrayList<Float>() {
-        {
-            add(null);
-            add(null);
-            add(null);
-            add(null);
-            add(null);
-            add(null);
-        }
-    };
+    private static Trigonometry triangle = new Trigonometry(Trigonometry.nullArray);
     private static ArrayList<Integer> givenSides = new ArrayList<Integer>();
 
     // enums to determine problem type
@@ -70,7 +60,7 @@ public class RightTrig extends ScenarioUI {
         int randomSide;
         do {
             // Resetting the equation
-            triangle.updateFromList(nullList);
+            triangle.updateFromList(Trigonometry.nullArrayList);
             givenSides.removeAll(givenSides);
 
             switch (givenVal) {

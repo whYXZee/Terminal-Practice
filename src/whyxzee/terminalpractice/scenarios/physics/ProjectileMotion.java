@@ -229,32 +229,26 @@ public class ProjectileMotion extends ScenarioUI {
                             howToLabels = AppConstants
                                     .divideLabel("The initial theta can be found using right triangle trigonometry " +
                                             "(SOH CAH TOA). In this case, we would use SOH (sine = opposite/hypotenuse) as "
-                                            +
-                                            "the x-side is missing: sin(\u03b8) = (" + triangle.y + "/"
+                                            + "the x-side is missing: sin(\u03b8) = (" + triangle.y + "/"
                                             + triangle.hypotenuse +
                                             "). Then, solve for theta by taking the inverse of sine: \u03b8 = "
-                                            + "sine "
-                                            + "inverse (" + triangle.y + "/" + triangle.hypotenuse + ").");
+                                            + "sine inverse (" + triangle.y + "/" + triangle.hypotenuse + ").");
                         } else if (!givenSides.contains(1)) {
                             howToLabels = AppConstants
                                     .divideLabel("The initial theta can be found using right triangle trigonometry " +
                                             "(SOH CAH TOA). In this case, we would use CAH (cosine = adjacent/hypotenuse) as "
-                                            +
-                                            "the y-side is missing: cos(\u03b8) = (" + triangle.x + "/"
-                                            + triangle.hypotenuse +
-                                            "). Then, solve for theta by taking the inverse of cosine: \u03b8 = "
-                                            + "cosine "
-                                            + "inverse (" + triangle.x + "/" + triangle.hypotenuse + ").");
+                                            + "the y-side is missing: cos(\u03b8) = (" + triangle.x + "/"
+                                            + triangle.hypotenuse
+                                            + "). Then, solve for theta by taking the inverse of cosine: \u03b8 = "
+                                            + "cosine inverse (" + triangle.x + "/" + triangle.hypotenuse + ").");
                         } else {
                             howToLabels = AppConstants
                                     .divideLabel("The initial theta can be found using right triangle trigonometry " +
                                             "(SOH CAH TOA). In this case, we would use TOA (tangent = opposite/adjacent) as "
-                                            +
-                                            "the hypotenuse is missing: tan(\u03b8) = (" + triangle.x + "/" + triangle.y
-                                            +
-                                            "). Then, solve for theta by taking the inverse of tangent: \u03b8 = "
-                                            + "tangent "
-                                            + "inverse (" + triangle.x + "/" + triangle.y + ").");
+                                            + "the hypotenuse is missing: tan(\u03b8) = (" + triangle.x + "/"
+                                            + triangle.y
+                                            + "). Then, solve for theta by taking the inverse of tangent: \u03b8 = "
+                                            + "tangent " + "inverse (" + triangle.x + "/" + triangle.y + ").");
                         }
                     default:
                         break;
@@ -264,8 +258,7 @@ public class ProjectileMotion extends ScenarioUI {
                 switch (givenVal) {
                     case INIT_SIDES:
                         howToLabels = AppConstants.divideLabel("The initial velocity of a projectile is the hypotenuse "
-                                +
-                                "of the initial triangle. In this case, we would use pythagorean theorem [a^(2) + b^(2) = c^(2)] "
+                                + "of the initial triangle. In this case, we would use pythagorean theorem [a^(2) + b^(2) = c^(2)] "
                                 + "to find the hypotenuse. " + triangle.x + "^(2) + " + triangle.y + "^(2) = "
                                 + triangle.hypotenuse + "^(2).");
                         break;

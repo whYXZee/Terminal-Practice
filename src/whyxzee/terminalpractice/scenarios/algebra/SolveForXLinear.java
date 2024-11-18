@@ -7,6 +7,7 @@ import whyxzee.terminalpractice.resources.Fraction;
 import whyxzee.terminalpractice.scenarios.ScenarioConstants;
 import whyxzee.terminalpractice.scenarios.ScenarioUI;
 
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
 import java.util.ArrayList;
@@ -70,10 +71,9 @@ public class SolveForXLinear extends ScenarioUI {
         int term_2 = Integer.valueOf(eq.termArray[1]);
         System.out.println("=: " + eq.termArray[2] + ", 1: " + eq.termArray[1] + ", 0: " + eq.termArray[0]);
 
+        // add or subtract the constant, based on the inner function.
         boolean shouldSubtract = !AlgebraFunctions.isNegative(Integer.toString(term_2));
-
         String output = AlgebraFunctions.parseDoubleNegativeEQ(equalTerm + "-" + term_2);
-
         if (shouldSubtract) {
             output = AlgebraFunctions.subtraction(output);
         } else {
@@ -93,13 +93,27 @@ public class SolveForXLinear extends ScenarioUI {
     }
 
     @Override
+    public void customActions(String action) {
+        if (action.equals("\u2044")) {
+            response = textField.getText();
+            textField.setText(response + "[] \u2044 []");
+        }
+    }
+
+    @Override
     public void getQuestion() {
         questions = AppConstants.divideLabel("Solve for x: " + eq);
     }
 
     @Override
+    public void getExtraButtons() {
+        extraButtonsArray = new JButton[] { new JButton("\u2044") };
+    }
+
+    @Override
     public void printInfo() {
-        JOptionPane.showMessageDialog(AppConstants.frame, "Solve for x.",
+        JOptionPane.showMessageDialog(AppConstants.frame,
+                "Solve for x.\nClick the \"\u2044\" button to declare fractions.",
                 "Scenario Instructions", JOptionPane.INFORMATION_MESSAGE);
     }
 }

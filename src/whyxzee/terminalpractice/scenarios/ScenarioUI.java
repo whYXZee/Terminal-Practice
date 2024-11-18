@@ -2,7 +2,9 @@ package whyxzee.terminalpractice.scenarios;
 
 import whyxzee.terminalpractice.application.AppConstants;
 
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -34,19 +36,40 @@ public class ScenarioUI extends JPanel implements ActionListener {
     protected Random rng = new Random();
     protected MathContext round = new MathContext(4, RoundingMode.HALF_UP);
 
+    // Labels
     protected JLabel questionTracker = new JLabel();
+    protected JLabel imageLabel = null;
     protected JLabel[] questions = {};
-    protected JTextField textField = new JTextField();
-    protected JButton backButton = new JButton("End practice");
     protected JLabel[] correctIncorrect = {};
     protected JLabel[] howToLabels = {};
+
+    // Inputs
+    protected JTextField textField = new JTextField();
+    protected JButton backButton = new JButton("End practice");
     protected JButton continueButton = new JButton("Continue");
+    protected JButton[] extraButtonsArray = {};
+
+    // UI
+    protected GridBagConstraints grid = new GridBagConstraints();
+    protected GridBagConstraints innerGrid = new GridBagConstraints();
+
+    protected JPanel extraButtons = new JPanel();
 
     public ScenarioUI() throws InterruptedException {
         textField.setEnabled(false);
         // Layout
         this.setLayout(new GridBagLayout());
-        printInfo();
+        extraButtons.setLayout(new GridBagLayout());
+
+        grid.insets = new Insets(8, 8, 8, 8);
+        grid.anchor = GridBagConstraints.CENTER;
+        grid.gridx = 0;
+        grid.gridy = 0;
+
+        innerGrid.insets = new Insets(8, 8, 8, 8);
+        innerGrid.anchor = GridBagConstraints.CENTER;
+        innerGrid.gridx = 0;
+        innerGrid.gridy = 0;
 
         daemon = new ScenarioDaemon(this);
         daemon.setDaemon(true);
@@ -73,6 +96,7 @@ public class ScenarioUI extends JPanel implements ActionListener {
         continueButton.setMnemonic(KeyEvent.VK_C);
         continueButton.addActionListener(this);
 
+        printInfo();
         for (int i = 0; i < AppConstants.goal; i++) {
             runProblem(i);
 
@@ -99,6 +123,8 @@ public class ScenarioUI extends JPanel implements ActionListener {
         // Question
         randomize();
         printQuestion();
+
+        printExtraButtons();
 
         // Answer box
         textField();
@@ -133,6 +159,9 @@ public class ScenarioUI extends JPanel implements ActionListener {
      * Checks the answer.
      */
     public final void checkAnswer(String response) throws InterruptedException {
+        response = AppConstants.parseCustom(response);
+        textField.setText(response);
+
         if (solve().equals(response)) {
             correctIncorrect = new JLabel[] { new JLabel("Correct!") };
             printCorrectIncorrect();
@@ -159,24 +188,38 @@ public class ScenarioUI extends JPanel implements ActionListener {
     public final void actionPerformed(ActionEvent e) {
         // System.out.println("detected: " + e.getActionCommand()); // for debugging
         // purposes
-        if (action.equals(e.getActionCommand())) {
-            // so there are no duplicate inputs
+        // if (action.equals(e.getActionCommand())) {
+        // so there are no duplicate inputs
 
-        } else {
-            action = e.getActionCommand();
-            // System.out.println("confirmed: " + action);
-            if (ScenarioConstants.scenarioSemaphore.hasQueuedThreads()) {
-                if (action.equals("end")) {
-                    shouldBreak = true;
-                } else if (action.equals("move on")) {
-
-                } else if (action.equals("answer")) {
-                    action = ""; // so if the answer is correct it won't intefere w/ the next one
-                    response = textField.getText();
-                }
+        // } else {
+        action = e.getActionCommand();
+        // System.out.println("confirmed: " + action);
+        if (ScenarioConstants.scenarioSemaphore.hasQueuedThreads()) {
+            if (action.equals("end")) {
+                shouldBreak = true;
+                response = textField.getText();
+                ScenarioConstants.scenarioSemaphore.release();
+            } else if (action.equals("move on")) {
+                ScenarioConstants.scenarioSemaphore.release();
+            } else if (action.equals("answer")) {
+                action = ""; // so if the answer is correct it won't intefere w/ the next one
+                response = textField.getText();
                 ScenarioConstants.scenarioSemaphore.release();
             }
+
+            customActions(action);
+
         }
+        // }
+    }
+
+    /**
+     * Custom actions for scenarios.
+     * 
+     * @param action action command as a string
+     */
+    public void customActions(String action) {
+
     }
 
     /**
@@ -195,9 +238,10 @@ public class ScenarioUI extends JPanel implements ActionListener {
      * Resets the question
      */
     public final void resetGrid() {
-        ScenarioConstants.grid.gridx = 0;
-        ScenarioConstants.grid.gridy = 0;
+        grid.gridx = 0;
+        grid.gridy = 0;
         this.removeAll();
+        extraButtons.removeAll();
     }
 
     /**
@@ -209,8 +253,8 @@ public class ScenarioUI extends JPanel implements ActionListener {
         questionTracker = new JLabel("Question " + (questionNum + 1) + "/" + AppConstants.goal);
         questionTracker.setFont(AppConstants.biggerFont);
 
-        this.add(questionTracker, ScenarioConstants.grid);
-        ScenarioConstants.grid.gridy++;
+        this.add(questionTracker, grid);
+        grid.gridy++;
     }
 
     /**
@@ -221,15 +265,49 @@ public class ScenarioUI extends JPanel implements ActionListener {
     }
 
     /**
+     * Gets the question image for the problem.
+     * 
+     * @return {@code null} if no image, a JLabel if there is one.
+     */
+    public JLabel getQuestionImg() {
+        return null;
+    }
+
+    /**
+     * Gets the latex of the question.
+     * 
+     * @return {@code null} if there is no latex available.
+     */
+    public JScrollPane getLatexQuestion() {
+        return null;
+    }
+
+    /**
+     * Gets the latex of the how to labels.
+     * 
+     * @return {@code null} if there is no latex available.
+     */
+    public String getLatexHowTo() {
+        return "";
+    }
+
+    /**
      * Prints the question labels for the scenario.
      */
     public final void printQuestion() {
         getQuestion();
 
+        // Getting the image
+        imageLabel = getQuestionImg();
+        if (imageLabel != null) {
+            this.add(imageLabel, grid);
+            grid.gridy++;
+        }
+
         for (JLabel j : questions) {
             j.setFont(AppConstants.medFont);
-            this.add(j, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
+            this.add(j, grid);
+            grid.gridy++;
         }
 
     }
@@ -239,16 +317,16 @@ public class ScenarioUI extends JPanel implements ActionListener {
      */
     public final void textField() {
         textField.setText("");
-        this.add(textField, ScenarioConstants.grid);
-        ScenarioConstants.grid.gridy++;
+        this.add(textField, grid);
+        grid.gridy++;
     }
 
     /**
      * Creates the back button for the scenario.
      */
     public final void backButton() {
-        this.add(backButton, ScenarioConstants.grid);
-        ScenarioConstants.grid.gridy++;
+        this.add(backButton, grid);
+        grid.gridy++;
     }
 
     /**
@@ -257,8 +335,8 @@ public class ScenarioUI extends JPanel implements ActionListener {
     public final void printCorrectIncorrect() {
         for (JLabel label : correctIncorrect) {
             label.setFont(AppConstants.smallFont);
-            this.add(label, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
+            this.add(label, grid);
+            grid.gridy++;
         }
     }
 
@@ -281,19 +359,50 @@ public class ScenarioUI extends JPanel implements ActionListener {
 
         for (JLabel label : howToLabels) {
             label.setFont(AppConstants.medFont);
-            this.add(label, ScenarioConstants.grid);
-            ScenarioConstants.grid.gridy++;
+            this.add(label, grid);
+            grid.gridy++;
         }
 
         // Button
-        this.add(continueButton, ScenarioConstants.grid);
-        ScenarioConstants.grid.gridy++;
+        this.add(continueButton, grid);
+        grid.gridy++;
 
         display();
         textField.setEnabled(false);
     }
 
-    public void closingMessage() {
+    /**
+     * Adds extra scenario buttons.
+     */
+    public void getExtraButtons() {
+
+    }
+
+    /**
+     * Prints the extra buttons for the scenario.
+     */
+    public final void printExtraButtons() {
+        getExtraButtons();
+
+        innerGrid.gridx = 0;
+        innerGrid.gridy = 0;
+
+        for (JButton button : extraButtonsArray) {
+            // if (button != null) {
+            button.setActionCommand(button.getText());
+            button.addActionListener(this);
+            button.setPreferredSize(AppConstants.extraButtonDimension);
+            button.setFont(AppConstants.smallFont);
+
+            extraButtons.add(button, innerGrid);
+            innerGrid.gridx++;
+            // }
+        }
+        this.add(extraButtons, grid);
+        grid.gridy++;
+    }
+
+    public final void closingMessage() {
         JOptionPane.showMessageDialog(AppConstants.frame, "You got " + correct + " correct!", "Scenario Completion",
                 JOptionPane.INFORMATION_MESSAGE);
     }
@@ -312,7 +421,10 @@ public class ScenarioUI extends JPanel implements ActionListener {
 
         for (JLabel j : questions) {
             j.setFont(AppConstants.medFont);
+        }
 
+        if (imageLabel != null) {
+            // imageLabel. // resize it
         }
 
         textField.setColumns(AppConstants.answerColumns);

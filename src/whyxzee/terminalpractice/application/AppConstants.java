@@ -49,8 +49,13 @@ public class AppConstants {
     public static int width = 10;
     public static int height = 10;
     public static Dimension smallButtonDimension = new Dimension(10, 10);
+    public static Dimension extraButtonDimension = new Dimension(10, 10);
     public static Dimension wideButtonDimension = new Dimension(10, 10);
+    public static Dimension imageDimension = new Dimension(10, 10);
     public static Dimension flashcardDimension = new Dimension(10, 10);
+
+    // Files
+    public static String directory = System.getProperty("user.dir");
 
     public enum Game {
         FLASHCARDS,
@@ -60,6 +65,9 @@ public class AppConstants {
         CUSTOM_DRILLS,
         JSON_EDITOR,
         JSON_CREATOR,
+        JSON_SHARING,
+        JSON_IMPORTING,
+        JSON_DELETION,
         NONE
     }
 
@@ -92,8 +100,10 @@ public class AppConstants {
         smallFont = new Font("Arial", Font.PLAIN, width / 80);
         answerColumns = width / 75;
 
+        extraButtonDimension = new Dimension(width / 10, height / 15);
         smallButtonDimension = new Dimension(width / 5, height / 15);
         wideButtonDimension = new Dimension(width / 2, height / 15);
+        imageDimension = new Dimension(width / 2, height / 5);
 
         // Declaring UI screens
         GoAgain loopQuestion = new GoAgain();
@@ -102,6 +112,17 @@ public class AppConstants {
         FrameDaemon frameDaemon = new FrameDaemon();
         frameDaemon.setDaemon(true);
         frameDaemon.start();
+
+        // Changing the thingies back
+        String forLoop = "";
+        for (Character i : directory.toCharArray()) {
+            if (i == '\\') {
+                forLoop += "/";
+            } else {
+                forLoop += i;
+            }
+        }
+        directory = forLoop;
 
         while (run) {
             switch (gameEnum) {
@@ -145,6 +166,15 @@ public class AppConstants {
 
                     loopQuestion.display();
                     semaphore.acquire();
+                    break;
+                case JSON_SHARING:
+                    gameEnum = Game.NONE;
+                    break;
+                case JSON_IMPORTING:
+                    gameEnum = Game.NONE;
+                    break;
+                case JSON_DELETION:
+                    gameEnum = Game.NONE;
                     break;
                 case NONE:
                     subject = "";
@@ -214,8 +244,41 @@ public class AppConstants {
         return string;
     }
 
+    public static String parseCustom(String input) {
+        String output = "";
+        char[] charArray = input.toCharArray();
+        int offset = 0;
+
+        // Offset is added to the for loop so the i doesn't go out of bounds
+        for (int i = 0; i + offset < charArray.length; i++) {
+
+            // prevent index out of bounds errors
+            if (i + 1 + offset < charArray.length) { // plus minus
+                if (charArray[i + offset] == '+' && charArray[i + 1 + offset] == '-') {
+                    output += "\u00b1";
+                    offset++;
+                } else if (charArray[i + offset] == 's' && charArray[i + 1 + offset] == 'q'
+                        && charArray[i + 2 + offset] == 'r' && charArray[i + 3 + offset] == 't') { // sqrt
+                    output += "\u221a";
+                    offset += 3;
+                } else if (charArray[i + offset] == 'i' && charArray[i + 1 + offset] == 'n'
+                        && charArray[i + 2 + offset] == 't') {
+                    output += "\u222b";
+                    offset += 2;
+                } else {
+                    output += charArray[i + offset];
+                }
+
+            } else {
+                output += charArray[i + offset];
+            }
+        }
+
+        return output;
+    }
+
     private static String getRandomSplash() {
-        switch (new Random().nextInt(13)) {
+        switch (new Random().nextInt(14)) {
             case 0:
                 return "case 0";
             case 1:
@@ -242,11 +305,18 @@ public class AppConstants {
                 return "7 + 1 = 10"; // octal joke
             case 12:
                 return "Can now turn two negatives into a positive!";
+            case 13:
+                return "Did you know, that all dev problems are caused by the devs?";
             default:
                 return "";
         }
     }
 
+    /**
+     * Goes through the custom flashcard directory to check for custom sets.
+     * 
+     * @return {@code true} if a custom set is available, {@code false} if otherwise
+     */
     public static boolean checkCustom() {
         File[] jsons = JSONTools
                 .removeGitKeep(new File("./src/whyxzee/terminalpractice/flashcards/custom/").listFiles());
@@ -267,8 +337,10 @@ public class AppConstants {
         smallFont = new Font("Arial", Font.PLAIN, width / 80);
         answerColumns = width / 75;
 
+        extraButtonDimension = new Dimension(width / 10, height / 15);
         smallButtonDimension = new Dimension(width / 5, height / 15);
         wideButtonDimension = new Dimension(width / 2, height / 15);
+        imageDimension = new Dimension(width / 2, height / 5);
         flashcardDimension = new Dimension((int) (width / 1.25), height / 2);
     }
 }
@@ -284,6 +356,7 @@ class FrameDaemon extends Thread {
             AppConstants.height = AppConstants.frame.getBounds().height;
 
             AppConstants.resize();
+            JSONTools.resize();
 
             try {
                 // System.out.println("width: " + AppConstants.width + " height: " +

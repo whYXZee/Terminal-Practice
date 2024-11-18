@@ -28,7 +28,7 @@ import java.util.concurrent.Semaphore;
 import whyxzee.terminalpractice.application.AppConstants;
 
 public class JSONCreator extends JPanel implements ActionListener {
-    // JSONCreatorDaemon daemon;
+    JSONCreatorDaemon daemon;
     Semaphore semaphore = new Semaphore(0);
 
     // Variables
@@ -74,6 +74,8 @@ public class JSONCreator extends JPanel implements ActionListener {
     JPanel restrictionButtons = new JPanel();
     JPanel optionsPanel = new JPanel();
     JPanel buttonsPanel = new JPanel();
+    JScrollPane answerScrollPane = new JScrollPane();
+    JScrollPane questionScrollPane = new JScrollPane();
 
     GridBagConstraints grid = new GridBagConstraints();
     GridBagConstraints optionsGrid = new GridBagConstraints();
@@ -194,23 +196,27 @@ public class JSONCreator extends JPanel implements ActionListener {
         optionsGrid.gridy++;
         optionsGrid.gridx--;
 
-        JScrollPane questionScrollPane = new JScrollPane(questionBox,
+        questionScrollPane = new JScrollPane(questionBox,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         optionsPanel.add(questionScrollPane, optionsGrid);
+        questionScrollPane.setPreferredSize(JSONTools.jsonTextBoxes);
         questionBox.setText(questions);
         questionBox.setFont(AppConstants.smallFont);
         optionsGrid.gridx++;
-        JScrollPane answerScrollPane = new JScrollPane(answerBox,
+
+        answerScrollPane = new JScrollPane(answerBox,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         optionsPanel.add(answerScrollPane, optionsGrid);
+        answerScrollPane.setPreferredSize(JSONTools.jsonTextBoxes);
         answerBox.setFont(AppConstants.smallFont);
         answerBox.setText(answers);
         optionsGrid.gridy++;
         optionsGrid.gridx--;
 
-        this.add(optionsPanel, grid);
+        this.add(new JScrollPane(optionsPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), grid);
         grid.gridy++;
 
         optionsGrid.gridy = 0;
@@ -243,6 +249,11 @@ public class JSONCreator extends JPanel implements ActionListener {
                 "Creator Information", JOptionPane.INFORMATION_MESSAGE);
 
         display();
+
+        daemon = new JSONCreatorDaemon(this);
+        daemon.setDaemon(true);
+        daemon.start();
+
         while (loop) {
             // From the charIndex
             charIndexField.setEnabled(restrict);
@@ -284,12 +295,10 @@ public class JSONCreator extends JPanel implements ActionListener {
     }
 
     public void display() {
-        AppConstants.frame.setContentPane(this);
+        AppConstants.frame.setContentPane(new JScrollPane(this,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
         AppConstants.frame.setVisible(true);
 
-        // daemon = new JSONCreatorDaemon(this);
-        // daemon.setDaemon(true);
-        // daemon.start();
     }
 
     private boolean checkIfDone() {
@@ -345,6 +354,9 @@ public class JSONCreator extends JPanel implements ActionListener {
         }
 
         if (!returnFalse) {
+            questionBox.setText(JSONTools.reformatString(questions));
+            answerBox.setText(JSONTools.reformatString(answers));
+
             JOptionPane.showMessageDialog(AppConstants.frame,
                     "Error: " + missing + ".", "Missing arguments", JOptionPane.ERROR_MESSAGE);
         }
@@ -386,6 +398,9 @@ public class JSONCreator extends JPanel implements ActionListener {
         answerLabel.setFont(AppConstants.smallFont);
         questionBox.setFont(AppConstants.smallFont);
         answerBox.setFont(AppConstants.smallFont);
+
+        answerScrollPane.setPreferredSize(JSONTools.jsonTextBoxes);
+        questionScrollPane.setPreferredSize(JSONTools.jsonTextBoxes);
 
         doneButton.setPreferredSize(AppConstants.smallButtonDimension);
         doneButton.setFont(AppConstants.medFont);

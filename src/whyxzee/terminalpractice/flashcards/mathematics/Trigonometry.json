@@ -1,0 +1,18 @@
+{
+  "setName": "trigonometry",
+  "beginningCharIndex": 0,
+  "termList": {
+    "What type of line starts at the vertex and hits the opposing line perpendicularly?": "altitude",
+    "What cuts an angle into two congruent angles?": "angle bisector",
+    "What joins a vertex to the midpoint of the opposite side?": "median",
+    "What joins a vertex to any point on the opposite side?": "cevian",
+
+    "What is the point of intersection of all angle bisectors?": "incenter",
+    "What is the circle inscribed by a shape?": "incircle",
+    "What is the point of intersection of all altitudes?": "orthocenter",
+    "What is the point of intersection of all medians?": "centroid,geometric center,center of figure",
+    "What is the point of intersection of all perpendicular bisectors?": "circumcenter"
+  },
+  "restrictLetters": false,
+  "subject": "math"
+}

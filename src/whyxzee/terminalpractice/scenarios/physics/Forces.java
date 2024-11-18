@@ -1,11 +1,14 @@
 package whyxzee.terminalpractice.scenarios.physics;
 
 import whyxzee.terminalpractice.application.AppConstants;
+import whyxzee.terminalpractice.resources.ImageCreator;
 import whyxzee.terminalpractice.scenarios.ExampleObjects;
 import whyxzee.terminalpractice.scenarios.ScenarioUI;
 
 import java.math.BigDecimal;
 
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 public class Forces extends ScenarioUI {
@@ -74,7 +77,7 @@ public class Forces extends ScenarioUI {
     public void randomize() {
         object.rngObjectForce();
 
-        switch (rng.nextInt(8)) {
+        switch (/* rng.nextInt(8) */ 7) {
             case 0:
                 problemType = ProblemType.BOUYANCY;
                 if (Math.random() > .5) {
@@ -137,15 +140,18 @@ public class Forces extends ScenarioUI {
                 massG_2 = rng.nextInt(100) + 1;
                 break;
             case 6:
+                // problemType = ProblemType.TENSION;
+                // mass = rng.nextInt(25) + 1;
+                // break;
             case 7:
                 problemType = ProblemType.INCLINED_SLOPE;
                 frictionCoefficient = (int) (Math.random() * 100) / 100.0;
                 slopeTheta = rng.nextInt(80) + 1;
                 mass = rng.nextInt(25) + 1;
 
-                fGravity = (int) (mass * gravity * 100) / 100.0;
-                fPerpendicular = -fGravity * Math.cos(Math.toRadians(slopeTheta)) * 100;
-                fParallel = -fGravity * Math.sin(Math.toRadians(slopeTheta));
+                fGravity = (int) (mass * -gravity * 100) / 100.0;
+                fPerpendicular = fGravity * Math.cos(Math.toRadians(slopeTheta));
+                fParallel = fGravity * Math.sin(Math.toRadians(slopeTheta));
                 break;
         }
     }
@@ -211,6 +217,41 @@ public class Forces extends ScenarioUI {
                 questions = AppConstants.divideLabel("Given a inclined slope of " + slopeTheta + "\u00b0 with a"
                         + object.singular + ", " + friction + " and a mass of " + mass + " kg, what is the net force?");
                 break;
+        }
+    }
+
+    @Override
+    public JLabel getQuestionImg() {
+        ImageCreator image = new ImageCreator(AppConstants.imageDimension.width,
+                AppConstants.imageDimension.height + 100);
+
+        int horizontalGrid = image.width / 50;
+        int verticalGrid = image.height / 50;
+
+        // System.out.println("horizontal grid: " + horizontalGrid);
+        // System.out.println("vertical grid: " + verticalGrid);
+
+        switch (problemType) {
+            case INCLINED_SLOPE:
+                int triangleHeight = verticalGrid * 48;
+                int triangleWidth = horizontalGrid * 48;
+                image.setColor(175, 175, 175);
+
+                image.filled90Triangle(horizontalGrid, verticalGrid, triangleHeight, triangleWidth);
+
+                // Box
+                image.setColor(125, 125, 125);
+                double gridRotation = Math.atan(triangleHeight / (double) triangleWidth);
+                image.filledRotatedRectangle(horizontalGrid * 20, verticalGrid * 20, verticalGrid * 10,
+                        horizontalGrid * 10, gridRotation);
+
+                // Text
+                image.setColor(0, 0, 0);
+                image.text(slopeTheta + "\u00b0", horizontalGrid * 39, verticalGrid * 47, AppConstants.smallFont);
+
+                return new JLabel(new ImageIcon(image.img));
+            default:
+                return null;
         }
     }
 

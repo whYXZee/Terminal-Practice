@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
 import java.util.ArrayList;
@@ -35,7 +36,8 @@ public class Uncertainties extends ScenarioUI {
         SUBTRACT,
         MULTIPLY,
         DIVIDE,
-        POWER
+        POWER,
+        GRADIENT
     }
 
     ProblemType problemType = ProblemType.ABS_UNCERTAINTY;
@@ -89,7 +91,9 @@ public class Uncertainties extends ScenarioUI {
                 };
                 power = ScenarioConstants.rng.nextInt(4) + 2;
                 break;
-            default:
+            case 8:
+                problemType = ProblemType.GRADIENT;
+                break;
         }
     }
 
@@ -107,7 +111,7 @@ public class Uncertainties extends ScenarioUI {
                         + parseNumberUncertainty(uncertainties.get(1)).doubleValue(), round).toString();
                 finalError = new BigDecimal(parseErrorUncertainty(uncertainties.get(0)).doubleValue()
                         + parseErrorUncertainty(uncertainties.get(1)).doubleValue(), round).toString();
-                return finalNum + " +- " + finalError;
+                return finalNum + " \u00b1 " + finalError;
             case SUBTRACT:
                 finalNum = new BigDecimal(parseNumberUncertainty(uncertainties.get(0)).doubleValue()
                         - parseNumberUncertainty(uncertainties.get(1)).doubleValue(), round).toString();
@@ -121,7 +125,7 @@ public class Uncertainties extends ScenarioUI {
                 if (AlgebraFunctions.isNegative(finalError)) {
                     finalError = new BigDecimal(-1 * Double.valueOf(finalError), round).toString();
                 }
-                return finalNum + " +- " + finalError;
+                return finalNum + " \u00b1 " + finalError;
             case MULTIPLY:
                 finalNum = new BigDecimal(parseNumberUncertainty(uncertainties.get(0)).doubleValue()
                         * parseNumberUncertainty(uncertainties.get(1)).doubleValue(), round).toString();
@@ -133,7 +137,7 @@ public class Uncertainties extends ScenarioUI {
                                         uncertainties.get(1)).doubleValue()) * 100,
                         round).toString();
                 // Error has to be fraction or percentage
-                return finalNum + " +- " + finalError + "%";
+                return finalNum + " \u00b1 " + finalError + "%";
             case DIVIDE:
                 finalNum = new BigDecimal(parseNumberUncertainty(uncertainties.get(0)).doubleValue()
                         / parseNumberUncertainty(uncertainties.get(1)).doubleValue(), round).toString();
@@ -145,7 +149,7 @@ public class Uncertainties extends ScenarioUI {
                                         uncertainties.get(1)).doubleValue()) * 100,
                         round).toString();
                 // Error has to be fraction or percentage
-                return finalNum + " +- " + finalError + "%";
+                return finalNum + " \u00b1 " + finalError + "%";
             case POWER:
                 finalNum = new BigDecimal(Math.pow(parseNumberUncertainty(uncertainties.get(0)).doubleValue(), power),
                         round).toString();
@@ -154,9 +158,19 @@ public class Uncertainties extends ScenarioUI {
                                 uncertainties.get(0))
                                 .doubleValue() * 100 * power),
                         round).toString();
-                return finalNum + " +- " + finalError + "%";
+                return finalNum + " \u00b1 " + finalError + "%";
+            case GRADIENT:
+
             default:
                 return "";
+        }
+    }
+
+    @Override
+    public void customActions(String action) {
+        if (action.equals("\u00b1")) {
+            response = textField.getText();
+            textField.setText(response + "\u00b1");
         }
     }
 
@@ -165,39 +179,39 @@ public class Uncertainties extends ScenarioUI {
         switch (problemType) {
             case ABS_UNCERTAINTY:
                 questions = AppConstants
-                        .divideLabel("Find the absolute uncertainty: " + measurements + " (answer as # +- #)");
+                        .divideLabel("Find the absolute uncertainty: " + measurements + " (answer as # \u00b1 #)");
                 break;
             case FRAC_UNCERTAINTY:
                 questions = AppConstants
-                        .divideLabel("Find the fractional uncertainty: " + measurements + " (answer as # +- #)");
+                        .divideLabel("Find the fractional uncertainty: " + measurements + " (answer as # \u00b1 #)");
                 break;
             case PER_UNCERTAINTY:
                 questions = AppConstants
-                        .divideLabel("Find the percent uncertainty: " + measurements + " (answer as # +- #%)");
+                        .divideLabel("Find the percent uncertainty: " + measurements + " (answer as # \u00b1 #%)");
                 break;
             case ADD:
                 questions = AppConstants.divideLabel(
-                        "Find the sum of the uncertainties (absolute): " + uncertainties + " (answer as # +- #)");
+                        "Find the sum of the uncertainties (absolute): " + uncertainties + " (answer as # \u00b1 #)");
                 break;
             case SUBTRACT:
                 questions = AppConstants.divideLabel(
                         "Find the difference of the uncertainties (absolute): " + uncertainties
-                                + " (answer as # +- #)");
+                                + " (answer as # \u00b1 #)");
                 break;
             case MULTIPLY:
                 questions = AppConstants
                         .divideLabel("Find the product of the uncertainties (percent): " + uncertainties
-                                + " (answer as # +- #%)");
+                                + " (answer as # \u00b1 #%)");
                 break;
             case DIVIDE:
                 questions = AppConstants
                         .divideLabel("Find the quotient of the uncertainties (percent): " + uncertainties
-                                + " (answer as # +- #%)");
+                                + " (answer as # \u00b1 #%)");
                 break;
             case POWER:
                 questions = AppConstants
                         .divideLabel("Find the uncertainty w/ the power of " + power + " (percent): " + uncertainties
-                                + " (answer as # +- #%)");
+                                + " (answer as # \u00b1 #%)");
                 break;
             default:
         }
@@ -219,8 +233,7 @@ public class Uncertainties extends ScenarioUI {
                         " them all, the divide them by the number of values). Then, to find the uncertainty you "
                         + "begin by, subtracting the max value from the minimum value and divide by 2: [(" + max + " - "
                         + min + ") / 2] = " + finalError + ". Afterwards, divide the error by the value: " + finalError
-                        + "/" + finalNum
-                        + ".");
+                        + "/" + finalNum + ".");
                 break;
             case PER_UNCERTAINTY:
                 howToLabels = AppConstants.divideLabel("To find the value, average all the values (add" +
@@ -277,15 +290,27 @@ public class Uncertainties extends ScenarioUI {
                         + ") = " + finalNum + ". Then, to find the uncertainty you add both percent uncertainties: "
                         + error1 + " * " + power + " = " + finalError + "%.");
                 break;
+            case GRADIENT:
+                howToLabels = AppConstants.divideLabel("");
+                break;
         }
+    }
+
+    @Override
+    public void getExtraButtons() {
+        extraButtonsArray = new JButton[] { new JButton("\u00b1") };
     }
 
     @Override
     public void printInfo() {
         JOptionPane.showMessageDialog(AppConstants.frame,
-                "Solve the given uncertainties problem.\nEnsure that your answer has '+-' with spaces separating the numbers.",
+                "Solve the given uncertainties problem.\nA '+-' in the answer will be turned into a \u00b1.",
                 "Scenario Instructions", JOptionPane.INFORMATION_MESSAGE);
     }
+
+    //
+    // Scenario-specific methods
+    //
 
     /**
      * Randomizes the given set of measurements.
@@ -301,6 +326,12 @@ public class Uncertainties extends ScenarioUI {
         return output;
     }
 
+    /**
+     * Randomizes two uncertainties for arithmetics (addition, subtraction,
+     * multiplication, and division)
+     * 
+     * @return two uncertainties (value and the error)
+     */
     private ArrayList<String> randomizeUncertainties() {
         return new ArrayList<String>() {
             {
@@ -338,7 +369,7 @@ public class Uncertainties extends ScenarioUI {
         String stringedNum = "";
         boolean isError = false;
         for (Character i : input.toCharArray()) {
-            if (i.equals('+')) {
+            if (i.equals('\u00b1')) {
                 isError = true;
             } else if (isError && (Character.isDigit(i) || i.equals('.'))) {
                 stringedNum += i;
@@ -381,15 +412,15 @@ public class Uncertainties extends ScenarioUI {
 
         switch (problemType) {
             case ABS_UNCERTAINTY:
-                return total.doubleValue() + " +- " + error.doubleValue();
+                return total.doubleValue() + " \u00b1 " + error.doubleValue();
             case FRAC_UNCERTAINTY:
                 error = new BigDecimal(error.doubleValue() / total.doubleValue(), round);
-                return total.doubleValue() + " +- " + error.doubleValue();
+                return total.doubleValue() + " \u00b1 " + error.doubleValue();
             case PER_UNCERTAINTY:
                 error = new BigDecimal((error.doubleValue() / total.doubleValue()) * 100, round);
-                return total.doubleValue() + " +- " + error.doubleValue() + "%";
+                return total.doubleValue() + " \u00b1 " + error.doubleValue() + "%";
             default:
-                return total.doubleValue() + " +- " + error.doubleValue();
+                return total.doubleValue() + " \u00b1 " + error.doubleValue();
         }
 
     }

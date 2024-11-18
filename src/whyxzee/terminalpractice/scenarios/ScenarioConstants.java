@@ -3,12 +3,9 @@ package whyxzee.terminalpractice.scenarios;
 import whyxzee.terminalpractice.application.AppConstants;
 import whyxzee.terminalpractice.scenarios.algebra.*;
 import whyxzee.terminalpractice.scenarios.discrete_math.*;
-import whyxzee.terminalpractice.scenarios.geometry.RightTrig;
+import whyxzee.terminalpractice.scenarios.geometry.*;
 import whyxzee.terminalpractice.scenarios.number_sense.*;
 import whyxzee.terminalpractice.scenarios.physics.*;
-
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,14 +16,12 @@ public class ScenarioConstants {
     // Universal classes
     public static final Random rng = new Random();
     public static final Semaphore scenarioSemaphore = new Semaphore(0);
-    public static final GridBagConstraints grid = new GridBagConstraints();
 
     // HashMaps
     static final ArrayList<String> algebraScenarios = new ArrayList<String>() {
         {
             add("algebraic memory");
-            add("solve for x (linear)"); // needs to update to new scenario structure and
-            // add equation side
+            add("solve for x (linear)");
             add("factoring");
             // add("quadratic factors"); // need to actually finish it lmao
         }
@@ -41,6 +36,8 @@ public class ScenarioConstants {
     static final ArrayList<String> geometryScenarios = new ArrayList<String>() {
         {
             add("right triangle trigonometry"); // needs howToLabels
+            add("triangle centers");
+            add("non-right triangle trigonometry");
             // structure
         }
     };
@@ -58,6 +55,7 @@ public class ScenarioConstants {
             // add("projectile motion"); // needs "howToLabels"
             add("uncertainties");
             add("forces");
+            add("work, energy, & power");
         }
     };
 
@@ -77,10 +75,6 @@ public class ScenarioConstants {
      * @throws InterruptedException because of the semaphores in the UI.
      */
     public static void runScenario() throws InterruptedException {
-        grid.insets = new Insets(8, 8, 8, 8);
-        grid.anchor = GridBagConstraints.CENTER;
-        grid.gridx = 0;
-        grid.gridy = 0;
 
         switch (AppConstants.set) {
             // Algebra
@@ -97,12 +91,17 @@ public class ScenarioConstants {
             // Discrete Mathematics
             case "combinatorics":
                 new Combinatorics();
-                // new ScenarioUI();
                 break;
 
             // Geometry
+            case "non-right triangle trigonometry":
+                new NonRightTrig();
+                break;
             case "right triangle trigonometry":
                 new RightTrig();
+                break;
+            case "triangle centers":
+                new TriangleCenters();
                 break;
 
             // Number Sense
@@ -119,11 +118,15 @@ public class ScenarioConstants {
             // Physics
             case "forces":
                 new Forces();
+                break;
             case "projectile motion":
                 new ProjectileMotion();
                 break;
             case "uncertainties":
                 new Uncertainties();
+                break;
+            case "work, energy, & power":
+                new WorkEnergyPower();
                 break;
         }
     }

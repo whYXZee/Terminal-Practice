@@ -7,6 +7,10 @@ package whyxzee.terminalpractice.resources;
 public class Fraction {
     private String numerator, denominator, term;
 
+    //
+    // Fraction Construction
+    //
+
     /**
      * Creates a fraction.
      * 
@@ -16,7 +20,7 @@ public class Fraction {
     public Fraction(String num, String denom) {
         this.numerator = num;
         this.denominator = denom;
-        this.term = num + "|" + denom;
+        this.term = "[" + num + "] \u2044 [" + denom + "]";
         this.simplify();
     }
 
@@ -29,7 +33,7 @@ public class Fraction {
     public void changeFraction(String num, String denom) {
         this.numerator = num;
         this.denominator = denom;
-        this.term = num + "|" + denom;
+        this.term = "[" + num + "] \u2044 [" + denom + "]";
     }
 
     /**
@@ -57,7 +61,7 @@ public class Fraction {
                     fractionPower += i;
                 } else if (i == '^') { // marks the start of the exponent, starting the avoidance
                     avoid = true;
-                } else if (i == '|') { // only triggers if avoid is false
+                } else if (i == '\u2044') { // only triggers if avoid is false
                     isDenom = true;
                 } else {
                     if (!isDenom) {
@@ -67,7 +71,7 @@ public class Fraction {
                     }
                 }
             } else {
-                if (i == '|') {
+                if (i == '\u2044') {
                     isDenom = true;
                 } else if (!isDenom) {
                     num += i;
@@ -84,28 +88,6 @@ public class Fraction {
             denom = "1";
         }
         return new Fraction(num, denom);
-    }
-
-    /**
-     * Returns true if the String input is a function.
-     * 
-     * @param input String to check if its a fraction
-     * @return {@code true} when there's a "/" in the input
-     *         <li>{@code false} if there's no "/" in the input
-     */
-    public static boolean isFraction(String input) {
-        boolean fracPow = false;
-        for (Character i : input.toCharArray()) {
-            // Voiding a fractional power
-            if (i == '(') {
-                fracPow = true;
-            } else if (i == ')') {
-                fracPow = false;
-            } else if (i == '|' && !fracPow) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -154,11 +136,15 @@ public class Fraction {
         changeFraction(num + numVar, denom + denomVar);
     }
 
+    //
+    // Arithmetics
+    //
+
     /**
      * Divides two fractions inputted as Strings in case there are whole numbers.
      * 
-     * @param dividend : fraction or number as a String, what is being divided.
-     * @param divisor  : fraction or number as a String, what its dividing by.
+     * @param dividend fraction or number as a String, what is being divided.
+     * @param divisor  fraction or number as a String, what its dividing by.
      */
     public static Fraction divideFraction(String dividend, String divisor) {
         // Converts the inputs to fractions
@@ -172,6 +158,12 @@ public class Fraction {
         return new Fraction(numerator, denominator);
     }
 
+    /**
+     * Subtracts two fractions inputted as Strings in case there are whole numbers.
+     * 
+     * @param a fraction or number as a String, what is being subtracted from
+     * @param b fraction or number as a String, what is being subtracted
+     */
     public static Fraction subtractFraction(String a, String b) {
         Fraction fracA = toFraction(a);
         Fraction fracB = toFraction(b);
@@ -182,9 +174,15 @@ public class Fraction {
             fracB.changeFraction(AlgebraFunctions.multiplication(fracB.numerator + "*" + fracA.denominator),
                     AlgebraFunctions.multiplication(fracB.denominator + "*" + fracA.denominator));
         }
-        return new Fraction(AlgebraFunctions.subtraction(fracA.numerator + "_" + fracB.numerator), fracA.denominator);
+        return new Fraction(AlgebraFunctions.subtraction(fracA.numerator + "-" + fracB.numerator), fracA.denominator);
     }
 
+    /**
+     * Multiplies two fractions inputted as Strings in case there are whole numbers.
+     * 
+     * @param a fraction or number as a String
+     * @param b fraction or number as a String
+     */
     public static Fraction multiplyFractions(String a, String b) {
         Fraction fracA = toFraction(a);
         Fraction fracB = toFraction(b);
@@ -194,15 +192,61 @@ public class Fraction {
                 AlgebraFunctions.multiplication(fracA.denominator + "*" + fracB.denominator));
     }
 
+    /**
+     * 
+     * @param a
+     * @param b
+     * @return
+     */
+    public static Fraction addFractions(String a, String b) {
+        Fraction fracA = toFraction(a);
+        Fraction fracB = toFraction(b);
+        if (!fracA.denominator.equals(fracB.denominator)) { // ensures that the denominators are the same before doing
+                                                            // illegal fraction arithmetics
+            fracA.changeFraction(AlgebraFunctions.multiplication(fracA.numerator + "*" + fracB.denominator),
+                    AlgebraFunctions.multiplication(fracA.denominator + "*" + fracB.denominator));
+            fracB.changeFraction(AlgebraFunctions.multiplication(fracB.numerator + "*" + fracA.denominator),
+                    AlgebraFunctions.multiplication(fracB.denominator + "*" + fracA.denominator));
+        }
+
+        return new Fraction(AlgebraFunctions.addition(fracA.numerator + "+" + fracB.numerator), fracA.denominator);
+    }
+
+    //
+    // Conditionals
+    //
+
     private static boolean isFracPower(String input) {
         boolean isPower = false;
         for (Character i : input.toCharArray()) {
-            if (isPower && i == '|') {
+            if (isPower && i == '\u2044') {
                 return true;
             } else if (i == '(') {
                 isPower = true;
             } else if (i == ')') {
                 isPower = false;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if the String input is a function.
+     * 
+     * @param input String to check if its a fraction
+     * @return {@code true} when there's a "/" in the input
+     *         <li>{@code false} if there's no "/" in the input
+     */
+    public static boolean isFraction(String input) {
+        boolean fracPow = false;
+        for (Character i : input.toCharArray()) {
+            // Voiding a fractional power
+            if (i == '(') {
+                fracPow = true;
+            } else if (i == ')') {
+                fracPow = false;
+            } else if (i == '\u2044' && !fracPow) {
+                return true;
             }
         }
         return false;

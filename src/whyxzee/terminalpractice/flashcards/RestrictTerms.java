@@ -22,6 +22,7 @@ public class RestrictTerms extends JPanel implements ActionListener {
     GridBagConstraints grid = new GridBagConstraints();
     GridBagConstraints checkBoxGrid = new GridBagConstraints();
 
+    // Checkboxes
     JCheckBox a = new JCheckBox("A");
     JCheckBox b = new JCheckBox("B");
     JCheckBox c = new JCheckBox("C");
@@ -112,7 +113,7 @@ public class RestrictTerms extends JPanel implements ActionListener {
             // to prevent no letters being selected.
             if (AppConstants.whitelistArray.size() == 0) {
                 JOptionPane.showMessageDialog(AppConstants.frame,
-                        "No letters have been selected. Please select a letter or select \"all\".", "Letter Error",
+                        "No letters have been selected. Please select a letter or select \"all\".", "Selection Error",
                         JOptionPane.ERROR_MESSAGE);
             } else {
                 AppConstants.bannedLetters.removeAll(AppConstants.whitelistArray);

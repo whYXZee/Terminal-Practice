@@ -25,6 +25,9 @@ public class Equation {
 
     public Equation(ArrayList<String> termList) {
         this.termArray = parseZero(termList).toArray(new String[parseZero(termList).size()]);
+        // for (String i : termArray) {
+        // System.out.println(i);
+        // }
     }
 
     /**
@@ -47,27 +50,36 @@ public class Equation {
 
         // Going through the input term list
         for (int i = 0; i < list.size(); i++) {
-            if (Fraction.isFraction(list.get(i))) {
+            String index = list.get(i);
+
+            if (Fraction.isFraction(index)) {
                 // Check if fraction
 
-                Fraction frac = Fraction.toFraction(list.get(i));
+                Fraction frac = Fraction.toFraction(index);
                 if (!AlgebraFunctions.getCoefficient(frac.toString()).equals("0")) {
                     // If the coefficient is not 0, add to the output
 
                     outputList.add(frac.toString());
                 }
 
-            } else if (list.get(i).contains("=")) {
+            } else if (index.contains("=")) {
                 // If it's the right of the equal sign
 
-                outputList.add(list.get(i));
+                outputList.add(index);
             } else {
                 // Nothing special with it
 
-                if (Integer.valueOf(AlgebraFunctions.getCoefficient(list.get(i))) != 0) {
+                if (Integer.valueOf(AlgebraFunctions.getCoefficient(index)) == 1) {
+                    if (AlgebraFunctions.getVars(index).equals("")) {
+                        outputList.add(index);
+                    } else {
+                        outputList.add(AlgebraFunctions.getVars(index));
+                    }
+
+                } else if (Integer.valueOf(AlgebraFunctions.getCoefficient(index)) != 0) {
                     // if not equal to zero, add to output list.
 
-                    outputList.add(list.get(i));
+                    outputList.add(index);
                 }
             }
 

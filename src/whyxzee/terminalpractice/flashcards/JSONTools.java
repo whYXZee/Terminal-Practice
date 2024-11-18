@@ -8,7 +8,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-// import javax.swing.
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import javax.swing.JOptionPane;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,8 +30,13 @@ public class JSONTools {
     // Vars
     public static Dimension jsonRestrictDimension = new Dimension(10, 10);
     public static Dimension jsonDimension = new Dimension(10, 10);
+    public static Dimension jsonTextBoxes = new Dimension(10, 10);
     public static int jsonColumns = 10;
     public static int jsonRows = 10;
+
+    //
+    // Set Creation
+    //
 
     /**
      * Creates a JSON of the flashcard set.
@@ -63,6 +72,73 @@ public class JSONTools {
     }
 
     /**
+     * Edits a selected JSON.
+     * 
+     * @param path path of the JSON file, starting with "./src/".
+     */
+    public static void editJSON(File path) {
+        try {
+            // Getting the file
+            JSONObject jsonO = new JSONObject();
+            PrintWriter pw = new PrintWriter(path);
+
+            jsonO.put("subject", JSONEditor.subject.toLowerCase());
+            jsonO.put("setName", JSONEditor.set.toLowerCase());
+            jsonO.put("restrictLetters", JSONEditor.restrict);
+            jsonO.put("beginningCharIndex", JSONEditor.beginningCharIndex);
+
+            // Adding terms
+            ArrayList<String> questions = parseArrayList(JSONEditor.questions);
+            ArrayList<String> answers = parseArrayList(JSONEditor.answers);
+            Map<String, String> map = new HashMap<String, String>();
+            int termSize = questions.size();
+            // if (termSize < answers.size()) {
+            // termSize = answers.size();
+            // }
+            // questions = equalizeTerms(questions, termSize);
+            // answers = equalizeTerms(answers, termSize);
+            for (int i = 0; i < termSize; i++) {
+                map.put(questions.get(i), answers.get(i));
+            }
+            jsonO.put("termList", map);
+
+            // Writing
+            pw.write(jsonO.toJSONString());
+            pw.flush();
+            pw.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("file not found");
+        }
+    }
+
+    /**
+     * Deletes a selected JSON.
+     * 
+     * @param file
+     */
+    public static void deleteJSON(File file) {
+        int selection = JOptionPane.showConfirmDialog(AppConstants.frame,
+                "Are you sure you want to delete " + file.getName() + "?", "Delete Custom Set",
+                JOptionPane.WARNING_MESSAGE);
+
+        if (selection == JOptionPane.YES_OPTION) {
+            try {
+                Path filePath = Paths.get(file.getPath());
+                Files.delete(filePath);
+
+                JOptionPane.showMessageDialog(AppConstants.frame, "File successfully deleted.",
+                        "File Deletion", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException er) {
+                JOptionPane.showMessageDialog(AppConstants.frame,
+                        "File not deleted: " + er, "File Deletion Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(AppConstants.frame,
+                    "File not deleted.", "File Deletion", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
      * Makes the ArrayList size equal to the termSize.
      * 
      * @param input
@@ -78,6 +154,70 @@ public class JSONTools {
         }
         return input;
     }
+
+    /**
+     * Parses an ArrayList<String> from the inputted string.
+     * 
+     * @return
+     */
+    public static ArrayList<String> parseArrayList(String input) {
+        ArrayList<String> output = new ArrayList<String>();
+        String stringedChar = "";
+        for (Character i : input.toCharArray()) {
+            if (i.equals(';')) {
+                output.add(stringedChar);
+                stringedChar = "";
+            } else if (i.equals('\n')) {
+
+            } else {
+                stringedChar = stringedChar + i;
+            }
+        }
+        return output;
+    }
+
+    /**
+     * Parses a String from an ArrayList. Used when setting the questions/terms in
+     * the set editor.
+     * 
+     * @param input
+     * @return
+     */
+    public static String arrayListToString(Set<String> input) {
+        String output = "";
+        for (String i : input) {
+            output += i + ";\n";
+        }
+        return output;
+    }
+
+    /**
+     * Reformats the String inside the text area to better see the input.
+     * 
+     * @param input
+     * @return {@code input} with newline characters (if needed)
+     */
+    public static String reformatString(String input) {
+        String output = "";
+        char[] charArray = input.toCharArray();
+        for (int i = 0; i < charArray.length; i++) {
+            char currentChar = charArray[i];
+            output += currentChar;
+            try {
+                if (currentChar == ';' && charArray[i + 1] != '\n') {
+                    output += '\n';
+                }
+            } catch (IndexOutOfBoundsException e) {
+
+            }
+        }
+        return output;
+
+    }
+
+    //
+    // Accessing custom sets
+    //
 
     /**
      * Gets the custom subjects available.
@@ -129,27 +269,6 @@ public class JSONTools {
                 } catch (ParseException e) {
                     System.out.println("ParseException at " + i);
                 }
-            }
-        }
-        return output;
-    }
-
-    /**
-     * Parses an ArrayList<String> from the inputted string.
-     * 
-     * @return
-     */
-    public static ArrayList<String> parseArrayList(String input) {
-        ArrayList<String> output = new ArrayList<String>();
-        String stringedChar = "";
-        for (Character i : input.toCharArray()) {
-            if (i.equals(';')) {
-                output.add(stringedChar);
-                stringedChar = "";
-            } else if (i.equals('\n')) {
-
-            } else {
-                stringedChar = stringedChar + i;
             }
         }
         return output;
@@ -254,45 +373,11 @@ public class JSONTools {
     }
 
     /**
-     * Edits a selected JSON.
+     * Gets the beginning character index of a set.
      * 
-     * @param path path of the JSON file, starting with "./src/".
+     * @param path
+     * @return
      */
-    public static void editJSON(File path) {
-        try {
-            // Getting the file
-            JSONObject jsonO = new JSONObject();
-            PrintWriter pw = new PrintWriter(path);
-
-            jsonO.put("subject", JSONEditor.subject.toLowerCase());
-            jsonO.put("setName", JSONEditor.set.toLowerCase());
-            jsonO.put("restrictLetters", JSONEditor.restrict);
-            jsonO.put("beginningCharIndex", JSONEditor.beginningCharIndex);
-
-            // Adding terms
-            ArrayList<String> questions = parseArrayList(JSONEditor.questions);
-            ArrayList<String> answers = parseArrayList(JSONEditor.answers);
-            Map<String, String> map = new HashMap<String, String>();
-            int termSize = questions.size();
-            // if (termSize < answers.size()) {
-            // termSize = answers.size();
-            // }
-            // questions = equalizeTerms(questions, termSize);
-            // answers = equalizeTerms(answers, termSize);
-            for (int i = 0; i < termSize; i++) {
-                map.put(questions.get(i), answers.get(i));
-            }
-            jsonO.put("termList", map);
-
-            // Writing
-            pw.write(jsonO.toJSONString());
-            pw.flush();
-            pw.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("file not found");
-        }
-    }
-
     public static long getBeginningCharIndex(File path) {
         try {
             JSONObject jsonO = (JSONObject) new JSONParser()
@@ -308,14 +393,14 @@ public class JSONTools {
         return 0;
     }
 
-    public static String arrayListToString(Set<String> input) {
-        String output = "";
-        for (String i : input) {
-            output = output + i + ";\n";
-        }
-        return output;
-    }
-
+    /**
+     * Gets the answer from the given key using a hashmap. Used to match questions
+     * to the answers.
+     * 
+     * @param map
+     * @param keys
+     * @return
+     */
     public static String answersFromKey(HashMap<String, String> map, Set<String> keys) {
         String output = "";
         for (String i : keys) {
@@ -324,10 +409,15 @@ public class JSONTools {
         return output;
     }
 
+    /**
+     * Resizes the dimensions of each JSON-related component.
+     */
     public static void resize() {
+        jsonColumns = AppConstants.width / 75;
+        jsonRows = AppConstants.height / 100;
+
         jsonRestrictDimension = new Dimension(jsonColumns, AppConstants.height / 15);
         jsonDimension = new Dimension((int) (AppConstants.width / 1.25), (int) (AppConstants.height / 1.4));
-        jsonColumns = AppConstants.width / 50;
-        jsonRows = AppConstants.height / 150;
+        jsonTextBoxes = new Dimension((int) Math.pow(jsonColumns, 2), AppConstants.height / 3);
     }
 }

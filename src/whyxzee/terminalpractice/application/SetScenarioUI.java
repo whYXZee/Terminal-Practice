@@ -1,6 +1,7 @@
 package whyxzee.terminalpractice.application;
 
 import whyxzee.terminalpractice.flashcards.FlashcardConstants;
+import whyxzee.terminalpractice.flashcards.JSONExport;
 import whyxzee.terminalpractice.flashcards.JSONTools;
 
 import java.awt.GridBagConstraints;
@@ -119,6 +120,19 @@ public class SetScenarioUI extends JPanel implements ActionListener {
                             "./src/whyxzee/terminalpractice/flashcards/custom/");
                     new ConfigureGoal(JSONTools.getCustomHashMap(AppConstants.json).size()).display();
                     break;
+
+                case JSON_SHARING:
+                    new JSONExport(JSONTools.getJSONPath(AppConstants.subject, AppConstants.set,
+                            "./src/whyxzee/terminalpractice/flashcards/custom")).display();
+                    AppConstants.semaphore.release();
+                    break;
+                case JSON_DELETION:
+                    AppConstants.json = JSONTools.getJSONPath(AppConstants.subject, AppConstants.set,
+                            "./src/whyxzee/terminalpractice/flashcards/custom/");
+                    JSONTools.deleteJSON(AppConstants.json);
+                    AppConstants.semaphore.release();
+                    break;
+
                 default:
                     break;
             }
