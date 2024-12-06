@@ -288,6 +288,18 @@ public class FlashcardUI extends JPanel implements ActionListener {
         goToButton.setPreferredSize(AppConstants.smallButtonDimension);
         goToButton.setFont(AppConstants.medFont);
     }
+
+    /**
+     * Removes listeners on each button. Removes the "ghost input" that occurs
+     * when creating more than one flashcard window.
+     */
+    public void disableListeners() {
+        nextButton.removeActionListener(this);
+        backButton.removeActionListener(this);
+        flipButton.removeActionListener(this);
+        goToButton.removeActionListener(this);
+        endButton.removeActionListener(this);
+    }
 }
 
 // Cuases "flashing", fix later
@@ -311,6 +323,7 @@ class FlashcardDaemon extends Thread {
                     break;
                 default:
                     shouldRun = false;
+                    ui.disableListeners();
                     break;
             }
         }

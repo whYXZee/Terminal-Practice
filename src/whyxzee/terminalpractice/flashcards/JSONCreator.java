@@ -28,7 +28,7 @@ import java.util.concurrent.Semaphore;
 import whyxzee.terminalpractice.application.AppConstants;
 
 public class JSONCreator extends JPanel implements ActionListener {
-    // JSONCreatorDaemon daemon;
+    JSONCreatorDaemon daemon;
     Semaphore semaphore = new Semaphore(0);
 
     // Variables
@@ -74,6 +74,8 @@ public class JSONCreator extends JPanel implements ActionListener {
     JPanel restrictionButtons = new JPanel();
     JPanel optionsPanel = new JPanel();
     JPanel buttonsPanel = new JPanel();
+    JScrollPane answerScrollPane = new JScrollPane();
+    JScrollPane questionScrollPane = new JScrollPane();
 
     GridBagConstraints grid = new GridBagConstraints();
     GridBagConstraints optionsGrid = new GridBagConstraints();
@@ -194,14 +196,14 @@ public class JSONCreator extends JPanel implements ActionListener {
         optionsGrid.gridy++;
         optionsGrid.gridx--;
 
-        JScrollPane questionScrollPane = new JScrollPane(questionBox,
+        questionScrollPane = new JScrollPane(questionBox,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         optionsPanel.add(questionScrollPane, optionsGrid);
         questionBox.setText(questions);
         questionBox.setFont(AppConstants.smallFont);
         optionsGrid.gridx++;
-        JScrollPane answerScrollPane = new JScrollPane(answerBox,
+        answerScrollPane = new JScrollPane(answerBox,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         optionsPanel.add(answerScrollPane, optionsGrid);
@@ -287,9 +289,9 @@ public class JSONCreator extends JPanel implements ActionListener {
         AppConstants.frame.setContentPane(this);
         AppConstants.frame.setVisible(true);
 
-        // daemon = new JSONCreatorDaemon(this);
-        // daemon.setDaemon(true);
-        // daemon.start();
+        daemon = new JSONCreatorDaemon(this);
+        daemon.setDaemon(true);
+        daemon.start();
     }
 
     private boolean checkIfDone() {
@@ -386,6 +388,9 @@ public class JSONCreator extends JPanel implements ActionListener {
         answerLabel.setFont(AppConstants.smallFont);
         questionBox.setFont(AppConstants.smallFont);
         answerBox.setFont(AppConstants.smallFont);
+
+        answerScrollPane.setPreferredSize(JSONTools.jsonTextBoxes);
+        questionScrollPane.setPreferredSize(JSONTools.jsonTextBoxes);
 
         doneButton.setPreferredSize(AppConstants.smallButtonDimension);
         doneButton.setFont(AppConstants.medFont);

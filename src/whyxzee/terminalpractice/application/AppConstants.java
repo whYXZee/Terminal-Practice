@@ -1,7 +1,8 @@
 package whyxzee.terminalpractice.application;
 
 import whyxzee.terminalpractice.flashcards.*;
-import whyxzee.terminalpractice.scenarios.ScenarioConstants;
+import whyxzee.terminalpractice.scenarios.RunOmegaScenario;
+import whyxzee.terminalpractice.scenarios.ScenarioTools;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -14,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -34,6 +36,9 @@ public class AppConstants {
     public static int goal = 0;
     public static ArrayList<String> bannedLetters = new ArrayList<String>();
     public static ArrayList<String> whitelistArray = new ArrayList<String>();
+    public static HashMap<String, String> compiledHashMap = new HashMap<String, String>();
+    public static ArrayList<String> compiledScenarios = new ArrayList<String>();
+    public static boolean isOmega = false;
 
     // UI
     static GoAgain loopQuestion = new GoAgain();
@@ -51,6 +56,7 @@ public class AppConstants {
     public static Dimension smallButtonDimension = new Dimension(10, 10);
     public static Dimension wideButtonDimension = new Dimension(10, 10);
     public static Dimension flashcardDimension = new Dimension(10, 10);
+    public static Dimension extraButtonDimension = new Dimension(10, 10);
 
     public enum Game {
         FLASHCARDS,
@@ -60,6 +66,9 @@ public class AppConstants {
         CUSTOM_DRILLS,
         JSON_EDITOR,
         JSON_CREATOR,
+        JSON_IMPORT,
+        OMEGA_DRILL,
+        OMEGA_SCENARIO,
         NONE
     }
 
@@ -94,6 +103,7 @@ public class AppConstants {
 
         smallButtonDimension = new Dimension(width / 5, height / 15);
         wideButtonDimension = new Dimension(width / 2, height / 15);
+        extraButtonDimension = new Dimension(width / 10, height / 15);
 
         // Declaring UI screens
         GoAgain loopQuestion = new GoAgain();
@@ -118,7 +128,8 @@ public class AppConstants {
                     semaphore.acquire();
                     break;
                 case SCENARIOS:
-                    ScenarioConstants.runScenario();
+                    ScenarioTools.getScenario(set).normalRun();
+                    // ScenarioConstants.runScenario();
 
                     loopQuestion.display();
                     semaphore.acquire();
@@ -146,6 +157,25 @@ public class AppConstants {
                     loopQuestion.display();
                     semaphore.acquire();
                     break;
+
+                case JSON_IMPORT:
+                    gameEnum = Game.NONE;
+                    break;
+
+                case OMEGA_DRILL:
+                    new RunBlandDrillsUI(compiledHashMap);
+                    semaphore.acquire();
+
+                    loopQuestion.display();
+                    semaphore.acquire();
+                    break;
+                case OMEGA_SCENARIO:
+                    new RunOmegaScenario();
+                    semaphore.acquire();
+
+                    loopQuestion.display();
+                    semaphore.acquire();
+
                 case NONE:
                     subject = "";
                     set = "";
@@ -214,8 +244,11 @@ public class AppConstants {
         return string;
     }
 
+    /**
+     * Gets a random splash-text from a set list.
+     */
     private static String getRandomSplash() {
-        switch (new Random().nextInt(13)) {
+        switch (new Random().nextInt(15)) {
             case 0:
                 return "case 0";
             case 1:
@@ -228,7 +261,7 @@ public class AppConstants {
                 return "1 + 1 = 10"; // binary joke
             case 5:
                 return "My problems are sqrt(-1)"; // imaginary problems
-            case 6:
+            case 6: // PI
                 return "3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679";
             case 7:
                 return "123 is the same as 132"; // combination joke
@@ -242,11 +275,21 @@ public class AppConstants {
                 return "7 + 1 = 10"; // octal joke
             case 12:
                 return "Can now turn two negatives into a positive!";
+            case 13:
+                return "V1.1.1 doesn't exist, it can't hurt you.";
+            case 14:
+                return "It's \u03a9 time";
             default:
                 return "";
         }
     }
 
+    /**
+     * Checks if there is a custom set available.
+     * 
+     * @return {@code true} if there is a file in the custom folder (excluding the
+     *         .gitignore file), {@code false} if otherwise.
+     */
     public static boolean checkCustom() {
         File[] jsons = JSONTools
                 .removeGitKeep(new File("./src/whyxzee/terminalpractice/flashcards/custom/").listFiles());
@@ -270,6 +313,7 @@ public class AppConstants {
         smallButtonDimension = new Dimension(width / 5, height / 15);
         wideButtonDimension = new Dimension(width / 2, height / 15);
         flashcardDimension = new Dimension((int) (width / 1.25), height / 2);
+        extraButtonDimension = new Dimension(width / 10, height / 15);
     }
 }
 
@@ -284,6 +328,7 @@ class FrameDaemon extends Thread {
             AppConstants.height = AppConstants.frame.getBounds().height;
 
             AppConstants.resize();
+            JSONTools.resize();
 
             try {
                 // System.out.println("width: " + AppConstants.width + " height: " +

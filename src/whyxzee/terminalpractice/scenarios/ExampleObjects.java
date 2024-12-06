@@ -1,10 +1,14 @@
 package whyxzee.terminalpractice.scenarios;
 
+import java.util.Random;
+
 public class ExampleObjects {
     public String plural = "";
     public String corresponding = "";
     public String singular = "";
     public String correspondingSingle = "";
+
+    private static final Random rng = new Random();
 
     public ExampleObjects() {
 
@@ -13,11 +17,11 @@ public class ExampleObjects {
     public void rngObjectCombinatoric() {
         corresponding = "positions";
         correspondingSingle = "position";
-        switch (ScenarioConstants.rng.nextInt(3)) {
+        switch (rng.nextInt(3)) {
             case 0:
                 plural = "people";
                 singular = "person";
-                switch (ScenarioConstants.rng.nextInt(2)) {
+                switch (rng.nextInt(2)) {
                     case 0:
                         corresponding = "seats";
                         correspondingSingle = "seat";
@@ -40,7 +44,7 @@ public class ExampleObjects {
     public void rngObjectForce() {
         corresponding = "";
         correspondingSingle = "";
-        switch (ScenarioConstants.rng.nextInt(3)) {
+        switch (rng.nextInt(3)) {
             case 0:
                 plural = "dice";
                 singular = " die";

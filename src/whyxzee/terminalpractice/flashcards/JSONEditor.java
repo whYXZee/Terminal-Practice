@@ -37,7 +37,7 @@ import java.util.concurrent.Semaphore;
 import whyxzee.terminalpractice.application.AppConstants;
 
 public class JSONEditor extends JPanel implements ActionListener {
-    // JSONEditorDaemon daemon;
+    JSONEditorDaemon daemon;
     Semaphore semaphore = new Semaphore(0);
 
     public static boolean restrict = false;
@@ -80,6 +80,8 @@ public class JSONEditor extends JPanel implements ActionListener {
     JPanel restrictionButtons = new JPanel();
     JPanel optionsPanel = new JPanel();
     JPanel buttonsPanel = new JPanel();
+    JScrollPane answerScrollPane = new JScrollPane();
+    JScrollPane questionScrollPane = new JScrollPane();
 
     GridBagConstraints grid = new GridBagConstraints();
     GridBagConstraints optionsGrid = new GridBagConstraints();
@@ -192,13 +194,13 @@ public class JSONEditor extends JPanel implements ActionListener {
             optionsGrid.gridy++;
             optionsGrid.gridx--;
 
-            JScrollPane questionScrollPane = new JScrollPane(questionBox, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+            questionScrollPane = new JScrollPane(questionBox, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                     JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             optionsPanel.add(questionScrollPane, optionsGrid);
             questionBox.setText(questions);
             questionBox.setFont(AppConstants.smallFont);
             optionsGrid.gridx++;
-            JScrollPane answerScrollPane = new JScrollPane(answerBox, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+            answerScrollPane = new JScrollPane(answerBox, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                     JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             optionsPanel.add(answerScrollPane, optionsGrid);
             answerBox.setText(answers);
@@ -286,6 +288,10 @@ public class JSONEditor extends JPanel implements ActionListener {
     public void display() {
         AppConstants.frame.setContentPane(this);
         AppConstants.frame.setVisible(true);
+
+        daemon = new JSONEditorDaemon(this);
+        daemon.setDaemon(true);
+        daemon.start();
     }
 
     private boolean checkIfDone() {
@@ -372,6 +378,9 @@ public class JSONEditor extends JPanel implements ActionListener {
         answerLabel.setFont(AppConstants.smallFont);
         questionBox.setFont(AppConstants.smallFont);
         answerBox.setFont(AppConstants.smallFont);
+
+        answerScrollPane.setPreferredSize(JSONTools.jsonTextBoxes);
+        questionScrollPane.setPreferredSize(JSONTools.jsonTextBoxes);
 
         doneButton.setPreferredSize(AppConstants.smallButtonDimension);
         doneButton.setFont(AppConstants.medFont);

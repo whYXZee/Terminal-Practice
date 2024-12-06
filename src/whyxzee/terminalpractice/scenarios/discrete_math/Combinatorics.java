@@ -4,7 +4,6 @@ import whyxzee.terminalpractice.application.AppConstants;
 import whyxzee.terminalpractice.resources.DiscreteMath;
 import whyxzee.terminalpractice.resources.English;
 import whyxzee.terminalpractice.scenarios.ExampleObjects;
-import whyxzee.terminalpractice.scenarios.ScenarioConstants;
 import whyxzee.terminalpractice.scenarios.ScenarioUI;
 
 import java.math.BigInteger;
@@ -57,41 +56,41 @@ public class Combinatorics extends ScenarioUI {
         PARTITION_ALLOCATION,
     }
 
-    public Combinatorics() throws InterruptedException {
+    public Combinatorics() {
     }
 
     @Override
-    public void randomize() {
+    public void randomizeOpen() {
         object.rngObjectCombinatoric();
         switch (0) {
             case 0:
                 problemType = ProblemType.PERMUTATION_ALLOCATION;
                 do {
-                    n_1 = ScenarioConstants.rng.nextInt(10) + 1;
-                    r = ScenarioConstants.rng.nextInt(3) + 2;
+                    n_1 = rng.nextInt(10) + 1;
+                    r = rng.nextInt(3) + 2;
                 } while (r >= n_1);
                 break;
             case 1:
                 problemType = ProblemType.PERMUTATION_GROUPED;
                 do {
-                    n_1 = ScenarioConstants.rng.nextInt(10) + 1;
-                    grouped = ScenarioConstants.rng.nextInt(3) + 2;
+                    n_1 = rng.nextInt(10) + 1;
+                    grouped = rng.nextInt(3) + 2;
                 } while (grouped >= n_1);
                 break;
             case 2:
                 problemType = ProblemType.PERMUTATION_CIRCULAR;
-                n_1 = ScenarioConstants.rng.nextInt(10) + 3;
+                n_1 = rng.nextInt(10) + 3;
                 break;
             case 3:
                 problemType = ProblemType.PERMUTATION_CLOCK_COUNTER_CLOCK;
-                n_1 = ScenarioConstants.rng.nextInt(10) + 3;
+                n_1 = rng.nextInt(10) + 3;
                 break;
             case 4:
                 problemType = ProblemType.PERMUTATION_GENERALIZED_TOTAL;
                 if (Math.random() > .5) {
                     // Variables
                     isWord = true;
-                    randomWord = English.words.get(ScenarioConstants.rng.nextInt(English.words.size())).toLowerCase();
+                    randomWord = English.words.get(rng.nextInt(English.words.size())).toLowerCase();
                     HashMap<Character, Integer> letters = new HashMap<Character, Integer>();
                     ArrayList<Integer> letterNums = new ArrayList<Integer>();
 
@@ -109,11 +108,11 @@ public class Combinatorics extends ScenarioUI {
                     groups = letterNums.stream().mapToInt(i -> i).toArray();
                 } else {
                     isWord = false;
-                    n_1 = ScenarioConstants.rng.nextInt(10) + 1;
-                    n_2 = ScenarioConstants.rng.nextInt(10) + 1;
-                    n_3 = ScenarioConstants.rng.nextInt(10) + 1;
+                    n_1 = rng.nextInt(10) + 1;
+                    n_2 = rng.nextInt(10) + 1;
+                    n_3 = rng.nextInt(10) + 1;
                     if (Math.random() > .5) {
-                        n_4 = ScenarioConstants.rng.nextInt(10) + 1;
+                        n_4 = rng.nextInt(10) + 1;
                     } else {
                         n_4 = 1;
                     }
@@ -124,8 +123,8 @@ public class Combinatorics extends ScenarioUI {
             case 5:
                 problemType = ProblemType.COMBINATION_ALLOCATION;
                 do {
-                    n_1 = ScenarioConstants.rng.nextInt(10) + 1;
-                    r = ScenarioConstants.rng.nextInt(3) + 2;
+                    n_1 = rng.nextInt(10) + 1;
+                    r = rng.nextInt(3) + 2;
                 } while (r >= n_1);
                 break;
             case 6:
@@ -133,11 +132,11 @@ public class Combinatorics extends ScenarioUI {
                 // if (Math.random() > .5) {
                 // isWord = true;
                 // } else {
-                n_1 = ScenarioConstants.rng.nextInt(10) + 1;
-                n_2 = ScenarioConstants.rng.nextInt(10) + 1;
-                n_3 = ScenarioConstants.rng.nextInt(10) + 1;
+                n_1 = rng.nextInt(10) + 1;
+                n_2 = rng.nextInt(10) + 1;
+                n_3 = rng.nextInt(10) + 1;
                 if (Math.random() > .5) {
-                    n_4 = ScenarioConstants.rng.nextInt(10) + 1;
+                    n_4 = rng.nextInt(10) + 1;
                 } else {
                     n_4 = 1;
                 }
@@ -147,11 +146,11 @@ public class Combinatorics extends ScenarioUI {
 
             case 7:
                 problemType = ProblemType.PARTITION_ALLOCATION;
-                n_1 = ScenarioConstants.rng.nextInt(10) + 1;
-                n_2 = ScenarioConstants.rng.nextInt(10) + 1;
-                n_3 = ScenarioConstants.rng.nextInt(10) + 1;
+                n_1 = rng.nextInt(10) + 1;
+                n_2 = rng.nextInt(10) + 1;
+                n_3 = rng.nextInt(10) + 1;
                 if (Math.random() > .5) {
-                    n_4 = ScenarioConstants.rng.nextInt(10) + 1;
+                    n_4 = rng.nextInt(10) + 1;
                 } else {
                     n_4 = 1;
                 }
@@ -161,7 +160,7 @@ public class Combinatorics extends ScenarioUI {
     }
 
     @Override
-    public String solve() {
+    public String solveOpen() {
         BigInteger combination = BigInteger.valueOf(1);
         switch (problemType) {
             case PERMUTATION_ALLOCATION:
@@ -207,7 +206,7 @@ public class Combinatorics extends ScenarioUI {
     public void getQuestion() {
         switch (problemType) {
             case PERMUTATION_ALLOCATION:
-                switch (ScenarioConstants.rng.nextInt(2)) {
+                switch (rng.nextInt(2)) {
                     case 0:
                         questions = AppConstants.divideLabel("How many ways can " + r + " unique " + object.plural
                                 + " be chosen out of " + n_1 + " " + object.corresponding + "?");
@@ -246,7 +245,7 @@ public class Combinatorics extends ScenarioUI {
                 break;
 
             case COMBINATION_ALLOCATION:
-                switch (ScenarioConstants.rng.nextInt(2)) {
+                switch (rng.nextInt(2)) {
                     case 0:
                         questions = AppConstants.divideLabel("How many ways can " + r + " identical " + object.plural
                                 + " be chosen out of " + n_1 + " " + object.corresponding + "?");

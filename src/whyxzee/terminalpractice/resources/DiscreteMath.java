@@ -1,6 +1,7 @@
 package whyxzee.terminalpractice.resources;
 
 import java.math.BigInteger;
+import java.util.Set;
 
 public class DiscreteMath {
     /**

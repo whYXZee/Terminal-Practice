@@ -12,12 +12,15 @@ import java.io.PrintWriter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import com.google.gson.*;
 
 import whyxzee.terminalpractice.application.AppConstants;
 
@@ -26,8 +29,13 @@ public class JSONTools {
     // Vars
     public static Dimension jsonRestrictDimension = new Dimension(10, 10);
     public static Dimension jsonDimension = new Dimension(10, 10);
+    public static Dimension jsonTextBoxes = new Dimension(10, 10);
     public static int jsonColumns = 10;
     public static int jsonRows = 10;
+
+    //
+    // JSON Writing
+    //
 
     /**
      * Creates a JSON of the flashcard set.
@@ -39,15 +47,15 @@ public class JSONTools {
         JSONObject jsonO = new JSONObject();
 
         // Adding needed paramaters
-        jsonO.put("subject", JSONCreator.subject.toLowerCase());
-        jsonO.put("setName", JSONCreator.set.toLowerCase());
+        jsonO.put("subject", JSONCreator.subject);
+        jsonO.put("setName", JSONCreator.set);
         jsonO.put("restrictLetters", JSONCreator.restrict);
         jsonO.put("beginningCharIndex", JSONCreator.beginningCharIndex);
 
         // Adding terms
         ArrayList<String> questions = parseArrayList(JSONCreator.questions);
         ArrayList<String> answers = parseArrayList(JSONCreator.answers);
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<String, String>();
         int termSize = questions.size();
         for (int i = 0; i < termSize; i++) {
             map.put(questions.get(i), answers.get(i));
@@ -63,21 +71,48 @@ public class JSONTools {
     }
 
     /**
-     * Makes the ArrayList size equal to the termSize.
+     * Edits a selected JSON.
      * 
-     * @param input
-     * @param termSize
-     * @return
+     * @param path path of the JSON file, starting with "./src/".
      */
-    private static ArrayList<String> equalizeTerms(ArrayList<String> input, int termSize) {
-        int size = input.size();
-        if (termSize != input.size()) {
-            for (int i = 0; i < termSize - size; i++) {
-                input.add("");
+    public static void editJSON(File path) {
+        try {
+            // Getting the file
+            JSONObject jsonO = new JSONObject();
+            PrintWriter pw = new PrintWriter(path);
+
+            jsonO.put("subject", JSONEditor.subject);
+            jsonO.put("setName", JSONEditor.set);
+            jsonO.put("restrictLetters", JSONEditor.restrict);
+            jsonO.put("beginningCharIndex", JSONEditor.beginningCharIndex);
+
+            // Adding terms
+            ArrayList<String> questions = parseArrayList(JSONEditor.questions);
+            ArrayList<String> answers = parseArrayList(JSONEditor.answers);
+            Map<String, String> map = new LinkedHashMap<String, String>();
+            int termSize = questions.size();
+            // if (termSize < answers.size()) {
+            // termSize = answers.size();
+            // }
+            // questions = equalizeTerms(questions, termSize);
+            // answers = equalizeTerms(answers, termSize);
+            for (int i = 0; i < termSize; i++) {
+                map.put(questions.get(i), answers.get(i));
             }
+            jsonO.put("termList", map);
+
+            // Writing
+            pw.write(jsonO.toJSONString());
+            pw.flush();
+            pw.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("file not found");
         }
-        return input;
     }
+
+    //
+    // JSON Parsing
+    //
 
     /**
      * Gets the custom subjects available.
@@ -198,6 +233,15 @@ public class JSONTools {
      */
     public static HashMap<String, String> getCustomHashMap(File path) {
         try {
+            // JsonElement jelement = new JsonParser().parse("jsonLine");
+            // JsonObject jobject = jelement.getAsJsonObject();
+            // jobject = jobject.getAsJsonObject("data");
+            // JsonArray jarray = jobject.getAsJsonArray("translations");
+            // jobject = jarray.get(0).getAsJsonObject();
+            // String result = jobject.get("translatedText").getAsString();
+
+            // String jsonObject = new
+            // JSONParser().parse("termList").getAsJsonObject().get("termList").toString();
             JSONObject jsonO = (JSONObject) new JSONParser()
                     .parse(new FileReader(path));
             return (HashMap<String, String>) jsonO.get("termList");
@@ -253,46 +297,6 @@ public class JSONTools {
         return output;
     }
 
-    /**
-     * Edits a selected JSON.
-     * 
-     * @param path path of the JSON file, starting with "./src/".
-     */
-    public static void editJSON(File path) {
-        try {
-            // Getting the file
-            JSONObject jsonO = new JSONObject();
-            PrintWriter pw = new PrintWriter(path);
-
-            jsonO.put("subject", JSONEditor.subject.toLowerCase());
-            jsonO.put("setName", JSONEditor.set.toLowerCase());
-            jsonO.put("restrictLetters", JSONEditor.restrict);
-            jsonO.put("beginningCharIndex", JSONEditor.beginningCharIndex);
-
-            // Adding terms
-            ArrayList<String> questions = parseArrayList(JSONEditor.questions);
-            ArrayList<String> answers = parseArrayList(JSONEditor.answers);
-            Map<String, String> map = new HashMap<String, String>();
-            int termSize = questions.size();
-            // if (termSize < answers.size()) {
-            // termSize = answers.size();
-            // }
-            // questions = equalizeTerms(questions, termSize);
-            // answers = equalizeTerms(answers, termSize);
-            for (int i = 0; i < termSize; i++) {
-                map.put(questions.get(i), answers.get(i));
-            }
-            jsonO.put("termList", map);
-
-            // Writing
-            pw.write(jsonO.toJSONString());
-            pw.flush();
-            pw.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("file not found");
-        }
-    }
-
     public static long getBeginningCharIndex(File path) {
         try {
             JSONObject jsonO = (JSONObject) new JSONParser()
@@ -324,10 +328,16 @@ public class JSONTools {
         return output;
     }
 
+    //
+    // UI
+    //
+
     public static void resize() {
+        jsonColumns = AppConstants.width / 75;
+        jsonRows = AppConstants.height / 100;
+
         jsonRestrictDimension = new Dimension(jsonColumns, AppConstants.height / 15);
         jsonDimension = new Dimension((int) (AppConstants.width / 1.25), (int) (AppConstants.height / 1.4));
-        jsonColumns = AppConstants.width / 50;
-        jsonRows = AppConstants.height / 150;
+        jsonTextBoxes = new Dimension((int) Math.pow(jsonColumns, 2), AppConstants.height / 3);
     }
 }

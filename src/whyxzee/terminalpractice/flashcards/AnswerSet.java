@@ -77,33 +77,35 @@ public class AnswerSet {
      */
     public boolean inSet(String input) {
         // Declaring variables
-        char[] inputCharArray = input.toCharArray();
-        ArrayList<char[]> answerArray = new ArrayList<char[]>();
+        if (input != null) {
+            char[] inputCharArray = input.toCharArray();
+            ArrayList<char[]> answerArray = new ArrayList<char[]>();
 
-        // Making the answer array
-        for (String answer : answerSet) {
-            answerArray.add(answer.toCharArray());
-        }
-
-        // Going through the answers and checking if the characters match
-        for (char[] i : answerArray) {
-            int charsCorrect = 0;
-            try {
-                for (int j = 0; j < inputCharArray.length; j++) {
-                    if (Character.toLowerCase(inputCharArray[j]) == Character.toLowerCase(i[j])) {
-                        charsCorrect++;
-                    }
-                }
-            } catch (IndexOutOfBoundsException e) {
-
+            // Making the answer array
+            for (String answer : answerSet) {
+                answerArray.add(answer.toCharArray());
             }
-            if (charsCorrect == i.length) {
-                String word = "";
-                for (Character j : i) {
-                    word += j;
+
+            // Going through the answers and checking if the characters match
+            for (char[] i : answerArray) {
+                int charsCorrect = 0;
+                try {
+                    for (int j = 0; j < inputCharArray.length; j++) {
+                        if (Character.toLowerCase(inputCharArray[j]) == Character.toLowerCase(i[j])) {
+                            charsCorrect++;
+                        }
+                    }
+                } catch (IndexOutOfBoundsException e) {
+
                 }
-                answerSet.remove(word);
-                return true;
+                if (charsCorrect == i.length) {
+                    String word = "";
+                    for (Character j : i) {
+                        word += j;
+                    }
+                    answerSet.remove(word);
+                    return true;
+                }
             }
         }
 

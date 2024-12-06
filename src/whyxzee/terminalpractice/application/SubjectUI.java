@@ -10,7 +10,7 @@ import javax.swing.JScrollPane;
 
 import whyxzee.terminalpractice.flashcards.FlashcardConstants;
 import whyxzee.terminalpractice.flashcards.JSONTools;
-import whyxzee.terminalpractice.scenarios.ScenarioConstants;
+import whyxzee.terminalpractice.scenarios.ScenarioTools;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,7 +48,7 @@ public class SubjectUI extends JPanel implements ActionListener {
 
         // Creating buttons from hashmap
         for (String i : list) {
-            buttonList.add(new JButton(AppConstants.capitalize(i)));
+            buttonList.add(new JButton(i));
         }
 
         subjectLabel.setFont(AppConstants.bigFont);
@@ -81,7 +81,7 @@ public class SubjectUI extends JPanel implements ActionListener {
         } else {
             for (JButton i : buttonList) {
                 if (e.getActionCommand().equals(i.getText().toLowerCase())) {
-                    AppConstants.subject = i.getText().toLowerCase();
+                    AppConstants.subject = i.getText();
                 }
             }
             switch (AppConstants.gameEnum) {
@@ -94,7 +94,7 @@ public class SubjectUI extends JPanel implements ActionListener {
                     break;
                 case SCENARIOS:
                     new SetScenarioUI(
-                            new HashSet<String>(ScenarioConstants.scenarioHashMap.get(AppConstants.subject)))
+                            new HashSet<String>(ScenarioTools.scenarioHashMap.get(AppConstants.subject)))
                             .display();
                     break;
                 case JSON_EDITOR:

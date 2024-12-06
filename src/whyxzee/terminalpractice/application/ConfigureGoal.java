@@ -54,6 +54,12 @@ public class ConfigureGoal extends JPanel implements PropertyChangeListener {
                 this.add(goalLabel, grid);
                 grid.gridy++;
                 break;
+            case OMEGA_SCENARIO:
+                goalLabel = new JLabel("How many questions would you like to practice?");
+                this.add(goalLabel, grid);
+                goalLabel.setFont(AppConstants.bigFont);
+                grid.gridy++;
+                break;
             default:
                 break;
         }
@@ -129,6 +135,20 @@ public class ConfigureGoal extends JPanel implements PropertyChangeListener {
                     }
                 }
                 break;
+            case OMEGA_SCENARIO:
+                if (AppConstants.goal < 1) {
+                    JOptionPane.showMessageDialog(AppConstants.frame, "The goal cannot be less than one.",
+                            "Input Error",
+                            JOptionPane.ERROR_MESSAGE);
+                } else {
+                    releasePause = true;
+                }
+
+                if (releasePause) {
+                    AppConstants.semaphore.release();
+                }
+                break;
+
             default:
                 break;
         }

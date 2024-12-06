@@ -45,7 +45,7 @@ public class SetScenarioUI extends JPanel implements ActionListener {
 
         // Creating buttons from hashmap
         for (String i : list) {
-            buttonList.add(new JButton(AppConstants.capitalize(i)));
+            buttonList.add(new JButton(i));
         }
 
         switch (AppConstants.gameEnum) {
@@ -88,7 +88,7 @@ public class SetScenarioUI extends JPanel implements ActionListener {
         } else {
             for (JButton i : buttonList) {
                 if (e.getActionCommand().equals(i.getText().toLowerCase())) {
-                    AppConstants.set = i.getText().toLowerCase();
+                    AppConstants.set = i.getText();
                 }
             }
             switch (AppConstants.gameEnum) {

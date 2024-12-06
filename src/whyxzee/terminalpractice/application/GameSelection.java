@@ -12,8 +12,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import whyxzee.terminalpractice.flashcards.FlashcardConstants;
+import whyxzee.terminalpractice.flashcards.JSONImport;
 import whyxzee.terminalpractice.flashcards.JSONTools;
-import whyxzee.terminalpractice.scenarios.ScenarioConstants;
+import whyxzee.terminalpractice.scenarios.OmegaScenarioSelection;
+import whyxzee.terminalpractice.scenarios.ScenarioTools;
 
 import java.util.HashSet;
 import java.util.concurrent.Semaphore;
@@ -21,14 +23,19 @@ import java.util.concurrent.Semaphore;
 public class GameSelection extends JPanel implements ActionListener {
     GameDaemon daemon;
     Semaphore gameSemaphore = new Semaphore(0);
+
     // Vars
     boolean isCustomAvailable;
 
+    //
     // Labels
+    //
     JLabel menuLabel = new JLabel("Terminal Practice");
     JLabel splashText = new JLabel(AppConstants.splash);
 
+    //
     // Button Constants
+    //
     JButton flashcardButton = new JButton("Flashcards");
     JButton drillsButton = new JButton("Drills");
     JButton scenariosButton = new JButton("Scenarios");
@@ -39,8 +46,11 @@ public class GameSelection extends JPanel implements ActionListener {
     JButton shareButton = new JButton("Share Custom Sets");
     JButton importButton = new JButton("Import Custom Sets");
     JButton removeButton = new JButton("Remove Custom Sets");
+    JButton omegaDrillButton = new JButton("Omega Drills");
+    JButton omegaScenarioButton = new JButton("Omega Scenarios");
     JButton[] buttonArray = { flashcardButton, drillsButton, scenariosButton, customFlashcardsButton,
-            customDrillsButton, creatorButton, editorButton, shareButton, importButton, removeButton };
+            customDrillsButton, creatorButton, editorButton, shareButton, importButton, removeButton,
+            omegaDrillButton, omegaScenarioButton };
 
     // Panels
     JPanel buttonPanel = new JPanel();
@@ -74,9 +84,9 @@ public class GameSelection extends JPanel implements ActionListener {
             grid.gridy++;
 
             tick++;
-            if (tick == 5) {
+            if (tick == 6) {
                 tick = 0;
-                grid.gridy -= 5;
+                grid.gridy -= 6;
                 grid.gridx++;
             }
         }
@@ -89,6 +99,8 @@ public class GameSelection extends JPanel implements ActionListener {
 
         scenariosButton.setToolTipText("Answer randomized questions.");
         scenariosButton.setMnemonic(KeyEvent.VK_S);
+        // scenariosButton.setEnabled(false);
+        // scenariosButton.setToolTipText("Currently reworking, come back soon!");
 
         customFlashcardsButton.setEnabled(isCustomAvailable);
         if (customFlashcardsButton.isEnabled()) {
@@ -124,9 +136,8 @@ public class GameSelection extends JPanel implements ActionListener {
         shareButton.setEnabled(false);
         shareButton.setToolTipText("Coming soon!");
 
-        // importButton.setToolTipText("Import custom sets to be used.");
-        importButton.setEnabled(false);
-        importButton.setToolTipText("Coming soon!");
+        importButton.setToolTipText("Import custom sets to be used.");
+        importButton.setMnemonic(KeyEvent.VK_I);
 
         // removeButton.setEnabled(isCustomAvailable);
         // if (shareButton.isEnabled()) {
@@ -136,6 +147,11 @@ public class GameSelection extends JPanel implements ActionListener {
         // }
         removeButton.setEnabled(false);
         removeButton.setToolTipText("Coming soon!");
+
+        omegaDrillButton.setToolTipText("Practice multiple sets at a time!");
+
+        omegaScenarioButton.setToolTipText("Coming soon!");
+        // omegaScenarioButton.setEnabled(false);
 
         // Labels
         menuLabel.setFont(AppConstants.biggerFont);
@@ -167,7 +183,7 @@ public class GameSelection extends JPanel implements ActionListener {
 
         } else if (action.equals("Scenarios")) {
             AppConstants.gameEnum = AppConstants.Game.SCENARIOS;
-            AppConstants.subjectSet = ScenarioConstants.scenarioHashMap.keySet();
+            AppConstants.subjectSet = ScenarioTools.scenarioHashMap.keySet();
             new SubjectUI(AppConstants.subjectSet).display();
 
         } else if (action.equals("Create Flashcards")) {
@@ -188,6 +204,18 @@ public class GameSelection extends JPanel implements ActionListener {
             AppConstants.gameEnum = AppConstants.Game.CUSTOM_FLASHCARDS;
             AppConstants.subjectSet = new HashSet<String>(JSONTools.getCustomSubjects());
             new SubjectUI(AppConstants.subjectSet).display();
+
+        } else if (action.equals("Import Custom Sets")) {
+            AppConstants.gameEnum = AppConstants.Game.JSON_IMPORT;
+            new JSONImport().display();
+            AppConstants.semaphore.release();
+
+        } else if (action.equals("Omega Drills")) {
+            AppConstants.gameEnum = AppConstants.Game.OMEGA_DRILL;
+            new OmegaDrillSelection().display();
+        } else if (action.equals("Omega Scenarios")) {
+            AppConstants.gameEnum = AppConstants.Game.OMEGA_SCENARIO;
+            new OmegaScenarioSelection().display();
         }
     }
 

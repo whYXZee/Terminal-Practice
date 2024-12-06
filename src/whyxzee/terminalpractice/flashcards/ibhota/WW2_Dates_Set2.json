@@ -1,0 +1,35 @@
+{
+  "setName": "ww2 dates set 2",
+  "restrictLetters": false,
+  "beginningCharIndex": 0,
+  "termList": {
+    "What years was Senator Daniel Inouye in office? [year-year]": "1963-2012",
+    "What years was Prime Minister Mackenzie King in charge? [year-year]": "1935-1948",
+    "When was the 442nd Regiment created? [month year]": "January 1943",
+    "When were the Anti-Japanese riots in Lima, Peru? [month year]": "May 1940",
+    "What year was the Burke-Wadsworth Act enacted?": "1940",
+    "What year was the California Alien Land Law enacted?": "1913",
+    "When was Executive Order 9066? [date month year]": "19 February 1942",
+    "When was Executive Order 9102? [date month year]": "18 March 1942",
+    "When was the fall of Hong Kong? [date month year]": "25 December 1941",
+    "What year was Hirabayashi v. United States?": "1943",
+    "What year was Korematsu v. United States?": "1944",
+    "When was the Battle of Midway? [month year]": "June 1942",
+    "What year was the National Association of Japanese Canadians founded?": "1947",
+    "What year was the National Origins Act enacted?": "1924",
+    "When was the Order in Council PC 1486? [date month year]": "24 February 1942",
+    "What year was the Roberts Report?": "1942",
+
+    "When was Executive Order 8802 enacted? [date month year]": "25 June 1941",
+    "What year was the Congress of Racial Equality (CORE) founded?": "1942",
+    "When were the Detroit Race Riots? [month year]": "June 1943",
+    "What year was the Harlem Race Riots?": "1943",
+    "What year was the Selective Service Act enacted?": "1940",
+    "When was the Bracero program created?": "August 1942",
+    "What year were the Zoot Suit Riots?": "1943",
+    "What years were the Navajo Code Talkers used? [year-year]": "1942-1945",
+    "What year was the court case Smith v. Allright?": "1944",
+    "What year was the GI Bill enacted?": "1944"
+  },
+  "subject": "ib history of the americas"
+}

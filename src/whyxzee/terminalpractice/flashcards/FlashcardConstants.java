@@ -7,34 +7,44 @@ import java.util.HashMap;
 public class FlashcardConstants {
     public static final HashMap<String, File> spanishFlashcards = new HashMap<String, File>() {
         {
-            put("animals", new File("./src/whyxzee/terminalpractice/flashcards/spanish/Animals.json"));
-            put("plants", new File("./src/whyxzee/terminalpractice/flashcards/spanish/Plants.json"));
-            put("nationalities, ethnicities, & religions",
+            put("Animals", new File("./src/whyxzee/terminalpractice/flashcards/spanish/Animals.json"));
+            put("Plants", new File("./src/whyxzee/terminalpractice/flashcards/spanish/Plants.json"));
+            put("Nationalities, Ethnicities, & Religions",
                     new File("./src/whyxzee/terminalpractice/flashcards/spanish/NationsEthnicities.json"));
-            put("food (plants)", new File("./rc/whyxzee/terminalpractice/flashcards/spanish/FoodPlants.json"));
-        }
-    };
-
-    static final HashMap<String, File> usHistoryFlashcards = new HashMap<String, File>() {
-        {
-            put("presidential parties",
-                    new File("./src/whyxzee/terminalpractice/flashcards/us_history/PresidentialParty.json"));
+            put("Food (Plants)", new File("./rc/whyxzee/terminalpractice/flashcards/spanish/FoodPlants.json"));
         }
     };
 
     static final HashMap<String, File> englishFlashcards = new HashMap<String, File>() {
         {
-            put("greek roots", new File("./src/whyxzee/terminalpractice/flashcards/english/GreekRoots.json"));
-            put("latin roots", new File("./src/whyxzee/terminalpractice/flashcards/english/LatinRoots.json"));
-            put("moods and tones", new File("./src/whyxzee/terminalpractice/flashcards/english/MoodTones.json"));
+            put("Greek Roots", new File("./src/whyxzee/terminalpractice/flashcards/english/GreekRoots.json"));
+            put("Latin Roots", new File("./src/whyxzee/terminalpractice/flashcards/english/LatinRoots.json"));
+            put("Moods and Tones", new File("./src/whyxzee/terminalpractice/flashcards/english/MoodTones.json"));
+        }
+    };
+
+    static final HashMap<String, File> ibhotaFlashcards = new HashMap<String, File>() {
+        {
+            put("WW2 Terms (Set 1)", new File("./src/whyxzee/terminalpractice/flashcards/ibhota/WW2_Set1.json"));
+            put("WW2 Terms (Set 2)", new File("./src/whyxzee/terminalpractice/flashcards/ibhota/WW2_Set2.json"));
+            put("WW2 Dates (Set 2)", new File("./src/whyxzee/terminalpractice/flashcards/ibhota/WW2_Dates_Set2.json"));
         }
     };
 
     public static final HashMap<String, HashMap<String, File>> flashcardHashMap = new HashMap<String, HashMap<String, File>>() {
         {
-            put("spanish", spanishFlashcards);
-            put("u.s. history", usHistoryFlashcards);
-            put("english", englishFlashcards);
+            put("Spanish", spanishFlashcards);
+            put("English", englishFlashcards);
+            put("IB History of the Americas", ibhotaFlashcards);
         }
     };
+
+    public static File getFileGeneric(String input) {
+        for (String i : flashcardHashMap.keySet()) {
+            if (flashcardHashMap.get(i).keySet().contains(input)) {
+                return flashcardHashMap.get(i).get(input);
+            }
+        }
+        return null;
+    }
 }
