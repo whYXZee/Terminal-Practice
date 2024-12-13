@@ -9,21 +9,28 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
+// Add more scenarios regarding actual circuits
+// Add
+
 /**
- * Scenarios over work, energy, and power. Available question types
+ * Scenarios over circuitry. Available question types
  * include:
  * <ul>
- * <li>Finding kinetic energy
- * <li>Finding gravitational potential energy
- * <li>Finding work
- * <li>Finding angled work
- * <li>Finding work along a curve
- * <li>Finding efficiency
- * <li>Finding power
- * <li>Converting change in kinetic energy to work
- * <li>Finding the gain of kinetic energy from the loss of potential energy
+ * <li>Voltage of a series circuit
+ * <li>Resistance of a series circuit
+ * <li>Current of a series circuit
+ * <li>Voltage of a parallel circuit
+ * <li>Resistance of a parallel circuit
+ * <li>Current of a parallel circuit
+ * <li>Resistivity
+ * <li>Drift velocity
+ * <li>Electromotive force
  * <li>{@code Fix} add units
  * <li>{@code Fix} repeating answers
+ * <li>{@code Fix} incorrect random choices for parallel resistance
+ * <li>{@code Fix} given values are not rounded to the proper rounding?
+ * <li>{@code Fix} use diagrams instead of labels for the circuits.
+ * <li>{@code Fix} use better questions
  * 
  */
 public class Circuitry extends ScenarioUI {
@@ -441,7 +448,8 @@ public class Circuitry extends ScenarioUI {
                 // Randomize values
                 length = (rng.nextInt(maxNum * 2) + 1);
                 time = rng.nextInt(60) + 1;
-                answer = new BigDecimal(length / (time * 100), round).toPlainString() + "m/s"; // * 100 for cm -> m
+                answer = new BigDecimal(length / (double) (time * 100), round).toPlainString() + "m/s"; // * 100 for cm
+                                                                                                        // -> m
 
                 // Answers
                 choices.add(answer);
@@ -514,7 +522,7 @@ public class Circuitry extends ScenarioUI {
 
             case RESISTIVITY:
                 questions = AppConstants
-                        .divideLabel("What is the resistvitiy of a conductor, which has a resistance of " + rE
+                        .divideLabel("What is the resistivity of a conductor, which has a resistance of " + rE
                                 + "\u03a9, a cross sectional area of " + area + ", and  a length of " + length + "?");
                 break;
             case DRIFT_VELOCITY:
