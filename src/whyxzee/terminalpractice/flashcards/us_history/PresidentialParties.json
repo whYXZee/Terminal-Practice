@@ -1,0 +1,20 @@
+{
+  "setName": "presidential parties",
+  "restrictLetters": false,
+  "beginningCharIndex": 0,
+  "termList": {
+    "What party did William McKinley run under?": "Republican",
+    "What party did Theodore Roosevelt run under?": "Republican",
+    "What party did William Howard Taft run under?": "Republican",
+    "What party did Warren G. Harding run under?": "Republican",
+    "What party did Calvin Coolidge run under?": "Republican",
+    "What party did Herbert Hoover run under?": "Republican",
+    "What party did Wendell Willkie run under?": "Republican",
+
+    "What party did William Jennings Bryan run under?": "Democrat",
+    "What party did Grover Cleveland run under?": "Democrat",
+    "What party did Woodrow Wilson run under?": "Democrat",
+    "What party did Franklin D. Roosvelt run under?": "Democrat",
+    "What party did Harry Truman run under?": "Democrat"
+  }
+}

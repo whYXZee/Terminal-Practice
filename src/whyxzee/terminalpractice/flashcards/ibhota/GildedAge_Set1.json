@@ -70,7 +70,8 @@
     "Which island processed immigrants entering New York?": "Ellis Island",
     "What are corrupt municipal governments who help immigrants called?": "political machines,Tammany Hall",
     "What housed poor people and helped them?": "settlement houses",
-    "[gospel of wealth]": "Gospel of Wealth",
+    "Who coined the Gospel of Wealth?": "Andrew Carnegie",
+    "What was the belief that it is the rich's responsibility to help the poor?": "Gospel of Wealth",
     "What are distinct residential areas for urban cities?": "suburbs",
     "Which act helped states build universities?": "Morrill Land Grant Act",
     "[social sciences]": "social sciences",
@@ -120,7 +121,9 @@
     "The Farmers' Alliance made this list of grievances:": "Ocala Platform",
     "Which group advocated on behalf of farmers?": "The National Grange,Grange",
     "What is the name for an African-American migrant who moved in hopes of claiming land?": "exoduster",
-    "What were African-American soldiers who hunted buffalo called?": "Buffalo Soldiers"
+    "What were African-American soldiers who hunted buffalo called?": "Buffalo Soldiers",
+    "If coined, what metal would inflate the economy?": "silver",
+    "What was the standard for currency?": "gold"
   },
   "subject": "ib history of the americas"
 }

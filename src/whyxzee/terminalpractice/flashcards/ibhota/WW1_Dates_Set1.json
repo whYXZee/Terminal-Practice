@@ -1,0 +1,10 @@
+{
+  "setName": "world war 1 definitions",
+  "termList": {
+    "What date was the WW1 armistice? [date month year]": "11 November 1918",
+    "What date did Wilson suffer from a stroke? [date month year]": "2 October 1919"
+  },
+  "restrictLetters": true,
+  "subject": "history of the americas",
+  "beginningCharIndex": 0
+}

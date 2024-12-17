@@ -25,9 +25,28 @@ public class FlashcardConstants {
 
     static final HashMap<String, File> ibhotaFlashcards = new HashMap<String, File>() {
         {
+            put("African American Terms",
+                    new File("./src/whyxzee/terminalpractice/flashcards/ibhota/AfricanAmericans_Set1.json"));
+            put("African American Dates",
+                    new File("./src/whyxzee/terminalpractice/flashcards/ibhota/AfricanAmericans_Dates_Set1.json"));
+
             put("Gilded Age Terms", new File("./src/whyxzee/terminalpractice/flashcards/ibhota/GildedAge_Set1.json"));
             put("Gilded Age Dates",
                     new File("./src/whyxzee/terminalpractice/flashcards/ibhota/GildedAge_Dates_Set1.json"));
+
+            put("Progressive Era Terms",
+                    new File("./src/whyxzee/terminalpractice/flashcards/ibhota/ProgressiveEra_Set1.json"));
+            put("Progressive Era Dates",
+                    new File("./src/whyxzee/terminalpractice/flashcards/ibhota/ProgressiveEra_Dates_Set1.json"));
+
+            put("US Expansionism Terms",
+                    new File("./src/whyxzee/terminalpractice/flashcards/ibhota/USExpansion_Set1.json"));
+            put("US Expansionism Dates",
+                    new File("./src/whyxzee/terminalpractice/flashcards/ibhota/USExpansion_Dates_Set1.json"));
+
+            put("WW1 Terms", new File("./src/whyxzee/terminalpractice/flashcards/ibhota/WW1_Set1.json"));
+            put("WW1 Dates", new File("./src/whyxzee/terminalpractice/flashcards/ibhota/WW1_Dates_Set1.json"));
+
             put("WW2 Terms (Set 1)", new File("./src/whyxzee/terminalpractice/flashcards/ibhota/WW2_Set1.json"));
             put("WW2 Terms (Set 2)", new File("./src/whyxzee/terminalpractice/flashcards/ibhota/WW2_Set2.json"));
             put("WW2 Dates (Set 2)", new File("./src/whyxzee/terminalpractice/flashcards/ibhota/WW2_Dates_Set2.json"));

@@ -149,17 +149,18 @@ public class FlashcardUI extends JPanel implements ActionListener {
         this.add(extraButtons, grid);
 
         while (run) {
+            // flashcard.removeAll();
+
             // Text
             cardTracker.setText("Card " + (index + 1) + "/" + set.keySet().size());
 
             // Adding the flashcard panel
+            flashcardGrid.gridy = 0;
             for (JLabel j : flashcardText) {
                 j.setFont(AppConstants.bigFont);
                 flashcard.add(j, flashcardGrid);
                 flashcardGrid.gridy++;
             }
-
-            flashcardGrid.gridy = 0;
 
             //
             // Setting the flashcard buttons
@@ -189,65 +190,81 @@ public class FlashcardUI extends JPanel implements ActionListener {
         // System.out.println("action: " + action + " question: " + question + " index:"
         // + index);
 
-        if (semaphore.hasQueuedThreads()) {
-            if (action.equals("next")) {
-                index++;
+        // if (semaphore.hasQueuedThreads()) {
+        if (action.equals("next")) {
+            for (JLabel j : flashcardText) {
+                flashcard.remove(j);
+            }
+
+            index++;
+            isQuestion = true;
+            // question = (String) set.keySet().toArray()[index];
+            question = terms.get(index);
+            flashcardText = AppConstants.divideLabel(question);
+        } else if (action.equals("back")) {
+            for (JLabel j : flashcardText) {
+                flashcard.remove(j);
+            }
+
+            index--;
+            isQuestion = true;
+            // question = (String) set.keySet().toArray()[index];
+            question = terms.get(index);
+            flashcardText = AppConstants.divideLabel(question);
+        } else if (action.equals("flip")) {
+            for (JLabel j : flashcardText) {
+                flashcard.remove(j);
+            }
+
+            if (isQuestion) {
+                isQuestion = false;
+                flashcardText = AppConstants.divideLabel(new AnswerSet(set.get(question)).toString());
+            } else {
                 isQuestion = true;
-                // question = (String) set.keySet().toArray()[index];
-                question = terms.get(index);
                 flashcardText = AppConstants.divideLabel(question);
-            } else if (action.equals("back")) {
-                index--;
-                isQuestion = true;
-                // question = (String) set.keySet().toArray()[index];
-                question = terms.get(index);
-                flashcardText = AppConstants.divideLabel(question);
-            } else if (action.equals("flip")) {
-                if (isQuestion) {
-                    isQuestion = false;
-                    flashcardText = AppConstants.divideLabel(new AnswerSet(set.get(question)).toString());
-                } else {
-                    isQuestion = true;
-                    flashcardText = AppConstants.divideLabel(question);
-                }
-            } else if (action.equals("end")) {
-                run = false;
-                AppConstants.gameEnum = AppConstants.Game.NONE;
-                AppConstants.semaphore.release();
-            } else if (action.equals("go to")) {
-                boolean getInput = true;
-                while (getInput) {
-                    try {
-                        int formerIndex = index;
-                        String input = JOptionPane.showInputDialog("What card would you like to go to?", index + 1);
-                        if (input == null) {
-                            index = formerIndex;
-                            getInput = false;
-                        } else {
-                            index = Integer.valueOf(input) - 1;
-                            // System.out.println(index);
-                            if (index >= 0 && set.keySet().size() >= index + 1) {
-                                getInput = false;
-                                isQuestion = true;
-                                // question = (String) set.keySet().toArray()[index];
-                                question = terms.get(index);
-                                flashcardText = AppConstants.divideLabel(question);
-                            } else {
-                                JOptionPane.showMessageDialog(AppConstants.frame,
-                                        "Invalid input, please put a number in between 1 and " + set.keySet().size()
-                                                + ".",
-                                        "Input Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else if (action.equals("end")) {
+            run = false;
+            AppConstants.gameEnum = AppConstants.Game.NONE;
+            AppConstants.semaphore.release();
+        } else if (action.equals("go to")) {
+            boolean getInput = true;
+            while (getInput) {
+                try {
+                    int formerIndex = index;
+                    String input = JOptionPane.showInputDialog("What card would you like to go to?", index + 1);
+                    if (input == null) {
+                        index = formerIndex;
+                        getInput = false;
+                    } else {
+                        index = Integer.valueOf(input) - 1;
+
+                        if (index >= 0 && set.keySet().size() >= index + 1) {
+                            for (JLabel j : flashcardText) {
+                                flashcard.remove(j);
                             }
+
+                            getInput = false;
+                            isQuestion = true;
+                            // question = (String) set.keySet().toArray()[index];
+                            question = terms.get(index);
+                            flashcardText = AppConstants.divideLabel(question);
+                        } else {
+                            JOptionPane.showMessageDialog(AppConstants.frame,
+                                    "Invalid input, please put a number in between 1 and " + set.keySet().size()
+                                            + ".",
+                                    "Input Error", JOptionPane.ERROR_MESSAGE);
                         }
-                    } catch (NumberFormatException error) {
-                        JOptionPane.showMessageDialog(AppConstants.frame, "Invalid input, please put numbers",
-                                "Input Error", JOptionPane.ERROR_MESSAGE);
                     }
+                } catch (NumberFormatException error) {
+                    JOptionPane.showMessageDialog(AppConstants.frame, "Invalid input, please put numbers",
+                            "Input Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
-            semaphore.release();
-            flashcard.removeAll();
         }
+
+        semaphore.release();
+        // }
     }
 
     /**
