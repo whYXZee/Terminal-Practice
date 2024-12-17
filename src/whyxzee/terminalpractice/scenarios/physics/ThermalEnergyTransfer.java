@@ -25,6 +25,10 @@ import javax.swing.JOptionPane;
  * <li>Emissivity
  * <li>{@code Open-only} Constants
  * </ul>
+ * Things to work on:
+ * <ul>
+ * <li>{@code fix} rounding issues
+ * <li>{@code fix} answer calculations for emissivity
  */
 public class ThermalEnergyTransfer extends ScenarioUI {
     //
@@ -309,7 +313,7 @@ public class ThermalEnergyTransfer extends ScenarioUI {
                 // Randomize values
                 power = rng.nextInt(maxNum * 10) + 1;
                 kelvin = rng.nextInt(maxNum * 100) + 1;
-                answer = new BigDecimal(power / (stefanBoltsmann * kelvin), round).toPlainString();
+                answer = new BigDecimal(power / (stefanBoltsmann * Math.pow(kelvin, 4)), round).toPlainString();
 
                 // Answers
                 choices.add(answer);
@@ -357,7 +361,7 @@ public class ThermalEnergyTransfer extends ScenarioUI {
                 } else {
                     questions = AppConstants
                             .divideLabel("What is the amount of heat released by an object if its mass is " + mass
-                                    + "g with a latent heat of " + latentHeat + "J/g?");
+                                    + "g with a latent heat of " + -latentHeat + "J/g?");
                 }
                 break;
             case ALBEDO:
