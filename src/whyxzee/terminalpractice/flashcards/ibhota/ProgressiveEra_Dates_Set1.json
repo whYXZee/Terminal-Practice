@@ -1,0 +1,12 @@
+{
+  "setName": " set 1",
+  "restrictLetters": true,
+  "beginningCharIndex": 0,
+  "termList": {
+    "What year was \"The Jungle\" released?": "1906",
+    "What year was the Anthracite Strike?": "1902",
+    "What year was the Industrial Workers of the World founded?": "1905",
+    "What years was Robert LaFollette senator? [year-year]": "1901-1906"
+  },
+  "subject": "ib history of the americas"
+}

@@ -47,14 +47,14 @@ public class JSONTools {
         JSONObject jsonO = new JSONObject();
 
         // Adding needed paramaters
-        jsonO.put("subject", JSONCreator.subject);
-        jsonO.put("setName", JSONCreator.set);
-        jsonO.put("restrictLetters", JSONCreator.restrict);
-        jsonO.put("beginningCharIndex", JSONCreator.beginningCharIndex);
+        jsonO.put("subject", FlashcardCreator.subject);
+        jsonO.put("setName", FlashcardCreator.set);
+        jsonO.put("restrictLetters", FlashcardCreator.restrict);
+        jsonO.put("beginningCharIndex", FlashcardCreator.beginningCharIndex);
 
         // Adding terms
-        ArrayList<String> questions = parseArrayList(JSONCreator.questions);
-        ArrayList<String> answers = parseArrayList(JSONCreator.answers);
+        ArrayList<String> questions = parseArrayList(FlashcardCreator.questions);
+        ArrayList<String> answers = parseArrayList(FlashcardCreator.answers);
         Map<String, String> map = new LinkedHashMap<String, String>();
         int termSize = questions.size();
         for (int i = 0; i < termSize; i++) {
@@ -64,7 +64,7 @@ public class JSONTools {
 
         // Export the JSON
         PrintWriter pw = new PrintWriter(
-                "./src/whyxzee/terminalpractice/flashcards/custom/" + JSONCreator.file + ".json");
+                "./src/whyxzee/terminalpractice/flashcards/custom/" + FlashcardCreator.file + ".json");
         pw.write(jsonO.toJSONString());
         pw.flush();
         pw.close();
@@ -81,14 +81,14 @@ public class JSONTools {
             JSONObject jsonO = new JSONObject();
             PrintWriter pw = new PrintWriter(path);
 
-            jsonO.put("subject", JSONEditor.subject);
-            jsonO.put("setName", JSONEditor.set);
-            jsonO.put("restrictLetters", JSONEditor.restrict);
-            jsonO.put("beginningCharIndex", JSONEditor.beginningCharIndex);
+            jsonO.put("subject", FlashcardEditor.subject);
+            jsonO.put("setName", FlashcardEditor.set);
+            jsonO.put("restrictLetters", FlashcardEditor.restrict);
+            jsonO.put("beginningCharIndex", FlashcardEditor.beginningCharIndex);
 
             // Adding terms
-            ArrayList<String> questions = parseArrayList(JSONEditor.questions);
-            ArrayList<String> answers = parseArrayList(JSONEditor.answers);
+            ArrayList<String> questions = parseArrayList(FlashcardEditor.questions);
+            ArrayList<String> answers = parseArrayList(FlashcardEditor.answers);
             Map<String, String> map = new LinkedHashMap<String, String>();
             int termSize = questions.size();
             // if (termSize < answers.size()) {

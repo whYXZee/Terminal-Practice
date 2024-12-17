@@ -11,6 +11,9 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 
+/**
+ * UI screen for repeating a drill or scenario.
+ */
 public class GoAgain extends JPanel implements ActionListener {
     GoAgainDaemon daemon;
 

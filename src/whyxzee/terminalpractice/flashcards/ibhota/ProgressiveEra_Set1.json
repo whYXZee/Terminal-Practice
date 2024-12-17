@@ -1,0 +1,31 @@
+{
+  "setName": " set 1",
+  "restrictLetters": true,
+  "beginningCharIndex": 0,
+  "termList": {
+    "Who wrote \"The Jungle\"?": "Upton Sinclair",
+    "Who was the progressive Senator from Wisconsin?": "Robert LaFollette",
+    "Who was a founder of the Socialist party?": "Eugene V. Debs",
+    "Who was the muckraker who exposed Standard Oil?": "Ida Tarbell",
+    "who was the leader of the Industrial Workers of the World?": "Big Bill Haywood",
+    "Who was the president of the National American Woman Suffrage Association?": "Carrie Chapman",
+    "Who was the president of the National Woman's Party?": "Alice Paul",
+    "Who was the successor to President Teddy Roosevelt?": "William Howard Taft",
+    "What are the studies to social problems?": "social sciences",
+    "What was the belief of radical reform and public ownership of railroads, utilities, and other major industries?": "socialism",
+    "What were printed ballots by the state, with marked choices in secrecy?": "Australian ballot",
+    "What was the nomination of a party condidate by vote?": "direct primary",
+    "What is the power of the President and the media to mold public opinion?": "bully pulpit",
+    "What was a deal for both workers and businesses, regarding strikes and unions?": "Square Deal",
+    "Which strike was the first time the government sided with workers?": "Anthracite Strike",
+    "What was President Roosevelt's enforcement of the Sherman Antitrust Law called?": "trust-busting",
+    "Which book attempted to expose working conditions at meat packing plants, instead leading to improving sanitary conditions?": "The Jungle",
+    "Which act prevented the sale of adulterated/mislabed food?": "Pure Food and Drug Act",
+    "Which act made inspectors check meatpacking plants and ensure that standards of sanitation were met?": "Meat Inspection Act",
+    "Which phrase means \"tariffs, banks, and trusts\", which is what the government was enforcing?": "triple wall of priviledge",
+    "Which act was a banking reform?": "Federal Reserve Act",
+    "Which act strengthened the Sherman Antritrust Act?": "Clayton Antitrust Act",
+    "Which slogan was meant to return to isolationism and to stop reform?": "return to normalcy"
+  },
+  "subject": "ib history of the americas"
+}

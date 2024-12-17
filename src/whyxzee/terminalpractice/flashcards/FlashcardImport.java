@@ -13,10 +13,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class JSONImport extends JPanel {
+/**
+ * UI menu for importing a set of flashcards.
+ */
+public class FlashcardImport extends JPanel {
     public static JFileChooser fc = new JFileChooser("./src/whyxzee/terminalpractice/flashcards/custom");
 
-    public JSONImport() {
+    public FlashcardImport() {
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
         fc.addChoosableFileFilter(new FileNameExtensionFilter("JSON (.json)", "json"));

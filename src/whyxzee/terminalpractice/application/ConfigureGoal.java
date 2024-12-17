@@ -18,6 +18,9 @@ import javax.swing.JPanel;
 
 import java.text.NumberFormat;
 
+/**
+ * UI for configuring the amount of questions/terms to practice.
+ */
 public class ConfigureGoal extends JPanel implements PropertyChangeListener {
     JFormattedTextField goalField = new JFormattedTextField(NumberFormat.getNumberInstance());
     int setSize;

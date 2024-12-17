@@ -1,0 +1,28 @@
+{
+  "setName": " set 1",
+  "restrictLetters": false,
+  "beginningCharIndex": 0,
+  "termList": {
+    "What years was the Gilded Age? [year-decade]": "1865-1890s",
+    "What year was the Great Railroad Strike?": "1877",
+    "What year was Haymarket Square?": "1886",
+    "What year was the Homestead Strike?": "1892",
+
+    "What year was the book \"How the Other Half Lives\" written?": "1890",
+    "What year was the Morrill Land Grant Act enacted?": "1862",
+    "What year was the National American Woman Suffrage Association made?": "1890",
+
+    "What year did William J. Bryan run for office?": "1896",
+    "What year was the Homestead Act enacted?": "1862",
+    "What year was the American Protective Association founded?": "1887",
+    "What year was \"The Significance of the American Frontier\" written?": "1893",
+    "What year was Wounded Knee?": "1890",
+    "What year was the Chinese Exclusion Act enacted?": "1882",
+    "What year was the Pacific Railway Act enacted?": "1862",
+    "What year was Coxey's March?": "1894",
+    "What year was the Pullman Strike?": "1895",
+    "Which decade did the Farmers' Alliance form?": "1870s",
+    "What year did the Populists form?": "1891"
+  },
+  "subject": "ib history of the americas"
+}

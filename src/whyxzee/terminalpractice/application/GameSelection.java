@@ -12,7 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import whyxzee.terminalpractice.flashcards.FlashcardConstants;
-import whyxzee.terminalpractice.flashcards.JSONImport;
+import whyxzee.terminalpractice.flashcards.FlashcardImport;
 import whyxzee.terminalpractice.flashcards.JSONTools;
 import whyxzee.terminalpractice.scenarios.OmegaScenarioSelection;
 import whyxzee.terminalpractice.scenarios.ScenarioTools;
@@ -20,6 +20,9 @@ import whyxzee.terminalpractice.scenarios.ScenarioTools;
 import java.util.HashSet;
 import java.util.concurrent.Semaphore;
 
+/**
+ * The UI for the main menu.
+ */
 public class GameSelection extends JPanel implements ActionListener {
     GameDaemon daemon;
     Semaphore gameSemaphore = new Semaphore(0);
@@ -97,10 +100,10 @@ public class GameSelection extends JPanel implements ActionListener {
         drillsButton.setToolTipText("Answer questions regarding pre-made flashcard content.");
         drillsButton.setMnemonic(KeyEvent.VK_D);
 
-        scenariosButton.setToolTipText("Answer randomized questions.");
-        scenariosButton.setMnemonic(KeyEvent.VK_S);
-        // scenariosButton.setEnabled(false);
-        // scenariosButton.setToolTipText("Currently reworking, come back soon!");
+        // scenariosButton.setToolTipText("Answer randomized questions.");
+        // scenariosButton.setMnemonic(KeyEvent.VK_S);
+        scenariosButton.setEnabled(false);
+        scenariosButton.setToolTipText("Currently reworking, come back soon!");
 
         customFlashcardsButton.setEnabled(isCustomAvailable);
         if (customFlashcardsButton.isEnabled()) {
@@ -207,7 +210,7 @@ public class GameSelection extends JPanel implements ActionListener {
 
         } else if (action.equals("Import Custom Sets")) {
             AppConstants.gameEnum = AppConstants.Game.JSON_IMPORT;
-            new JSONImport().display();
+            new FlashcardImport().display();
             AppConstants.semaphore.release();
 
         } else if (action.equals("Omega Drills")) {

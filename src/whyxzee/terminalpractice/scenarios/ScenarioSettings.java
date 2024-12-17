@@ -8,6 +8,9 @@ import javax.swing.JPanel;
 
 // use properties class and .config for scenario settings
 
+/**
+ * UI screen for configuring scenario settings.
+ */
 public class ScenarioSettings extends JPanel implements ActionListener {
     //
     // Labels

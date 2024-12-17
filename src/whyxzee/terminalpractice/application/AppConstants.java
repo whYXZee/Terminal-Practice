@@ -21,6 +21,10 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 
+/**
+ * General-use methods and constants for all classes. Also contains the methods
+ * for running the app.
+ */
 public class AppConstants {
     //
     // Global Variables
@@ -135,11 +139,11 @@ public class AppConstants {
                     semaphore.acquire();
                     break;
                 case JSON_CREATOR:
-                    new JSONCreator().display();
+                    new FlashcardCreator().display();
                     semaphore.acquire();
                     break;
                 case JSON_EDITOR:
-                    new JSONEditor(
+                    new FlashcardEditor(
                             JSONTools.getJSONPath(subject, set, "./src/whyxzee/terminalpractice/flashcards/custom/"))
                             .display();
                     semaphore.acquire();
@@ -248,7 +252,7 @@ public class AppConstants {
      * Gets a random splash-text from a set list.
      */
     private static String getRandomSplash() {
-        switch (new Random().nextInt(15)) {
+        switch (new Random().nextInt(16)) {
             case 0:
                 return "case 0";
             case 1:
@@ -279,6 +283,8 @@ public class AppConstants {
                 return "V1.1.1 doesn't exist, it can't hurt you.";
             case 14:
                 return "It's \u03a9 time";
+            case 15:
+                return "I have 0 clue how the drill selection works, but it does!";
             default:
                 return "";
         }

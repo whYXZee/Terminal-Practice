@@ -25,6 +25,9 @@ public class FlashcardConstants {
 
     static final HashMap<String, File> ibhotaFlashcards = new HashMap<String, File>() {
         {
+            put("Gilded Age Terms", new File("./src/whyxzee/terminalpractice/flashcards/ibhota/GildedAge_Set1.json"));
+            put("Gilded Age Dates",
+                    new File("./src/whyxzee/terminalpractice/flashcards/ibhota/GildedAge_Dates_Set1.json"));
             put("WW2 Terms (Set 1)", new File("./src/whyxzee/terminalpractice/flashcards/ibhota/WW2_Set1.json"));
             put("WW2 Terms (Set 2)", new File("./src/whyxzee/terminalpractice/flashcards/ibhota/WW2_Set2.json"));
             put("WW2 Dates (Set 2)", new File("./src/whyxzee/terminalpractice/flashcards/ibhota/WW2_Dates_Set2.json"));
