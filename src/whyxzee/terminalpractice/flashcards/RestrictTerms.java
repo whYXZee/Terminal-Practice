@@ -52,6 +52,10 @@ public class RestrictTerms extends JPanel implements ActionListener {
 
     JCheckBox[] array = { a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, all };
 
+    // Labels
+    JLabel description = new JLabel("Practice only terms that begin with the chosen letter(s).");
+    JLabel restrictLabel = new JLabel("What letters would you like to practice?");
+
     public RestrictTerms() {
         // Layout
         this.setLayout(new GridBagLayout());
@@ -67,10 +71,11 @@ public class RestrictTerms extends JPanel implements ActionListener {
 
         AppConstants.bannedLetters = new ArrayList<String>(English.characters.keySet());
         AppConstants.whitelistArray = new ArrayList<String>();
-        JLabel restrictLabel = new JLabel(
-                "What letters would you like to practice?");
+
         restrictLabel.setFont(AppConstants.bigFont);
         this.add(restrictLabel, grid);
+        grid.gridy++;
+        this.add(description, grid);
         grid.gridy++;
 
         // Adding the checkboxes
