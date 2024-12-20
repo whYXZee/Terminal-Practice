@@ -316,6 +316,8 @@ public class FlashcardUI extends JPanel implements ActionListener {
         flipButton.removeActionListener(this);
         goToButton.removeActionListener(this);
         endButton.removeActionListener(this);
+
+        flashcard.removeAll();
     }
 }
 

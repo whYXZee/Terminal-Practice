@@ -1,6 +1,6 @@
 {
   "setName": " set 1",
-  "restrictLetters": true,
+  "restrictLetters": false,
   "beginningCharIndex": 0,
   "termList": {
     "What year was \"The Jungle\" released?": "1906",
